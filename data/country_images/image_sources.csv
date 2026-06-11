@@ -1,0 +1,49 @@
+country,country_slug,image_filename,image_url,source_page,author,license,description,status
+Algeria,algeria,algeria.jpg,,,,,,existing
+Argentina,argentina,argentina.jpg,,,,,,existing
+Australia,australia,australia.jpg,,,,,,existing
+Austria,austria,austria.jpg,,,,,,existing
+Belgium,belgium,belgium.jpg,,,,,,existing
+Bosnia and Herzegovina,bosnia-and-herzegovina,bosnia-and-herzegovina.jpg,,,,,,existing
+Brazil,brazil,brazil.jpg,,,,,,existing
+Cabo Verde,cabo-verde,cabo-verde.jpg,,,,,,existing
+Canada,canada,canada.jpg,,,,,,existing
+Colombia,colombia,colombia.jpg,,,,,,existing
+Congo DR,congo-dr,congo-dr.jpg,,,,,,existing
+Croatia,croatia,croatia.jpg,,,,,,existing
+Curaçao,curacao,curacao.jpg,,,,,,existing
+Czechia,czechia,czechia.jpg,,,,,,existing
+Côte d'Ivoire,cote-divoire,cote-divoire.jpg,https://upload.wikimedia.org/wikipedia/commons/c/cc/Abidjan_des_Lagune.jpg,https://commons.wikimedia.org/wiki/File:Abidjan_des_Lagune.jpg,Aman ADO,CC BY-SA 4.0,Une vue de la Lagune Ebrié d'Abidjan,downloaded
+Ecuador,ecuador,ecuador.jpg,,,,,,existing
+Egypt,egypt,egypt.jpg,,,,,,existing
+England,england,england.jpg,,,,,,existing
+France,france,france.jpg,,,,,,existing
+Germany,germany,germany.jpg,,,,,,existing
+Ghana,ghana,ghana.jpg,,,,,,existing
+Haiti,haiti,haiti.jpg,,,,,,existing
+IR Iran,ir-iran,ir-iran.jpg,,,,,,existing
+Iraq,iraq,iraq.jpg,,,,,,existing
+Japan,japan,japan.jpg,,,,,,existing
+Jordan,jordan,jordan.jpg,,,,,,existing
+Korea Republic,korea-republic,korea-republic.jpg,,,,,,existing
+Mexico,mexico,mexico.jpg,,,,,,existing
+Morocco,morocco,morocco.jpg,,,,,,existing
+Netherlands,netherlands,netherlands.jpg,,,,,,existing
+New Zealand,new-zealand,new-zealand.jpg,,,,,,existing
+Norway,norway,norway.jpg,,,,,,existing
+Panama,panama,panama.jpg,,,,,,existing
+Paraguay,paraguay,paraguay.jpg,,,,,,existing
+Portugal,portugal,portugal.jpg,,,,,,existing
+Qatar,qatar,qatar.jpg,,,,,,existing
+Saudi Arabia,saudi-arabia,saudi-arabia.jpg,,,,,,existing
+Scotland,scotland,scotland.jpg,,,,,,existing
+Senegal,senegal,senegal.jpg,,,,,,existing
+South Africa,south-africa,south-africa.jpg,,,,,,existing
+Spain,spain,spain.jpg,,,,,,existing
+Sweden,sweden,sweden.jpg,,,,,,existing
+Switzerland,switzerland,switzerland.jpg,,,,,,existing
+Tunisia,tunisia,tunisia.jpg,,,,,,existing
+Türkiye,turkiye,turkiye.jpg,,,,,,existing
+Uruguay,uruguay,uruguay.jpg,,,,,,existing
+USA,usa,usa.jpg,,,,,,existing
+Uzbekistan,uzbekistan,uzbekistan.jpg,,,,,,existing

@@ -1,0 +1,22 @@
+# Generated database — rebuilt by reset_db.py
+data/worldcup.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.Python
+
+# macOS
+.DS_Store
+
+# Streamlit secrets (if you add API keys later)
+.streamlit/secrets.toml
+
+# PDF (large, not needed for deployment)
+data/SquadLists-English.pdf
+
+# Virtual envs
+.venv/
+venv/
+env/

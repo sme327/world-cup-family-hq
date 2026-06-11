@@ -1,0 +1,17 @@
+city_slug,display_name,country,stadium_name,stadium_image,landmark_image
+new-york,New York / New Jersey,USA,MetLife Stadium,data/city_images/new-york-stadium.jpg,data/city_images/new-york-landmark.jpg
+dallas,Dallas / Arlington,USA,AT&T Stadium,data/city_images/dallas-stadium.jpg,data/city_images/dallas-landmark.jpg
+los-angeles,Los Angeles,USA,SoFi Stadium,data/city_images/los-angeles-stadium.jpg,data/city_images/los-angeles-landmark.jpg
+san-francisco,San Francisco Bay Area,USA,Levi's Stadium,data/city_images/san-francisco-stadium.jpg,data/city_images/san-francisco-landmark.jpg
+philadelphia,Philadelphia,USA,Lincoln Financial Field,data/city_images/philadelphia-stadium.jpg,data/city_images/philadelphia-landmark.jpg
+miami,Miami,USA,Hard Rock Stadium,data/city_images/miami-stadium.jpg,data/city_images/miami-landmark.jpg
+kansas-city,Kansas City,USA,Arrowhead Stadium,data/city_images/kansas-city-stadium.jpg,data/city_images/kansas-city-landmark.jpg
+boston,Boston,USA,Gillette Stadium,data/city_images/boston-stadium.jpg,data/city_images/boston-landmark.jpg
+atlanta,Atlanta,USA,Mercedes-Benz Stadium,data/city_images/atlanta-stadium.jpg,data/city_images/atlanta-landmark.jpg
+seattle,Seattle,USA,Lumen Field,data/city_images/seattle-stadium.jpg,data/city_images/seattle-landmark.jpg
+houston,Houston,USA,NRG Stadium,data/city_images/houston-stadium.jpg,data/city_images/houston-landmark.jpg
+vancouver,Vancouver,Canada,BC Place,data/city_images/vancouver-stadium.jpg,data/city_images/vancouver-landmark.jpg
+toronto,Toronto,Canada,BMO Field,data/city_images/toronto-stadium.jpg,data/city_images/toronto-landmark.jpg
+mexico-city,Mexico City,Mexico,Estadio Azteca,data/city_images/mexico-city-stadium.jpg,data/city_images/mexico-city-landmark.jpg
+guadalajara,Guadalajara,Mexico,Estadio Akron,data/city_images/guadalajara-stadium.jpg,data/city_images/guadalajara-landmark.jpg
+monterrey,Monterrey,Mexico,Estadio BBVA,data/city_images/monterrey-stadium.jpg,data/city_images/monterrey-landmark.jpg

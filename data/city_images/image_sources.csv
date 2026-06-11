@@ -1,0 +1,36 @@
+city_slug,display_name,country,image_type,stadium_name,image_filename,image_url,source_page,author,license,description,status
+new-york,New York / New Jersey,USA,stadium,MetLife Stadium,new-york-stadium.jpg,,,,,,existing
+new-york,New York / New Jersey,USA,landmark,MetLife Stadium,new-york-landmark.jpg,,,,,,existing
+dallas,Dallas / Arlington,USA,stadium,AT&T Stadium,dallas-stadium.jpg,,,,,,existing
+dallas,Dallas / Arlington,USA,landmark,AT&T Stadium,dallas-landmark.jpg,,,,,,existing
+los-angeles,Los Angeles,USA,stadium,SoFi Stadium,los-angeles-stadium.jpg,,,,,,existing
+los-angeles,Los Angeles,USA,landmark,SoFi Stadium,los-angeles-landmark.jpg,,,,,,existing
+san-francisco,San Francisco Bay Area,USA,stadium,Levi's Stadium,san-francisco-stadium.jpg,https://upload.wikimedia.org/wikipedia/commons/d/d2/Levi%27s_Stadium_interior_1.jpg,https://commons.wikimedia.org/wiki/File:Levi's_Stadium_interior_1.jpg,Matthew Roth,CC BY-SA 2.0,Levi's Stadium interior,downloaded
+san-francisco,San Francisco Bay Area,USA,landmark,Levi's Stadium,san-francisco-landmark.jpg,https://upload.wikimedia.org/wikipedia/commons/2/20/Golden_Gate_Bridge_and_San_Francisco_skyline_from_Hawk_Hill_at_Blue_Hour_dllu.jpg,https://commons.wikimedia.org/wiki/File:Golden_Gate_Bridge_and_San_Francisco_skyline_from_Hawk_Hill_at_Blue_Hour_dllu.jpg,"Daniel L. Lu (user:dllu)
+
+
+Camera location37° 49′ 39.52″ N, 122° 29′ 56.17″ W View this and other nearby images on: OpenStreetMap 37.827644; -122.498935",CC BY-SA 4.0,The Golden Gate Bridge and San Francisco as seen from Hawk Hill during blue hour.,downloaded
+philadelphia,Philadelphia,USA,stadium,Lincoln Financial Field,philadelphia-stadium.jpg,,,,,,existing
+philadelphia,Philadelphia,USA,landmark,Lincoln Financial Field,philadelphia-landmark.jpg,,,,,,existing
+miami,Miami,USA,stadium,Hard Rock Stadium,miami-stadium.jpg,,,,,,existing
+miami,Miami,USA,landmark,Hard Rock Stadium,miami-landmark.jpg,,,,,,existing
+kansas-city,Kansas City,USA,stadium,Arrowhead Stadium,kansas-city-stadium.jpg,,,,,,existing
+kansas-city,Kansas City,USA,landmark,Arrowhead Stadium,kansas-city-landmark.jpg,,,,,,existing
+boston,Boston,USA,stadium,Gillette Stadium,boston-stadium.jpg,,,,,,existing
+boston,Boston,USA,landmark,Gillette Stadium,boston-landmark.jpg,,,,,,existing
+atlanta,Atlanta,USA,stadium,Mercedes-Benz Stadium,atlanta-stadium.jpg,,,,,,existing
+atlanta,Atlanta,USA,landmark,Mercedes-Benz Stadium,atlanta-landmark.jpg,,,,,,existing
+seattle,Seattle,USA,stadium,Lumen Field,seattle-stadium.jpg,,,,,,existing
+seattle,Seattle,USA,landmark,Lumen Field,seattle-landmark.jpg,,,,,,existing
+houston,Houston,USA,stadium,NRG Stadium,houston-stadium.jpg,,,,,,existing
+houston,Houston,USA,landmark,NRG Stadium,houston-landmark.jpg,,,,,,existing
+vancouver,Vancouver,Canada,stadium,BC Place,vancouver-stadium.jpg,,,,,,existing
+vancouver,Vancouver,Canada,landmark,BC Place,vancouver-landmark.jpg,,,,,,existing
+toronto,Toronto,Canada,stadium,BMO Field,toronto-stadium.jpg,,,,,,existing
+toronto,Toronto,Canada,landmark,BMO Field,toronto-landmark.jpg,,,,,,existing
+mexico-city,Mexico City,Mexico,stadium,Estadio Azteca,mexico-city-stadium.jpg,,,,,,existing
+mexico-city,Mexico City,Mexico,landmark,Estadio Azteca,mexico-city-landmark.jpg,,,,,,existing
+guadalajara,Guadalajara,Mexico,stadium,Estadio Akron,guadalajara-stadium.jpg,,,,,,existing
+guadalajara,Guadalajara,Mexico,landmark,Estadio Akron,guadalajara-landmark.jpg,,,,,,existing
+monterrey,Monterrey,Mexico,stadium,Estadio BBVA,monterrey-stadium.jpg,,,,,,existing
+monterrey,Monterrey,Mexico,landmark,Estadio BBVA,monterrey-landmark.jpg,,,,,,existing

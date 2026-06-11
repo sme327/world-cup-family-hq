@@ -1,0 +1,73 @@
+id,match_number,group_letter,home_team,away_team,match_date,kickoff_time_et,venue,city,host_country,home_score,away_score,status
+1,1,A,Mexico,South Africa,2026-06-11,15:00,Estadio Azteca,Mexico City,Mexico,,,scheduled
+2,2,A,South Korea,Czechia,2026-06-11,22:00,Estadio Akron,Guadalajara,Mexico,,,scheduled
+3,3,B,Canada,Bosnia and Herzegovina,2026-06-12,15:00,BMO Field,Toronto,Canada,,,scheduled
+4,4,D,USA,Paraguay,2026-06-12,21:00,SoFi Stadium,Los Angeles,USA,,,scheduled
+5,5,B,Qatar,Switzerland,2026-06-13,15:00,Levi's Stadium,Santa Clara,USA,,,scheduled
+6,6,C,Brazil,Morocco,2026-06-13,18:00,MetLife Stadium,East Rutherford,USA,,,scheduled
+7,7,C,Haiti,Scotland,2026-06-13,21:00,Gillette Stadium,Foxborough,USA,,,scheduled
+8,8,D,Australia,Türkiye,2026-06-14,00:00,BC Place,Vancouver,Canada,,,scheduled
+9,9,E,Germany,Curaçao,2026-06-14,13:00,NRG Stadium,Houston,USA,,,scheduled
+10,10,F,Netherlands,Japan,2026-06-14,16:00,AT&T Stadium,Arlington,USA,,,scheduled
+11,11,E,Ivory Coast,Ecuador,2026-06-14,19:00,Lincoln Financial Field,Philadelphia,USA,,,scheduled
+12,12,F,Sweden,Tunisia,2026-06-14,22:00,Estadio BBVA,Monterrey,Mexico,,,scheduled
+13,13,H,Spain,Cape Verde,2026-06-15,13:00,Mercedes-Benz Stadium,Atlanta,USA,,,scheduled
+14,14,G,Belgium,Egypt,2026-06-15,18:00,Lumen Field,Seattle,USA,,,scheduled
+15,15,H,Saudi Arabia,Uruguay,2026-06-15,18:00,Hard Rock Stadium,Miami Gardens,USA,,,scheduled
+16,16,G,Iran,New Zealand,2026-06-16,00:00,SoFi Stadium,Los Angeles,USA,,,scheduled
+17,17,I,France,Senegal,2026-06-16,15:00,MetLife Stadium,East Rutherford,USA,,,scheduled
+18,18,I,Iraq,Norway,2026-06-16,18:00,Gillette Stadium,Foxborough,USA,,,scheduled
+19,19,J,Argentina,Algeria,2026-06-16,21:00,Arrowhead Stadium,Kansas City,USA,,,scheduled
+20,20,J,Austria,Jordan,2026-06-17,00:00,Levi's Stadium,Santa Clara,USA,,,scheduled
+21,21,K,Portugal,DR Congo,2026-06-17,13:00,NRG Stadium,Houston,USA,,,scheduled
+22,22,L,England,Croatia,2026-06-17,16:00,AT&T Stadium,Arlington,USA,,,scheduled
+23,23,L,Ghana,Panama,2026-06-17,19:00,BMO Field,Toronto,Canada,,,scheduled
+24,24,K,Uzbekistan,Colombia,2026-06-17,22:00,Estadio Azteca,Mexico City,Mexico,,,scheduled
+25,25,A,Czechia,South Africa,2026-06-18,12:00,Mercedes-Benz Stadium,Atlanta,USA,,,scheduled
+26,26,B,Switzerland,Bosnia and Herzegovina,2026-06-18,15:00,SoFi Stadium,Los Angeles,USA,,,scheduled
+27,27,B,Canada,Qatar,2026-06-18,18:00,BC Place,Vancouver,Canada,,,scheduled
+28,28,A,Mexico,South Korea,2026-06-18,23:00,Estadio Akron,Guadalajara,Mexico,,,scheduled
+29,29,D,USA,Australia,2026-06-19,15:00,Lumen Field,Seattle,USA,,,scheduled
+30,30,C,Scotland,Morocco,2026-06-19,18:00,Gillette Stadium,Foxborough,USA,,,scheduled
+31,31,C,Brazil,Haiti,2026-06-19,21:00,Lincoln Financial Field,Philadelphia,USA,,,scheduled
+32,32,D,Türkiye,Paraguay,2026-06-20,00:00,Levi's Stadium,Santa Clara,USA,,,scheduled
+33,33,F,Netherlands,Sweden,2026-06-20,13:00,NRG Stadium,Houston,USA,,,scheduled
+34,34,E,Germany,Ivory Coast,2026-06-20,16:00,BMO Field,Toronto,Canada,,,scheduled
+35,35,E,Ecuador,Curaçao,2026-06-20,20:00,Arrowhead Stadium,Kansas City,USA,,,scheduled
+36,36,F,Tunisia,Japan,2026-06-21,00:00,Estadio BBVA,Monterrey,Mexico,,,scheduled
+37,37,H,Spain,Saudi Arabia,2026-06-21,12:00,Mercedes-Benz Stadium,Atlanta,USA,,,scheduled
+38,38,G,Belgium,Iran,2026-06-21,15:00,SoFi Stadium,Los Angeles,USA,,,scheduled
+39,39,H,Uruguay,Cape Verde,2026-06-21,18:00,Hard Rock Stadium,Miami Gardens,USA,,,scheduled
+40,40,G,New Zealand,Egypt,2026-06-21,21:00,BC Place,Vancouver,Canada,,,scheduled
+41,41,J,Argentina,Austria,2026-06-22,13:00,AT&T Stadium,Arlington,USA,,,scheduled
+42,42,I,France,Iraq,2026-06-22,17:00,Lincoln Financial Field,Philadelphia,USA,,,scheduled
+43,43,I,Norway,Senegal,2026-06-22,20:00,MetLife Stadium,East Rutherford,USA,,,scheduled
+44,44,J,Jordan,Algeria,2026-06-22,23:00,Levi's Stadium,Santa Clara,USA,,,scheduled
+45,45,K,Portugal,Uzbekistan,2026-06-23,13:00,NRG Stadium,Houston,USA,,,scheduled
+46,46,L,England,Ghana,2026-06-23,16:00,Gillette Stadium,Foxborough,USA,,,scheduled
+47,47,L,Panama,Croatia,2026-06-23,19:00,BMO Field,Toronto,Canada,,,scheduled
+48,48,K,Colombia,DR Congo,2026-06-23,22:00,Estadio Akron,Guadalajara,Mexico,,,scheduled
+49,49,B,Switzerland,Canada,2026-06-24,15:00,BC Place,Vancouver,Canada,,,scheduled
+50,50,B,Bosnia and Herzegovina,Qatar,2026-06-24,15:00,Lumen Field,Seattle,USA,,,scheduled
+51,51,C,Scotland,Brazil,2026-06-24,18:00,Hard Rock Stadium,Miami Gardens,USA,,,scheduled
+52,52,C,Morocco,Haiti,2026-06-24,18:00,Mercedes-Benz Stadium,Atlanta,USA,,,scheduled
+53,53,A,Czechia,Mexico,2026-06-24,21:00,Estadio Azteca,Mexico City,Mexico,,,scheduled
+54,54,A,South Africa,South Korea,2026-06-24,21:00,Estadio BBVA,Monterrey,Mexico,,,scheduled
+55,55,E,Ecuador,Germany,2026-06-25,16:00,MetLife Stadium,East Rutherford,USA,,,scheduled
+56,56,E,Curaçao,Ivory Coast,2026-06-25,16:00,Lincoln Financial Field,Philadelphia,USA,,,scheduled
+57,57,F,Japan,Sweden,2026-06-25,19:00,AT&T Stadium,Arlington,USA,,,scheduled
+58,58,F,Tunisia,Netherlands,2026-06-25,19:00,Arrowhead Stadium,Kansas City,USA,,,scheduled
+59,59,D,Türkiye,USA,2026-06-25,22:00,SoFi Stadium,Los Angeles,USA,,,scheduled
+60,60,D,Paraguay,Australia,2026-06-25,22:00,Levi's Stadium,Santa Clara,USA,,,scheduled
+61,61,I,Norway,France,2026-06-26,15:00,Gillette Stadium,Foxborough,USA,,,scheduled
+62,62,I,Senegal,Iraq,2026-06-26,15:00,BMO Field,Toronto,Canada,,,scheduled
+63,63,H,Cape Verde,Saudi Arabia,2026-06-26,20:00,NRG Stadium,Houston,USA,,,scheduled
+64,64,H,Uruguay,Spain,2026-06-26,20:00,Arrowhead Stadium,Kansas City,USA,,,scheduled
+65,65,G,Egypt,Iran,2026-06-26,23:00,Lumen Field,Seattle,USA,,,scheduled
+66,66,G,New Zealand,Belgium,2026-06-26,23:00,BC Place,Vancouver,Canada,,,scheduled
+67,67,L,Panama,England,2026-06-27,17:00,MetLife Stadium,East Rutherford,USA,,,scheduled
+68,68,L,Croatia,Ghana,2026-06-27,17:00,Lincoln Financial Field,Philadelphia,USA,,,scheduled
+69,69,K,Colombia,Portugal,2026-06-27,19:30,Hard Rock Stadium,Miami Gardens,USA,,,scheduled
+70,70,K,DR Congo,Uzbekistan,2026-06-27,19:30,Mercedes-Benz Stadium,Atlanta,USA,,,scheduled
+71,71,J,Algeria,Austria,2026-06-27,22:00,Arrowhead Stadium,Kansas City,USA,,,scheduled
+72,72,J,Jordan,Argentina,2026-06-27,22:00,AT&T Stadium,Arlington,USA,,,scheduled

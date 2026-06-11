@@ -1,0 +1,34 @@
+achievement_id,name,description,category,scope,hidden,emoji,rule_type,threshold
+first_discovery,First Discovery,Open your first Country Profile,Explorer,individual,false,🌍,countries_discovered,1
+globetrotter,Globetrotter,Discover 10 different countries,Explorer,individual,false,✈️,countries_discovered,10
+world_explorer,World Explorer,Discover 25 different countries,Explorer,individual,false,🗺️,countries_discovered,25
+world_citizen,World Citizen,Discover all 48 countries — you've seen the whole world!,Explorer,individual,false,🌎,countries_discovered,48
+passport_ready,Passport Ready,Discover 5 countries,Passport,individual,false,🛂,countries_discovered,5
+frequent_flyer,Frequent Flyer,Discover 15 countries,Passport,individual,false,🛫,countries_discovered,15
+stamp_collector,Stamp Collector,Discover 30 countries,Passport,individual,false,🏷️,countries_discovered,30
+first_pick,First Pick,Make your very first tournament pick,Picks,individual,false,⚽,first_pick,
+fan_club,Fan Club,Make 10 picks,Picks,individual,false,👥,picks_made,10
+superfan,Superfan,Make 25 picks,Picks,individual,false,🎉,picks_made,25
+cheer_for_10,Cheer for 10,Cheer for 10 different countries,Picks,individual,false,📣,countries_cheered,10
+cheer_for_20,Loyal Supporter,Cheer for 20 different countries,Picks,individual,false,❤️,countries_cheered,20
+first_point,First Point,Earn your very first point — you predicted a match!,Winning,individual,false,🌟,first_point,
+on_the_board,On the Board,Earn 5 total points,Winning,individual,false,📈,points_earned,5
+rising_star,Rising Star,Earn 10 total points,Winning,individual,false,⭐,points_earned,10
+champion,Champion,Earn 20 total points,Winning,individual,false,🏆,points_earned,20
+winner_5,Hot Streak,Win with 5 different countries,Winning,individual,false,🥇,countries_won,5
+winner_10,Global Winner,Win with 10 different countries,Winning,individual,false,🎯,countries_won,10
+north_america_explorer,North America Explorer,Discover all North American countries in the tournament,Continents,individual,false,🗽,continent_all_discovered,North America
+south_america_explorer,South America Explorer,Discover all South American countries in the tournament,Continents,individual,false,🌎,continent_all_discovered,South America
+europe_explorer,European Journey,Discover all European countries in the tournament,Continents,individual,false,🗼,continent_all_discovered,Europe
+africa_explorer,African Safari,Discover all African countries in the tournament,Continents,individual,false,🦁,continent_all_discovered,Africa
+asia_explorer,Asian Adventure,Discover all Asian countries in the tournament,Continents,individual,false,🗻,continent_all_discovered,Asia
+oceania_explorer,Oceania Explorer,Discover the Oceania countries in the tournament,Continents,individual,false,🥝,continent_all_discovered,Oceania
+continent_complete,Continent Complete,Discover all countries in any one continent,Continents,individual,false,🌏,any_continent_all_discovered,
+family_first,Family First,All 5 family members discover at least 1 country,Family,family,false,👨‍👩‍👧‍👦,family_all_started,
+family_explorers,Family Explorers,Family discovers 25 countries together,Family,family,false,🌍,family_discovered,25
+world_cup_family,World Cup Family,Family discovers all 48 countries,Family,family,false,🏆,family_discovered,48
+united_we_cheer,United We Cheer,All family members cheer for the same country,Family,family,false,🤝,family_same_pick,
+secret_pacific,Pacific Rim,Discover Japan South Korea Australia and New Zealand,Hidden,individual,true,🌊,pacific_rim_discovered,
+secret_americas,All the Americas,Discover all 12 countries from North and South America combined,Hidden,individual,true,🌎,all_americas_discovered,
+secret_host_tour,Host City Tour,Discover all three host countries USA Canada and Mexico,Hidden,individual,true,🏟️,host_countries_discovered,
+secret_loyal,Die-Hard Fan,Pick the same country in all 3 of their group stage matches,Hidden,individual,true,💙,loyal_3_matches,

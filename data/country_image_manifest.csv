@@ -1,0 +1,49 @@
+country,country_slug,image_path
+Algeria,algeria,data/country_images/algeria.jpg
+Argentina,argentina,data/country_images/argentina.jpg
+Australia,australia,data/country_images/australia.jpg
+Austria,austria,data/country_images/austria.jpg
+Belgium,belgium,data/country_images/belgium.jpg
+Bosnia and Herzegovina,bosnia-and-herzegovina,data/country_images/bosnia-and-herzegovina.jpg
+Brazil,brazil,data/country_images/brazil.jpg
+Cabo Verde,cabo-verde,data/country_images/cabo-verde.jpg
+Canada,canada,data/country_images/canada.jpg
+Colombia,colombia,data/country_images/colombia.jpg
+Congo DR,congo-dr,data/country_images/congo-dr.jpg
+Croatia,croatia,data/country_images/croatia.jpg
+Curaçao,curacao,data/country_images/curacao.jpg
+Czechia,czechia,data/country_images/czechia.jpg
+Côte d'Ivoire,cote-divoire,data/country_images/cote-divoire.jpg
+Ecuador,ecuador,data/country_images/ecuador.jpg
+Egypt,egypt,data/country_images/egypt.jpg
+England,england,data/country_images/england.jpg
+France,france,data/country_images/france.jpg
+Germany,germany,data/country_images/germany.jpg
+Ghana,ghana,data/country_images/ghana.jpg
+Haiti,haiti,data/country_images/haiti.jpg
+IR Iran,ir-iran,data/country_images/ir-iran.jpg
+Iraq,iraq,data/country_images/iraq.jpg
+Japan,japan,data/country_images/japan.jpg
+Jordan,jordan,data/country_images/jordan.jpg
+Korea Republic,korea-republic,data/country_images/korea-republic.jpg
+Mexico,mexico,data/country_images/mexico.jpg
+Morocco,morocco,data/country_images/morocco.jpg
+Netherlands,netherlands,data/country_images/netherlands.jpg
+New Zealand,new-zealand,data/country_images/new-zealand.jpg
+Norway,norway,data/country_images/norway.jpg
+Panama,panama,data/country_images/panama.jpg
+Paraguay,paraguay,data/country_images/paraguay.jpg
+Portugal,portugal,data/country_images/portugal.jpg
+Qatar,qatar,data/country_images/qatar.jpg
+Saudi Arabia,saudi-arabia,data/country_images/saudi-arabia.jpg
+Scotland,scotland,data/country_images/scotland.jpg
+Senegal,senegal,data/country_images/senegal.jpg
+South Africa,south-africa,data/country_images/south-africa.jpg
+Spain,spain,data/country_images/spain.jpg
+Sweden,sweden,data/country_images/sweden.jpg
+Switzerland,switzerland,data/country_images/switzerland.jpg
+Tunisia,tunisia,data/country_images/tunisia.jpg
+Türkiye,turkiye,data/country_images/turkiye.jpg
+Uruguay,uruguay,data/country_images/uruguay.jpg
+USA,usa,data/country_images/usa.jpg
+Uzbekistan,uzbekistan,data/country_images/uzbekistan.jpg

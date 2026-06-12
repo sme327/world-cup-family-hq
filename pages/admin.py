@@ -9,7 +9,7 @@ from services.database import get_connection
 st.markdown("## 🔧 Admin — Data Review & Score Entry")
 st.caption("Shawn's tools for entering scores and reviewing data.")
 
-tabs = st.tabs(["📥 Enter Scores", "📋 Matches", "🌍 Teams", "👤 Users", "🏷️ Stamps", "🛠️ Database"])
+tabs = st.tabs(["📥 Enter Scores", "📋 Matches", "🌍 Teams", "👤 Users", "🏷️ Stamps", "🖼️ Card Images", "🛠️ Database"])
 
 # ── Enter Scores ──────────────────────────────────────────────────────────────
 with tabs[0]:
@@ -101,8 +101,71 @@ with tabs[4]:
     st.dataframe(meta, use_container_width=True, hide_index=True)
     st.caption(f"Total countries: {len(meta)} | Continents: {meta['continent'].nunique()}")
 
-# ── Database ──────────────────────────────────────────────────────────────────
+# ── Card Images Review ────────────────────────────────────────────────────────
 with tabs[5]:
+    st.markdown("### 🖼️ Country Card Images")
+    st.caption(
+        "Images are downloaded by `scripts/download_country_card_images.py`. "
+        "Run it to populate images for the Country Profile cards."
+    )
+
+    import os
+    targets_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'country_card_image_targets.csv')
+    targets_path = os.path.normpath(targets_path)
+
+    if not os.path.exists(targets_path):
+        st.warning("No targets CSV found. Run `python scripts/build_country_card_image_targets.py` first.")
+    else:
+        card_df = pd.read_csv(targets_path)
+
+        # Summary metrics
+        total     = len(card_df[card_df['is_duplicate'] == 'no'])
+        downloaded = (card_df[card_df['is_duplicate'] == 'no']['status'] == 'downloaded').sum()
+        missing    = (card_df[card_df['is_duplicate'] == 'no']['status'] == 'missing').sum()
+        pending    = total - downloaded - missing
+
+        m1, m2, m3, m4 = st.columns(4)
+        m1.metric("Unique Images", total)
+        m2.metric("Downloaded ✅", downloaded)
+        m3.metric("Missing ❌", missing)
+        m4.metric("Pending ⏳", pending)
+
+        if total > 0:
+            pct = int(downloaded / total * 100)
+            st.progress(pct / 100, text=f"{pct}% complete ({downloaded}/{total})")
+
+        # Filters
+        fc1, fc2, fc3 = st.columns(3)
+        with fc1:
+            country_filter = st.selectbox("Country", ["All"] + sorted(card_df['country'].unique().tolist()))
+        with fc2:
+            section_filter = st.selectbox("Section", ["All", "landmarks", "animals", "foods", "cheer_reasons"])
+        with fc3:
+            status_filter = st.selectbox("Status", ["All", "downloaded", "missing", "pending", "duplicate"])
+
+        view = card_df.copy()
+        if country_filter != "All":
+            view = view[view['country'] == country_filter]
+        if section_filter != "All":
+            view = view[view['section'] == section_filter]
+        if status_filter == "duplicate":
+            view = view[view['is_duplicate'] == 'yes']
+        elif status_filter != "All":
+            view = view[view['status'] == status_filter]
+
+        show_cols = ['country', 'section', 'item_name', 'item_slug', 'search_query',
+                     'image_path', 'is_duplicate', 'status']
+        st.dataframe(view[show_cols], use_container_width=True, hide_index=True)
+        st.caption(f"Showing {len(view)} rows. To re-download: `python scripts/download_country_card_images.py`")
+
+        with st.expander("📥 Download command examples"):
+            st.code("# Download everything (skip already-downloaded)\npython scripts/download_country_card_images.py")
+            st.code("# Landmarks only\npython scripts/download_country_card_images.py --section landmarks")
+            st.code("# One country\npython scripts/download_country_card_images.py --country mexico")
+            st.code("# Re-download everything from scratch\npython scripts/download_country_card_images.py --overwrite")
+
+# ── Database ──────────────────────────────────────────────────────────────────
+with tabs[6]:
     st.markdown("### Database Stats")
     conn = get_connection()
     tables = ['teams', 'matches', 'users', 'picks', 'discoveries',

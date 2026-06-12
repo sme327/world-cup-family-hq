@@ -1,0 +1,386 @@
+{
+  "Algeria": {
+    "nickname": "Les Fennecs",
+    "famous_player": "Lakhdar Belloumi",
+    "home_stadium": "Stade Mustapha Tchaker",
+    "neighbors": ["Tunisia", "Libya", "Niger", "Mali", "Mauritania", "Morocco", "Western Sahara"],
+    "distance_miles": 6200,
+    "timezone_offset": 8
+  },
+  "Argentina": {
+    "nickname": "La Albiceleste",
+    "famous_player": "Lionel Messi",
+    "home_stadium": "Estadio Monumental",
+    "neighbors": ["Chile", "Bolivia", "Paraguay", "Brazil", "Uruguay"],
+    "distance_miles": 7100,
+    "timezone_offset": 4
+  },
+  "Australia": {
+    "nickname": "The Socceroos",
+    "famous_player": "Tim Cahill",
+    "home_stadium": "Stadium Australia",
+    "neighbors": [],
+    "distance_miles": 7700,
+    "timezone_offset": 17
+  },
+  "Austria": {
+    "nickname": "Das Team",
+    "famous_player": "Hans Krankl",
+    "home_stadium": "Ernst-Happel-Stadion",
+    "neighbors": ["Germany", "Czech Republic", "Slovakia", "Hungary", "Slovenia", "Italy", "Switzerland", "Liechtenstein"],
+    "distance_miles": 5300,
+    "timezone_offset": 9
+  },
+  "Belgium": {
+    "nickname": "The Red Devils",
+    "famous_player": "Eden Hazard",
+    "home_stadium": "King Baudouin Stadium",
+    "neighbors": ["France", "Luxembourg", "Germany", "Netherlands"],
+    "distance_miles": 5100,
+    "timezone_offset": 9
+  },
+  "Bosnia and Herzegovina": {
+    "nickname": "Zmajevi",
+    "famous_player": "Edin Džeko",
+    "home_stadium": "Bilino Polje Stadium",
+    "neighbors": ["Croatia", "Serbia", "Montenegro"],
+    "distance_miles": 5600,
+    "timezone_offset": 9
+  },
+  "Brazil": {
+    "nickname": "Seleção",
+    "famous_player": "Pelé",
+    "home_stadium": "Estádio do Maracanã",
+    "neighbors": ["Colombia", "Venezuela", "Guyana", "Suriname", "French Guiana", "Peru", "Bolivia", "Paraguay", "Argentina", "Uruguay"],
+    "distance_miles": 6600,
+    "timezone_offset": 4
+  },
+  "Canada": {
+    "nickname": "Les Rouges",
+    "famous_player": "Alphonso Davies",
+    "home_stadium": "BMO Field",
+    "neighbors": ["USA"],
+    "distance_miles": 800,
+    "timezone_offset": 3
+  },
+  "Cape Verde": {
+    "nickname": "Tubarões Azuis",
+    "famous_player": "Hélder Postiga",
+    "home_stadium": "Estádio Nacional de Cabo Verde",
+    "neighbors": [],
+    "distance_miles": 6400,
+    "timezone_offset": 4
+  },
+  "Colombia": {
+    "nickname": "Los Cafeteros",
+    "famous_player": "Carlos Valderrama",
+    "home_stadium": "Estadio Metropolitano Roberto Meléndez",
+    "neighbors": ["Venezuela", "Brazil", "Peru", "Ecuador", "Panama"],
+    "distance_miles": 3700,
+    "timezone_offset": 2
+  },
+  "Croatia": {
+    "nickname": "Vatreni",
+    "famous_player": "Luka Modrić",
+    "home_stadium": "Stadion Maksimir",
+    "neighbors": ["Slovenia", "Hungary", "Serbia", "Bosnia and Herzegovina", "Montenegro"],
+    "distance_miles": 5700,
+    "timezone_offset": 9
+  },
+  "Czechia": {
+    "nickname": "Národní tým",
+    "famous_player": "Pavel Nedvěd",
+    "home_stadium": "Doosan Arena",
+    "neighbors": ["Germany", "Poland", "Slovakia", "Austria"],
+    "distance_miles": 5300,
+    "timezone_offset": 9
+  },
+  "Curaçao": {
+    "nickname": "Marchená Boys",
+    "famous_player": "Leandro Bacuna",
+    "home_stadium": "Ergilio Hato Stadium",
+    "neighbors": [],
+    "distance_miles": 3300,
+    "timezone_offset": 4
+  },
+  "DR Congo": {
+    "nickname": "Les Léopards",
+    "famous_player": "Shabani Nonda",
+    "home_stadium": "Stade des Martyrs",
+    "neighbors": ["Republic of the Congo", "Central African Republic", "South Sudan", "Uganda", "Rwanda", "Burundi", "Tanzania", "Zambia", "Angola"],
+    "distance_miles": 8800,
+    "timezone_offset": 8
+  },
+  "Ecuador": {
+    "nickname": "La Tri",
+    "famous_player": "Iván Hurtado",
+    "home_stadium": "Estadio Rodrigo Paz Delgado",
+    "neighbors": ["Colombia", "Peru"],
+    "distance_miles": 3900,
+    "timezone_offset": 0
+  },
+  "Egypt": {
+    "nickname": "The Pharaohs",
+    "famous_player": "Mohamed Salah",
+    "home_stadium": "Cairo International Stadium",
+    "neighbors": ["Libya", "Sudan", "Israel", "Gaza Strip"],
+    "distance_miles": 7100,
+    "timezone_offset": 10
+  },
+  "England": {
+    "nickname": "The Three Lions",
+    "famous_player": "Bobby Charlton",
+    "home_stadium": "Wembley Stadium",
+    "neighbors": ["Scotland", "Wales"],
+    "distance_miles": 4800,
+    "timezone_offset": 8
+  },
+  "France": {
+    "nickname": "Les Bleus",
+    "famous_player": "Zinedine Zidane",
+    "home_stadium": "Stade de France",
+    "neighbors": ["Belgium", "Luxembourg", "Germany", "Switzerland", "Italy", "Monaco", "Spain", "Andorra"],
+    "distance_miles": 5100,
+    "timezone_offset": 9
+  },
+  "Germany": {
+    "nickname": "Die Mannschaft",
+    "famous_player": "Franz Beckenbauer",
+    "home_stadium": "Olympiastadion Berlin",
+    "neighbors": ["France", "Luxembourg", "Belgium", "Netherlands", "Denmark", "Poland", "Czech Republic", "Austria", "Switzerland"],
+    "distance_miles": 5200,
+    "timezone_offset": 9
+  },
+  "Ghana": {
+    "nickname": "The Black Stars",
+    "famous_player": "Abedi Pelé",
+    "home_stadium": "Accra Sports Stadium",
+    "neighbors": ["Ivory Coast", "Burkina Faso", "Togo"],
+    "distance_miles": 7700,
+    "timezone_offset": 7
+  },
+  "Haiti": {
+    "nickname": "Les Grenadiers",
+    "famous_player": "Emmanuel Sanon",
+    "home_stadium": "Stade Sylvio Cator",
+    "neighbors": ["Dominican Republic"],
+    "distance_miles": 3000,
+    "timezone_offset": 3
+  },
+  "Iran": {
+    "nickname": "Team Melli",
+    "famous_player": "Ali Daei",
+    "home_stadium": "Azadi Stadium",
+    "neighbors": ["Iraq", "Turkey", "Armenia", "Azerbaijan", "Turkmenistan", "Afghanistan", "Pakistan"],
+    "distance_miles": 7300,
+    "timezone_offset": 11.5
+  },
+  "Iraq": {
+    "nickname": "Lions of Mesopotamia",
+    "famous_player": "Younis Mahmoud",
+    "home_stadium": "Franso Hariri Stadium",
+    "neighbors": ["Iran", "Turkey", "Syria", "Jordan", "Saudi Arabia", "Kuwait"],
+    "distance_miles": 7100,
+    "timezone_offset": 10
+  },
+  "Ivory Coast": {
+    "nickname": "Les Éléphants",
+    "famous_player": "Didier Drogba",
+    "home_stadium": "Stade Félix Houphouët-Boigny",
+    "neighbors": ["Liberia", "Guinea", "Mali", "Burkina Faso", "Ghana"],
+    "distance_miles": 7900,
+    "timezone_offset": 7
+  },
+  "Japan": {
+    "nickname": "Samurai Blue",
+    "famous_player": "Hidetoshi Nakata",
+    "home_stadium": "Japan National Stadium",
+    "neighbors": [],
+    "distance_miles": 5100,
+    "timezone_offset": 16
+  },
+  "Jordan": {
+    "nickname": "Al-Nashama",
+    "famous_player": "Ahmed Hayel",
+    "home_stadium": "Amman International Stadium",
+    "neighbors": ["Israel", "West Bank", "Syria", "Iraq", "Saudi Arabia"],
+    "distance_miles": 7200,
+    "timezone_offset": 10
+  },
+  "Mexico": {
+    "nickname": "El Tri",
+    "famous_player": "Hugo Sánchez",
+    "home_stadium": "Estadio Azteca",
+    "neighbors": ["USA", "Guatemala", "Belize"],
+    "distance_miles": 2100,
+    "timezone_offset": 2
+  },
+  "Morocco": {
+    "nickname": "The Atlas Lions",
+    "famous_player": "Noureddine Naybet",
+    "home_stadium": "Stade Mohammed V",
+    "neighbors": ["Algeria", "Mauritania", "Western Sahara"],
+    "distance_miles": 5800,
+    "timezone_offset": 8
+  },
+  "Netherlands": {
+    "nickname": "Oranje",
+    "famous_player": "Johan Cruyff",
+    "home_stadium": "Johan Cruyff Arena",
+    "neighbors": ["Germany", "Belgium"],
+    "distance_miles": 5100,
+    "timezone_offset": 9
+  },
+  "New Zealand": {
+    "nickname": "All Whites",
+    "famous_player": "Wynton Rufer",
+    "home_stadium": "Eden Park",
+    "neighbors": [],
+    "distance_miles": 7700,
+    "timezone_offset": 19
+  },
+  "Norway": {
+    "nickname": "Drillo",
+    "famous_player": "Ole Gunnar Solskjær",
+    "home_stadium": "Ullevaal Stadion",
+    "neighbors": ["Sweden", "Finland", "Russia"],
+    "distance_miles": 4900,
+    "timezone_offset": 9
+  },
+  "Panama": {
+    "nickname": "Los Canaleros",
+    "famous_player": "Román Torres",
+    "home_stadium": "Estadio Rommel Fernández",
+    "neighbors": ["Costa Rica", "Colombia"],
+    "distance_miles": 3200,
+    "timezone_offset": 0
+  },
+  "Paraguay": {
+    "nickname": "La Albirroja",
+    "famous_player": "Roque Santa Cruz",
+    "home_stadium": "Estadio Defensores del Chaco",
+    "neighbors": ["Argentina", "Bolivia", "Brazil"],
+    "distance_miles": 6800,
+    "timezone_offset": 4
+  },
+  "Portugal": {
+    "nickname": "Seleção das Quinas",
+    "famous_player": "Cristiano Ronaldo",
+    "home_stadium": "Estádio da Luz",
+    "neighbors": ["Spain"],
+    "distance_miles": 5400,
+    "timezone_offset": 8
+  },
+  "Qatar": {
+    "nickname": "The Maroons",
+    "famous_player": "Hassan Al-Haydos",
+    "home_stadium": "Khalifa International Stadium",
+    "neighbors": ["Saudi Arabia"],
+    "distance_miles": 7600,
+    "timezone_offset": 10
+  },
+  "Saudi Arabia": {
+    "nickname": "Green Falcons",
+    "famous_player": "Sami Al-Jaber",
+    "home_stadium": "King Fahd International Stadium",
+    "neighbors": ["Jordan", "Iraq", "Kuwait", "Qatar", "UAE", "Oman", "Yemen"],
+    "distance_miles": 7400,
+    "timezone_offset": 10
+  },
+  "Scotland": {
+    "nickname": "The Tartan Army",
+    "famous_player": "Denis Law",
+    "home_stadium": "Hampden Park",
+    "neighbors": ["England"],
+    "distance_miles": 4900,
+    "timezone_offset": 8
+  },
+  "Senegal": {
+    "nickname": "Lions of Teranga",
+    "famous_player": "El Hadji Diouf",
+    "home_stadium": "Stade Léopold Sédar Senghor",
+    "neighbors": ["Mauritania", "Mali", "Guinea", "Guinea-Bissau", "Gambia"],
+    "distance_miles": 6700,
+    "timezone_offset": 7
+  },
+  "South Africa": {
+    "nickname": "Bafana Bafana",
+    "famous_player": "Benni McCarthy",
+    "home_stadium": "FNB Stadium",
+    "neighbors": ["Namibia", "Botswana", "Zimbabwe", "Mozambique", "Eswatini", "Lesotho"],
+    "distance_miles": 10200,
+    "timezone_offset": 9
+  },
+  "South Korea": {
+    "nickname": "Taegeuk Warriors",
+    "famous_player": "Park Ji-sung",
+    "home_stadium": "Seoul World Cup Stadium",
+    "neighbors": ["North Korea"],
+    "distance_miles": 5500,
+    "timezone_offset": 16
+  },
+  "Spain": {
+    "nickname": "La Roja",
+    "famous_player": "Andrés Iniesta",
+    "home_stadium": "Estadio de La Cartuja",
+    "neighbors": ["France", "Andorra", "Portugal", "Morocco"],
+    "distance_miles": 5400,
+    "timezone_offset": 9
+  },
+  "Sweden": {
+    "nickname": "Blågult",
+    "famous_player": "Zlatan Ibrahimović",
+    "home_stadium": "Friends Arena",
+    "neighbors": ["Norway", "Finland"],
+    "distance_miles": 5000,
+    "timezone_offset": 9
+  },
+  "Switzerland": {
+    "nickname": "Nati",
+    "famous_player": "Xherdan Shaqiri",
+    "home_stadium": "Wankdorf Stadium",
+    "neighbors": ["France", "Germany", "Austria", "Liechtenstein", "Italy"],
+    "distance_miles": 5300,
+    "timezone_offset": 9
+  },
+  "Tunisia": {
+    "nickname": "The Eagles of Carthage",
+    "famous_player": "Hatem Ben Arfa",
+    "home_stadium": "Stade de Radès",
+    "neighbors": ["Algeria", "Libya"],
+    "distance_miles": 6300,
+    "timezone_offset": 8
+  },
+  "Türkiye": {
+    "nickname": "Ay-Yıldızlılar",
+    "famous_player": "Hakan Şükür",
+    "home_stadium": "Atatürk Olympic Stadium",
+    "neighbors": ["Greece", "Bulgaria", "Georgia", "Armenia", "Iran", "Iraq", "Syria"],
+    "distance_miles": 6300,
+    "timezone_offset": 10
+  },
+  "USA": {
+    "nickname": "The Stars and Stripes",
+    "famous_player": "Landon Donovan",
+    "home_stadium": "Rose Bowl",
+    "neighbors": ["Canada", "Mexico"],
+    "distance_miles": 0,
+    "timezone_offset": 0
+  },
+  "Uruguay": {
+    "nickname": "La Celeste",
+    "famous_player": "Diego Forlán",
+    "home_stadium": "Estadio Centenario",
+    "neighbors": ["Argentina", "Brazil"],
+    "distance_miles": 7200,
+    "timezone_offset": 4
+  },
+  "Uzbekistan": {
+    "nickname": "White Wolves",
+    "famous_player": "Mirjalol Qosimov",
+    "home_stadium": "Milliy Stadion",
+    "neighbors": ["Kazakhstan", "Kyrgyzstan", "Tajikistan", "Afghanistan", "Turkmenistan"],
+    "distance_miles": 6400,
+    "timezone_offset": 12
+  }
+}

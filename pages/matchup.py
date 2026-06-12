@@ -509,4 +509,5 @@ st.markdown(
 )
 
 if st.button("🏙️ Full City Guide", key="host_city_btn"):
+    st.session_state["_nav_city"] = city
     st.switch_page("pages/host_cities.py")

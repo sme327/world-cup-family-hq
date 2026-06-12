@@ -137,7 +137,7 @@ def get_recent_activity(limit: int = 20) -> pd.DataFrame:
 
 _EVENT_ICONS = {
     'country_discovered': '🌍',
-    'achievement_unlocked': '🏅',
+    'achievement_unlocked': '🎖',
     'continent_completed': '🗺️',
     'first_pick': '⚽',
     'points_earned': '🏆',
@@ -155,7 +155,7 @@ def format_activity_message(row) -> tuple[str, str]:
         'country_discovered': f"discovered **{country}**",
         'achievement_unlocked': f"unlocked **{msg}**" if msg else "unlocked an achievement!",
         'continent_completed': f"explored all of **{country}**! 🎉",
-        'first_pick': f"made their **very first pick**: {country}!",
-        'points_earned': f"earned points with **{country}**!",
+        'first_pick': f"picked **{country}**",
+        'points_earned': f"earned points with **{country}**",
     }
     return icon, narratives.get(et, msg or et)

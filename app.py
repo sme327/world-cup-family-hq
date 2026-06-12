@@ -62,8 +62,9 @@ pg = st.navigation(
             st.Page("pages/home.py", title="Home", icon="🏠", default=True),
         ],
         "Tournament": [
-            st.Page("pages/schedule.py",  title="Schedule", icon="📅"),
-            st.Page("pages/matchup.py",   title="Matchup",  icon="🏟️"),
+            st.Page("pages/schedule.py",    title="Schedule",     icon="📅"),
+            st.Page("pages/matchup.py",     title="Matchup",      icon="🏟️"),
+            st.Page("pages/pick_tracker.py", title="Pick Tracker", icon="🎯"),
         ],
         "Explore": [
             st.Page("pages/country_profile.py", title="Countries",   icon="🌍"),
@@ -74,7 +75,8 @@ pg = st.navigation(
             st.Page("pages/passport_family.py",     title="Family Passport", icon="👨‍👩‍👧‍👦"),
         ],
         "Progress": [
-            st.Page("pages/achievements.py", title="Achievements", icon="🏅"),
+            st.Page("pages/leaderboard.py",  title="Leaderboard",  icon="🏆"),
+            st.Page("pages/achievements.py", title="Achievements",  icon="🏅"),
         ],
         "Admin": [
             st.Page("pages/admin.py", title="Admin", icon="🔧"),
@@ -93,7 +95,6 @@ _ids    = dict(zip(_users['name'], _users['id']))
 _po     = dict(zip(_users['name'], _users.get('picks_only', [0]*len(_users))))
 
 with st.sidebar:
-    st.divider()
     _current = st.session_state.get("active_user_name", _names[0])
     _idx     = _names.index(_current) if _current in _names else 0
     _chosen  = st.selectbox(

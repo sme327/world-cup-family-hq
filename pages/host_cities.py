@@ -1,8 +1,67 @@
 import streamlit as st
+import plotly.graph_objects as go
 from services.matches import get_all_matches
 from services.teams import get_flag
 from services.time_utils import fmt_date, fmt_match_time
 from services.images import get_city_image_html
+
+# ── City coordinates (lat, lon) ───────────────────────────────────────────────
+_CITY_COORDS: dict[str, tuple[float, float]] = {
+    "Seattle":         (47.61, -122.33),
+    "East Rutherford": (40.81,  -74.07),
+    "Arlington":       (32.74,  -97.11),
+    "Los Angeles":     (34.05, -118.24),
+    "Santa Clara":     (37.35, -121.96),
+    "Philadelphia":    (39.95,  -75.17),
+    "Miami Gardens":   (25.94,  -80.25),
+    "Kansas City":     (39.10,  -94.58),
+    "Foxborough":      (42.09,  -71.26),
+    "Atlanta":         (33.75,  -84.39),
+    "Houston":         (29.76,  -95.37),
+    "Mexico City":     (19.43,  -99.13),
+    "Guadalajara":     (20.66, -103.35),
+    "Monterrey":       (25.69, -100.32),
+    "Vancouver":       (49.28, -123.12),
+    "Toronto":         (43.65,  -79.38),
+}
+
+
+@st.cache_data
+def _city_map(city_name: str):
+    coords = _CITY_COORDS.get(city_name)
+    if not coords:
+        return None
+    lat, lon = coords
+    fig = go.Figure()
+    fig.add_trace(go.Scattergeo(
+        lat=[lat], lon=[lon],
+        mode='markers+text',
+        marker=dict(size=14, color='#EF4444', symbol='circle',
+                    line=dict(color='white', width=2)),
+        text=[city_name],
+        textposition='top center',
+        textfont=dict(size=11, color='#1E293B'),
+        showlegend=False,
+    ))
+    fig.update_layout(
+        geo=dict(
+            showframe=False,
+            showcoastlines=True,  coastlinecolor='#94A3B8',
+            showland=True,        landcolor='#E2E8F0',
+            showocean=True,       oceancolor='#DBEAFE',
+            showlakes=True,       lakecolor='#DBEAFE',
+            showcountries=True,   countrycolor='#CBD5E1',
+            showsubunits=True,    subunitcolor='#E2E8F0',
+            projection_type='natural earth',
+            # Fixed viewport covering all 16 host cities
+            lataxis_range=[13, 57],
+            lonaxis_range=[-136, -62],
+        ),
+        margin=dict(l=0, r=0, t=0, b=0),
+        height=260,
+        paper_bgcolor='rgba(0,0,0,0)',
+    )
+    return fig
 
 # ── City data ─────────────────────────────────────────────────────────────────
 CITY_DATA = {
@@ -388,9 +447,16 @@ st.caption("2026 FIFA World Cup — 16 Host Cities across USA, Canada & Mexico")
 all_matches = get_all_matches()
 cities      = sorted(all_matches['city'].unique().tolist())
 
+_nav_city = st.session_state.pop("_nav_city", None)
+
 with st.sidebar:
     st.markdown("### 🏙️ Select a City")
-    selected_city = st.selectbox("City", cities, index=cities.index("Seattle") if "Seattle" in cities else 0)
+    default_city_idx = (
+        cities.index(_nav_city) if _nav_city and _nav_city in cities
+        else cities.index("Seattle") if "Seattle" in cities
+        else 0
+    )
+    selected_city = st.selectbox("City", cities, index=default_city_idx)
 
 city         = CITY_DATA.get(selected_city)
 city_matches = all_matches[all_matches['city'] == selected_city].sort_values(['match_date', 'kickoff_time_et'])
@@ -400,18 +466,42 @@ match_count  = len(city_matches)
 is_home      = city and city.get('home_city', False)
 city_flag    = city['flag'] if city else "📍"
 
-# ── 1. Hero Image ─────────────────────────────────────────────────────────────
+# ── 1. Hero Images — landmark + stadium side by side ─────────────────────────
 hero_emoji = city.get('hero_emoji', '🌍') if city else '🌍'
 home_label = " 🏠 YOUR HOME CITY!" if is_home else ""
 
-city_img = get_city_image_html(selected_city, image_type='landmark', height='240px')
-if city_img:
-    st.markdown(city_img, unsafe_allow_html=True)
+landmark_img = get_city_image_html(selected_city, image_type='landmark', height='220px',
+                                   border_radius='16px 0 0 0')
+stadium_img  = get_city_image_html(selected_city, image_type='stadium',  height='220px',
+                                   border_radius='0 16px 0 0')
+
+if landmark_img and stadium_img:
+    st.markdown(
+        f"<div style='display:flex;gap:3px;border-radius:16px 16px 0 0;overflow:hidden'>"
+        f"<div style='flex:1.1;position:relative'>{landmark_img}"
+        f"<div style='position:absolute;bottom:0;left:0;right:0;"
+        f"background:linear-gradient(transparent,rgba(0,0,0,.55));padding:.3rem .5rem'>"
+        f"<span style='font-size:.68rem;color:rgba(255,255,255,.8);font-weight:700'>📍 City</span>"
+        f"</div></div>"
+        f"<div style='flex:.9;position:relative'>{stadium_img}"
+        f"<div style='position:absolute;bottom:0;left:0;right:0;"
+        f"background:linear-gradient(transparent,rgba(0,0,0,.55));padding:.3rem .5rem'>"
+        f"<span style='font-size:.68rem;color:rgba(255,255,255,.8);font-weight:700'>🏟️ Stadium</span>"
+        f"</div></div>"
+        f"</div>",
+        unsafe_allow_html=True
+    )
+elif landmark_img:
+    st.markdown(landmark_img.replace("border-radius:'16px 0 0 0'", "border-radius:16px 16px 0 0"),
+                unsafe_allow_html=True)
+elif stadium_img:
+    st.markdown(stadium_img.replace("border-radius:'0 16px 0 0'", "border-radius:16px 16px 0 0"),
+                unsafe_allow_html=True)
 else:
     st.markdown(
-        f"<div style='background:linear-gradient(160deg,#0F172A,#1E293B);border-radius:16px;"
-        f"height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;"
-        f"margin-bottom:0;border:1px solid rgba(148,163,184,.1)'>"
+        f"<div style='background:linear-gradient(160deg,#0F172A,#1E293B);border-radius:16px 16px 0 0;"
+        f"height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;"
+        f"border:1px solid rgba(148,163,184,.1)'>"
         f"<div style='font-size:4rem;letter-spacing:.5rem'>{hero_emoji}</div>"
         f"</div>",
         unsafe_allow_html=True
@@ -440,14 +530,18 @@ if city:
     fc4.markdown(_stat_card("⚽", "Matches",       str(match_count)), unsafe_allow_html=True)
     fc5.markdown(_stat_card("📅", "First Match",   first_match_date), unsafe_allow_html=True)
 
-# ── 3. Where Is This City? (map placeholder) ──────────────────────────────────
+# ── 3. Where Is This City? ────────────────────────────────────────────────────
 st.markdown("### 🗺️ Where Is This City?")
-st.markdown(
+_map_fig = _city_map(selected_city)
+if _map_fig:
+    st.plotly_chart(_map_fig, use_container_width=True, config={'staticPlot': True})
+else:
+    st.markdown(
     "<div style='background:linear-gradient(135deg,#1E293B,#0F172A);border-radius:12px;"
     "height:100px;display:flex;align-items:center;justify-content:center;"
     "color:rgba(255,255,255,.35);font-size:.85rem;border:1px dashed rgba(148,163,184,.25)'>"
     "<div style='text-align:center'><div style='font-size:1.5rem'>🗺️</div>"
-    "<div>Interactive map coming soon</div></div>"
+    "<div>Map coming soon</div></div>"
     "</div>",
     unsafe_allow_html=True
 )

@@ -20,6 +20,14 @@ st.markdown("""<style>
     font-size:.7rem;font-weight:800;letter-spacing:.06em;animation:pulse 1.4s infinite;
 }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+/* ── Quick nav chips ──────────────────────────────── */
+a.nav-chip {
+    display:inline-block;padding:.28rem .78rem;border-radius:20px;
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+    color:#CBD5E1;font-size:.83rem;font-weight:700;text-decoration:none;
+    white-space:nowrap;
+}
+a.nav-chip:hover { background:rgba(255,255,255,.15);color:white; }
 </style>""", unsafe_allow_html=True)
 
 # ── Constants ──────────────────────────────────────────────────────────────────
@@ -29,8 +37,9 @@ _GRP_COLORS = {
     'I': '#4D7C0F', 'J': '#6D28D9', 'K': '#0E7490', 'L': '#92400E',
 }
 
-now_pt   = datetime.utcnow() - timedelta(hours=7)
-today_pt = now_pt.date().isoformat()  # derive from PT, not server UTC
+now_pt       = datetime.utcnow() - timedelta(hours=7)
+today_pt     = now_pt.date().isoformat()
+tomorrow_pt  = (now_pt.date() + timedelta(days=1)).isoformat()
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
@@ -235,6 +244,64 @@ if not _sched.empty:
         unsafe_allow_html=True,
     )
 
+# ── Missing Picks Dashboard ────────────────────────────────────────────────────
+# Uses unfiltered all_matches so it always reflects the full family picture.
+_upcoming_sched = all_matches[
+    (all_matches['status'] == 'scheduled') & ~all_matches.apply(_is_live, axis=1)
+]
+if not _upcoming_sched.empty:
+    _upcoming_ids = set(_upcoming_sched['id'].astype(int).tolist())
+    _missing: list[dict] = []
+    for _, _u in users.iterrows():
+        _uid = int(_u['id'])
+        _picked_ids = (
+            set(picks_df[picks_df['user_id'] == _uid]['match_id'].astype(int).tolist())
+            if not picks_df.empty else set()
+        )
+        _n = len(_upcoming_ids - _picked_ids)
+        if _n > 0:
+            _missing.append({'name': str(_u['name']), 'avatar': str(_u['avatar']), 'count': _n})
+
+    _total_missing = sum(v['count'] for v in _missing)
+
+    if not _missing:
+        st.markdown(
+            "<div style='background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);"
+            "border-radius:12px;padding:.6rem 1.1rem;margin:.3rem 0 .6rem;"
+            "display:flex;align-items:center;gap:.7rem'>"
+            "<span style='font-size:1.4rem'>✅</span>"
+            "<div>"
+            "<div style='font-weight:800;color:#4ADE80;font-size:.92rem'>Everyone is ready!</div>"
+            "<div style='font-size:.75rem;color:#6EE7B7'>"
+            "All family picks submitted for upcoming matches.</div>"
+            "</div></div>",
+            unsafe_allow_html=True,
+        )
+    else:
+        _pills_html = " ".join(
+            f"<span style='display:inline-flex;align-items:center;gap:.28rem;"
+            f"background:rgba(251,191,36,.11);border:1px solid rgba(251,191,36,.28);"
+            f"border-radius:20px;padding:.2rem .65rem;font-size:.84rem;font-weight:700'>"
+            f"<span style='font-size:1.08rem'>{v['avatar']}</span>"
+            f"<span style='color:#F1F5F9'>{v['name']}</span>"
+            f"<span style='background:rgba(0,0,0,.28);border-radius:10px;"
+            f"padding:.02rem .26rem;font-size:.71rem;color:#FCD34D;margin-left:.08rem'>"
+            f"{v['count']}</span></span>"
+            for v in sorted(_missing, key=lambda x: -x['count'])
+        )
+        _rem = "1 pick" if _total_missing == 1 else f"{_total_missing} picks"
+        st.markdown(
+            f"<div style='background:rgba(30,41,59,.7);border:1px solid rgba(251,191,36,.2);"
+            f"border-radius:12px;padding:.6rem 1.1rem;margin:.3rem 0 .6rem'>"
+            f"<div style='font-size:.7rem;font-weight:800;color:#F59E0B;letter-spacing:.05em;"
+            f"text-transform:uppercase;margin-bottom:.38rem'>⏳ Waiting On Picks</div>"
+            f"<div style='display:flex;flex-wrap:wrap;gap:.3rem;margin:.1rem 0'>{_pills_html}</div>"
+            f"<div style='font-size:.71rem;color:#94A3B8;margin-top:.28rem'>"
+            f"{_rem} remaining</div>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
+
 # ── Apply filters to main match list ──────────────────────────────────────────
 matches = all_matches.copy()
 if selected_group != "All Groups":
@@ -256,13 +323,34 @@ if matches.empty:
     st.info("No matches found with those filters.")
     st.stop()
 
+# ── Quick Navigation Chips ─────────────────────────────────────────────────────
+_chip_defs: list[tuple[str, str]] = []
+if not live_df.empty:
+    _chip_defs.append(("🔴 Live", "#sched-live"))
+if not upcoming_df.empty:
+    if today_pt in upcoming_df['pt_date'].values:
+        _chip_defs.append(("📅 Today", "#sched-today"))
+    if tomorrow_pt in upcoming_df['pt_date'].values:
+        _chip_defs.append(("⏭ Tomorrow", "#sched-tomorrow"))
+    _chip_defs.append(("🔥 Upcoming", "#sched-upcoming"))
+if not completed_df.empty:
+    _chip_defs.append(("🏆 Results", "#sched-results"))
+
+if _chip_defs:
+    st.markdown(
+        "<div style='display:flex;flex-wrap:wrap;gap:.35rem;margin:.15rem 0 .9rem'>"
+        + " ".join(f"<a href='{h}' class='nav-chip'>{l}</a>" for l, h in _chip_defs)
+        + "</div>",
+        unsafe_allow_html=True,
+    )
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 🔥 LIVE NOW
 # ══════════════════════════════════════════════════════════════════════════════
 
 if not live_df.empty:
-    st.markdown("<div class='sect-hdr sect-live'>🔥 Live Now</div>", unsafe_allow_html=True)
+    st.markdown("<div id='sched-live' class='sect-hdr sect-live'>🔥 Live Now</div>", unsafe_allow_html=True)
 
     for _, m in live_df.iterrows():
         mid      = int(m['id'])
@@ -322,13 +410,22 @@ if not live_df.empty:
 # ══════════════════════════════════════════════════════════════════════════════
 
 if not upcoming_df.empty:
-    st.markdown("<div class='sect-hdr sect-upcoming'>⏰ Upcoming</div>", unsafe_allow_html=True)
+    st.markdown("<div id='sched-upcoming' class='sect-hdr sect-upcoming'>⏰ Upcoming</div>", unsafe_allow_html=True)
 
     for pt_date_val, day_grp in upcoming_df.groupby('pt_date'):
-        is_today = (pt_date_val == today_pt)
-        date_label = "Today" if is_today else fmt_date(pt_date_val)
+        is_today    = (pt_date_val == today_pt)
+        is_tomorrow = (pt_date_val == tomorrow_pt)
+        if is_today:
+            date_label   = "Today"
+            _date_anchor = " id='sched-today'"
+        elif is_tomorrow:
+            date_label   = "Tomorrow"
+            _date_anchor = " id='sched-tomorrow'"
+        else:
+            date_label   = fmt_date(pt_date_val)
+            _date_anchor = ""
         st.markdown(
-            f"<div style='font-size:.82rem;color:#64748B;font-weight:700;"
+            f"<div{_date_anchor} style='font-size:.82rem;color:#64748B;font-weight:700;"
             f"letter-spacing:.03em;margin:.6rem 0 .2rem'>📆 {date_label}</div>",
             unsafe_allow_html=True,
         )
@@ -393,7 +490,7 @@ if not upcoming_df.empty:
 if not completed_df.empty:
     n_done = len(completed_df)
     st.markdown(
-        f"<div class='sect-hdr sect-final'>🏆 Final Results &nbsp;"
+        f"<div id='sched-results' class='sect-hdr sect-final'>🏆 Final Results &nbsp;"
         f"<span style='font-weight:400;font-size:.8rem'>({n_done} matches)</span></div>",
         unsafe_allow_html=True,
     )

@@ -57,6 +57,17 @@ st.markdown("""
 
     /* ── Typography ──────────────────────────────── */
     h1, h2, h3 { font-family: 'Georgia', serif; }
+
+    /* ── Hide Admin from main nav (accessible below Playing As) ── */
+    /* Hide admin link by href — scoped so the page_link below Playing As is unaffected */
+    [data-testid="stSidebarNav"] a[href*="admin"],
+    [data-testid="stSidebarNav"] a[href*="Admin"] { display: none !important; }
+    /* Hide the ⚙️ section header: last <li> in the nav list */
+    [data-testid="stSidebarNav"] > ul > li:last-child,
+    [data-testid="stSidebarNav"] > div > ul > li:last-child { display: none !important; }
+    /* :has() fallback for modern browsers — hides entire section group */
+    [data-testid="stSidebarNav"] > ul > *:has(a[href*="admin"]),
+    [data-testid="stSidebarNav"] > div > ul > *:has(a[href*="admin"]) { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -79,8 +90,8 @@ pg = st.navigation(
             st.Page("pages/achievements.py",         title="Achievements",    icon="🏅"),
             st.Page("pages/leaderboard.py",          title="Leaderboard",     icon="🏆"),
         ],
-        # ⚙️ keeps Admin in the router (required for page access in Streamlit 1.36+)
-        # while giving it a non-blank, non-duplicating section header.
+        # Admin is hidden from the sidebar nav via CSS; accessible via the
+        # st.page_link below Playing As. Must stay in navigation() for routing.
         "⚙️": [
             st.Page("pages/admin.py", title="Admin", icon="🔧"),
         ],

@@ -244,64 +244,6 @@ if not _sched.empty:
         unsafe_allow_html=True,
     )
 
-# ── Missing Picks Dashboard ────────────────────────────────────────────────────
-# Uses unfiltered all_matches so it always reflects the full family picture.
-_upcoming_sched = all_matches[
-    (all_matches['status'] == 'scheduled') & ~all_matches.apply(_is_live, axis=1)
-]
-if not _upcoming_sched.empty:
-    _upcoming_ids = set(_upcoming_sched['id'].astype(int).tolist())
-    _missing: list[dict] = []
-    for _, _u in users.iterrows():
-        _uid = int(_u['id'])
-        _picked_ids = (
-            set(picks_df[picks_df['user_id'] == _uid]['match_id'].astype(int).tolist())
-            if not picks_df.empty else set()
-        )
-        _n = len(_upcoming_ids - _picked_ids)
-        if _n > 0:
-            _missing.append({'name': str(_u['name']), 'avatar': str(_u['avatar']), 'count': _n})
-
-    _total_missing = sum(v['count'] for v in _missing)
-
-    if not _missing:
-        st.markdown(
-            "<div style='background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);"
-            "border-radius:12px;padding:.6rem 1.1rem;margin:.3rem 0 .6rem;"
-            "display:flex;align-items:center;gap:.7rem'>"
-            "<span style='font-size:1.4rem'>✅</span>"
-            "<div>"
-            "<div style='font-weight:800;color:#4ADE80;font-size:.92rem'>Everyone is ready!</div>"
-            "<div style='font-size:.75rem;color:#6EE7B7'>"
-            "All family picks submitted for upcoming matches.</div>"
-            "</div></div>",
-            unsafe_allow_html=True,
-        )
-    else:
-        _pills_html = " ".join(
-            f"<span style='display:inline-flex;align-items:center;gap:.28rem;"
-            f"background:rgba(251,191,36,.11);border:1px solid rgba(251,191,36,.28);"
-            f"border-radius:20px;padding:.2rem .65rem;font-size:.84rem;font-weight:700'>"
-            f"<span style='font-size:1.08rem'>{v['avatar']}</span>"
-            f"<span style='color:#F1F5F9'>{v['name']}</span>"
-            f"<span style='background:rgba(0,0,0,.28);border-radius:10px;"
-            f"padding:.02rem .26rem;font-size:.71rem;color:#FCD34D;margin-left:.08rem'>"
-            f"{v['count']}</span></span>"
-            for v in sorted(_missing, key=lambda x: -x['count'])
-        )
-        _rem = "1 pick" if _total_missing == 1 else f"{_total_missing} picks"
-        st.markdown(
-            f"<div style='background:rgba(30,41,59,.7);border:1px solid rgba(251,191,36,.2);"
-            f"border-radius:12px;padding:.6rem 1.1rem;margin:.3rem 0 .6rem'>"
-            f"<div style='font-size:.7rem;font-weight:800;color:#F59E0B;letter-spacing:.05em;"
-            f"text-transform:uppercase;margin-bottom:.38rem'>⏳ Waiting On Picks</div>"
-            f"<div style='display:flex;flex-wrap:wrap;gap:.3rem;margin:.1rem 0'>{_pills_html}</div>"
-            f"<div style='font-size:.71rem;color:#94A3B8;margin-top:.28rem'>"
-            f"{_rem} remaining</div>"
-            f"</div>",
-            unsafe_allow_html=True,
-        )
-
 # ── Apply filters to main match list ──────────────────────────────────────────
 matches = all_matches.copy()
 if selected_group != "All Groups":

@@ -338,12 +338,6 @@ def _family_story_insights() -> list[str]:
     return stories[:3]
 
 
-# ── Tab header: title left, achievement shortcut right ────────────────────────
-_tab_hdr_l, _tab_hdr_r = st.columns([5, 2])
-with _tab_hdr_r:
-    if st.button("🏅 Achievement Progress", key="ach_header_btn", use_container_width=True):
-        st.switch_page("pages/achievements.py")
-
 # ── TABS ───────────────────────────────────────────────────────────────────────
 tab_match, tab_person = st.tabs(["📋 By Match", "👤 By Person"])
 
@@ -506,8 +500,8 @@ with tab_person:
         if accuracy is not None else ""
     )
     st.markdown(
-        f"<div style='background:linear-gradient(135deg,#1E3A5F,#2563EB);border-radius:16px;"
-        f"padding:1rem 1.2rem;text-align:center;color:white;margin-bottom:1rem'>"
+        f"<div style='background:linear-gradient(135deg,#1E3A5F,#2563EB);border-radius:16px 16px 0 0;"
+        f"padding:1rem 1.2rem;text-align:center;color:white'>"
         f"<div style='font-size:3rem;line-height:1'>{active_avatar}</div>"
         f"<div style='font-size:1.4rem;font-weight:900;margin:.2rem 0'>{active_user}'s Picks</div>"
         f"<div style='display:flex;justify-content:center;gap:2rem;margin-top:.5rem;flex-wrap:wrap'>"
@@ -523,6 +517,19 @@ with tab_person:
         f"</div></div>",
         unsafe_allow_html=True,
     )
+    # Achievement button docked to bottom of header card (same blue, flush border)
+    _ach_l, _ach_m, _ach_r = st.columns([2, 3, 2])
+    with _ach_m:
+        st.markdown(
+            "<div style='background:linear-gradient(135deg,#1E3A5F,#1D4ED8);"
+            "border-radius:0 0 16px 16px;padding:.45rem .9rem;text-align:center;"
+            "margin-bottom:.9rem'>",
+            unsafe_allow_html=True,
+        )
+        if st.button("🏅 Achievement Progress", key="ach_in_card", use_container_width=True):
+            st.switch_page("pages/achievements.py")
+        st.markdown("</div>", unsafe_allow_html=True)
+
     # ── Streak + Best/Worst ───────────────────────────────────────────────────
     if streak >= 2 or best_pk is not None or worst_pk is not None:
         c1, c2, c3 = st.columns(3)

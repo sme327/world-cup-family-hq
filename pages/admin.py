@@ -2,12 +2,71 @@ import streamlit as st
 import pandas as pd
 from services.matches import get_all_matches, update_match_score, reset_match
 from services.teams import get_all_teams
-from services.picks import get_all_users
+from services.picks import get_all_users, get_all_picks
 from services.passport import get_country_metadata
 from services.database import get_connection
 
 st.markdown("## 🔧 Admin — Data Review & Score Entry")
 st.caption("Shawn's tools for entering scores and reviewing data.")
+
+# ── Waiting On Picks ──────────────────────────────────────────────────────────
+_adm_matches  = get_all_matches()
+_adm_picks    = get_all_picks()
+_adm_users    = get_all_users()
+_adm_upcoming = _adm_matches[_adm_matches['status'] == 'scheduled']
+
+if not _adm_upcoming.empty:
+    _adm_upcoming_ids = set(_adm_upcoming['id'].astype(int).tolist())
+    _adm_missing: list[dict] = []
+    for _, _u in _adm_users.iterrows():
+        _uid = int(_u['id'])
+        _picked_ids = (
+            set(_adm_picks[_adm_picks['user_id'] == _uid]['match_id'].astype(int).tolist())
+            if not _adm_picks.empty else set()
+        )
+        _n = len(_adm_upcoming_ids - _picked_ids)
+        if _n > 0:
+            _adm_missing.append({'name': str(_u['name']), 'avatar': str(_u['avatar']), 'count': _n})
+
+    _adm_total_missing = sum(v['count'] for v in _adm_missing)
+
+    if not _adm_missing:
+        st.markdown(
+            "<div style='background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);"
+            "border-radius:12px;padding:.6rem 1.1rem;margin:.3rem 0 .8rem;"
+            "display:flex;align-items:center;gap:.7rem'>"
+            "<span style='font-size:1.4rem'>✅</span>"
+            "<div>"
+            "<div style='font-weight:800;color:#4ADE80;font-size:.92rem'>Everyone is ready!</div>"
+            "<div style='font-size:.75rem;color:#6EE7B7'>"
+            "All family picks submitted for upcoming matches.</div>"
+            "</div></div>",
+            unsafe_allow_html=True,
+        )
+    else:
+        _adm_pills = " ".join(
+            f"<span style='display:inline-flex;align-items:center;gap:.28rem;"
+            f"background:rgba(251,191,36,.11);border:1px solid rgba(251,191,36,.28);"
+            f"border-radius:20px;padding:.2rem .65rem;font-size:.84rem;font-weight:700'>"
+            f"<span style='font-size:1.08rem'>{v['avatar']}</span>"
+            f"<span style='color:#F1F5F9'>{v['name']}</span>"
+            f"<span style='background:rgba(0,0,0,.28);border-radius:10px;"
+            f"padding:.02rem .26rem;font-size:.71rem;color:#FCD34D;margin-left:.08rem'>"
+            f"{v['count']}</span></span>"
+            for v in sorted(_adm_missing, key=lambda x: -x['count'])
+        )
+        _adm_rem = "1 pick" if _adm_total_missing == 1 else f"{_adm_total_missing} picks"
+        st.markdown(
+            f"<div style='background:rgba(30,41,59,.7);border:1px solid rgba(251,191,36,.2);"
+            f"border-radius:12px;padding:.6rem 1.1rem;margin:.3rem 0 .8rem'>"
+            f"<div style='font-size:.7rem;font-weight:800;color:#F59E0B;letter-spacing:.05em;"
+            f"text-transform:uppercase;margin-bottom:.38rem'>⏳ Waiting On Picks</div>"
+            f"<div style='display:flex;flex-wrap:wrap;gap:.3rem;margin:.1rem 0'>{_adm_pills}</div>"
+            f"<div style='font-size:.71rem;color:#94A3B8;margin-top:.28rem'>"
+            f"{_adm_rem} remaining across all upcoming matches</div>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
 
 tabs = st.tabs(["📥 Enter Scores", "📋 Matches", "🌍 Teams", "👤 Users", "🏷️ Stamps", "🖼️ Card Images", "🛠️ Database"])
 

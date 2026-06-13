@@ -180,8 +180,8 @@ if h_rank and a_rank:
             'body': f"FIFA #{h_rank} {home_team} vs #{a_rank} {away_team} — very close in the rankings.",
             'question': "Which team wants it more today?",
         })
-h_capital = _safe(home_data.get('capital') if home_data else None)
-a_capital = _safe(away_data.get('capital') if away_data else None)
+h_capital = _safe(home_data.get('capital') if home_data is not None else None)
+a_capital = _safe(away_data.get('capital') if away_data is not None else None)
 if h_capital != "—" and a_capital != "—":
     debate_cards.append({
         'icon': '✈️', 'color': '#0369A1',
@@ -189,8 +189,8 @@ if h_capital != "—" and a_capital != "—":
         'body': f"{home_team}'s capital {h_capital} or {away_team}'s capital {a_capital}?",
         'question': "Pack your bags — where are you going?",
     })
-h_foods = _parse_pipe(home_data.get('foods') if home_data else None)
-a_foods = _parse_pipe(away_data.get('foods') if away_data else None)
+h_foods = _parse_pipe(home_data.get('foods') if home_data is not None else None)
+a_foods = _parse_pipe(away_data.get('foods') if away_data is not None else None)
 if h_foods and a_foods:
     debate_cards.append({
         'icon': '🍽️', 'color': '#D97706',
@@ -198,8 +198,8 @@ if h_foods and a_foods:
         'body': f"{h_foods[0]} from {home_team} vs {a_foods[0]} from {away_team}.",
         'question': "Which dish sounds tastier right now?",
     })
-h_animals = _parse_pipe(home_data.get('animals') if home_data else None)
-a_animals = _parse_pipe(away_data.get('animals') if away_data else None)
+h_animals = _parse_pipe(home_data.get('animals') if home_data is not None else None)
+a_animals = _parse_pipe(away_data.get('animals') if away_data is not None else None)
 if h_animals and a_animals and len(debate_cards) < 4:
     debate_cards.append({
         'icon': '🦁', 'color': '#16A34A',

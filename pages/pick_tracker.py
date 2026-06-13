@@ -39,7 +39,7 @@ def _pill(av: str, name: str, suffix: str, color: str) -> str:
     rgb = _hex_to_rgb(color)
     return (
         f"<span style='background:rgba({rgb},.15);color:{color};border-radius:20px;"
-        f"padding:.07rem .4rem;font-size:.7rem;font-weight:700;display:inline-block;"
+        f"padding:.07rem .5rem;font-size:.85rem;font-weight:700;display:inline-block;"
         f"margin:.04rem;white-space:nowrap'>{av}&nbsp;{name}"
         + (f"&nbsp;<b>{suffix}</b>" if suffix else "")
         + "</span>"
@@ -92,7 +92,7 @@ def _build_pick_board(mpicks: pd.DataFrame, home_team: str, away_team: str,
 
     def _pills_for(rows: pd.DataFrame, pts_override=None) -> str:
         if rows.empty:
-            return "<span style='font-size:.68rem;color:#475569;opacity:.6'>—</span>"
+            return "<span style='font-size:.78rem;color:#475569;opacity:.6'>—</span>"
         parts = []
         for _, r in rows.iterrows():
             av   = r['avatar']
@@ -118,15 +118,15 @@ def _build_pick_board(mpicks: pd.DataFrame, home_team: str, away_team: str,
         hp = _pills_for(home_rows, "+½")
         ap = _pills_for(away_rows, "+½")
         return (
-            "<div style='text-align:center;font-size:.72rem;font-weight:800;"
-            "color:#FCD34D;margin:.1rem 0'>🤝 DRAW — everyone earns +½</div>"
+            "<div style='text-align:center;font-size:.88rem;font-weight:800;"
+            "color:#FCD34D;margin:.15rem 0'>🤝 DRAW — everyone earns +½</div>"
             "<div style='display:flex;gap:.3rem;margin-top:.1rem'>"
             f"<div style='{col_style};background:rgba(252,211,77,.07)'>"
-            f"<div style='font-size:.58rem;color:#FCD34D;font-weight:700;margin-bottom:.1rem'>"
+            f"<div style='font-size:.75rem;color:#FCD34D;font-weight:700;margin-bottom:.1rem'>"
             f"{hf} {home_team}</div>"
             f"<div style='display:flex;flex-wrap:wrap'>{hp}</div></div>"
             f"<div style='{col_style};background:rgba(252,211,77,.07)'>"
-            f"<div style='font-size:.58rem;color:#FCD34D;font-weight:700;margin-bottom:.1rem'>"
+            f"<div style='font-size:.75rem;color:#FCD34D;font-weight:700;margin-bottom:.1rem'>"
             f"{af} {away_team}</div>"
             f"<div style='display:flex;flex-wrap:wrap'>{ap}</div></div>"
             "</div>"
@@ -143,11 +143,11 @@ def _build_pick_board(mpicks: pd.DataFrame, home_team: str, away_team: str,
         return (
             "<div style='display:flex;gap:.3rem;margin-top:.1rem'>"
             f"<div style='{col_style};background:rgba(74,222,128,.08)'>"
-            f"<div style='font-size:.58rem;font-weight:700;color:#4ADE80;margin-bottom:.1rem'>"
+            f"<div style='font-size:.75rem;font-weight:700;color:#4ADE80;margin-bottom:.1rem'>"
             f"✓ {win_team} ({win_n}/{n_family})</div>"
             f"<div style='display:flex;flex-wrap:wrap'>{wp}</div></div>"
             f"<div style='{col_style};background:rgba(248,113,113,.07)'>"
-            f"<div style='font-size:.58rem;font-weight:700;color:#F87171;margin-bottom:.1rem'>"
+            f"<div style='font-size:.75rem;font-weight:700;color:#F87171;margin-bottom:.1rem'>"
             f"✗ {lose_team} ({lose_n}/{n_family})</div>"
             f"<div style='display:flex;flex-wrap:wrap'>{lp}</div></div>"
             "</div>"
@@ -159,11 +159,11 @@ def _build_pick_board(mpicks: pd.DataFrame, home_team: str, away_team: str,
     return (
         "<div style='display:flex;gap:.3rem;margin-top:.1rem'>"
         f"<div style='{col_style};background:rgba(148,163,184,.07)'>"
-        f"<div style='font-size:.58rem;color:#94A3B8;font-weight:700;margin-bottom:.1rem'>"
+        f"<div style='font-size:.75rem;color:#94A3B8;font-weight:700;margin-bottom:.1rem'>"
         f"{hf} {home_team} ({home_n}/{n_family})</div>"
         f"<div style='display:flex;flex-wrap:wrap'>{hp}</div></div>"
         f"<div style='{col_style};background:rgba(148,163,184,.07)'>"
-        f"<div style='font-size:.58rem;color:#94A3B8;font-weight:700;margin-bottom:.1rem'>"
+        f"<div style='font-size:.75rem;color:#94A3B8;font-weight:700;margin-bottom:.1rem'>"
         f"{af} {away_team} ({away_n}/{n_family})</div>"
         f"<div style='display:flex;flex-wrap:wrap'>{ap}</div></div>"
         "</div>"
@@ -180,9 +180,9 @@ def _match_card_html(m: pd.Series, mpicks: pd.DataFrame) -> str:
         hs_i, as_i = int(hs), int(as_)
         score_str = f"{hs_i} – {as_i}"
         if hs_i > as_i:
-            result_html = f"<div style='font-size:.7rem;font-weight:700;color:#4ADE80'>🏆 {m['home_team']} wins</div>"
+            result_html = f"<div style='font-size:.9rem;font-weight:700;color:#4ADE80'>🏆 {m['home_team']} wins</div>"
         elif as_i > hs_i:
-            result_html = f"<div style='font-size:.7rem;font-weight:700;color:#4ADE80'>🏆 {m['away_team']} wins</div>"
+            result_html = f"<div style='font-size:.9rem;font-weight:700;color:#4ADE80'>🏆 {m['away_team']} wins</div>"
         else:
             result_html = ""  # draw shown in pick board
     else:
@@ -197,7 +197,7 @@ def _match_card_html(m: pd.Series, mpicks: pd.DataFrame) -> str:
         conf_str = _confidence(home_n, away_n, m['home_team'], m['away_team'],
                                m['status'], hs, as_)
         conf_html = (
-            f"<div style='font-size:.6rem;color:#64748B;margin-top:.12rem;"
+            f"<div style='font-size:.72rem;color:#64748B;margin-top:.15rem;"
             f"text-align:center'>{conf_str}</div>"
             if conf_str else ""
         )
@@ -215,13 +215,13 @@ def _match_card_html(m: pd.Series, mpicks: pd.DataFrame) -> str:
         f"<div style='display:flex;align-items:center;justify-content:center;"
         f"gap:.35rem;margin-bottom:.1rem'>"
         f"<span style='font-size:1.9rem;line-height:1'>{hf}</span>"
-        f"<span style='font-size:.85rem;font-weight:800;color:var(--text-color)'>{m['home_team']}</span>"
-        f"<span style='font-size:1rem;font-weight:900;color:#FCD34D'>{score_str}</span>"
-        f"<span style='font-size:.85rem;font-weight:800;color:var(--text-color)'>{m['away_team']}</span>"
+        f"<span style='font-size:1rem;font-weight:900;color:var(--text-color)'>{m['home_team']}</span>"
+        f"<span style='font-size:1.3rem;font-weight:900;color:#FCD34D'>{score_str}</span>"
+        f"<span style='font-size:1rem;font-weight:900;color:var(--text-color)'>{m['away_team']}</span>"
         f"<span style='font-size:1.9rem;line-height:1'>{af}</span>"
         f"</div>"
         # Sub-info
-        f"<div style='text-align:center;font-size:.6rem;color:#64748B;margin-bottom:.1rem'>"
+        f"<div style='text-align:center;font-size:.72rem;color:#64748B;margin-bottom:.15rem'>"
         f"Group {m['group_letter']} · {time_str} · {m['city']}</div>"
         + result_html
         + "<hr style='border:none;border-top:1px solid rgba(128,128,128,.15);margin:.2rem 0'>"
@@ -247,11 +247,22 @@ def _win_streak(user_picks: pd.DataFrame) -> int:
     return streak
 
 
-def _favorite_countries(user_picks: pd.DataFrame, n: int = 5) -> list[tuple[str, int]]:
-    if user_picks.empty:
+def _best_countries_for_user(completed_picks: pd.DataFrame, all_user_picks: pd.DataFrame,
+                             n: int = 5) -> list[tuple[str, float, int]]:
+    """Countries ranked by points earned; tiebreak by pick count, then name."""
+    if all_user_picks.empty:
         return []
-    counts = user_picks.groupby('picked_team').size().sort_values(ascending=False)
-    return [(team, int(cnt)) for team, cnt in counts.head(n).items()]
+    pick_counts = all_user_picks.groupby('picked_team').size().to_dict()
+    if completed_picks.empty or 'pts' not in completed_picks.columns:
+        return []
+    pts_by = completed_picks.groupby('picked_team')['pts'].sum().to_dict()
+    results = [
+        (team, float(pts_by.get(team, 0.0)), int(pick_counts[team]))
+        for team in pick_counts
+        if float(pts_by.get(team, 0.0)) > 0
+    ]
+    results.sort(key=lambda x: (-x[1], -x[2], x[0]))
+    return results[:n]
 
 
 def _best_and_worst(completed: pd.DataFrame) -> tuple:
@@ -342,6 +353,40 @@ with tab_match:
         for insight in insights:
             st.markdown(f"> {insight}")
 
+    # ── Family Country Heatmap ────────────────────────────────────────────────
+    st.markdown("##### 🌎 Family Country Heatmap")
+    if all_picks.empty:
+        st.caption("No family picks yet.")
+    else:
+        _ctry_counts = (
+            all_picks.groupby('picked_team').size()
+            .sort_values(ascending=False)
+            .head(10)
+        )
+        _max_cnt = int(_ctry_counts.max())
+        _heatmap_rows = ""
+        for _team, _cnt in _ctry_counts.items():
+            _cnt  = int(_cnt)
+            _flag = get_flag(_team)
+            _fires = "🔥" * max(1, round(_cnt / _max_cnt * 7))
+            _heatmap_rows += (
+                f"<div style='display:flex;align-items:center;gap:.5rem;"
+                f"padding:.13rem 0;border-bottom:1px solid rgba(128,128,128,.07)'>"
+                f"<span style='font-size:1.15rem;min-width:1.6rem;line-height:1'>{_flag}</span>"
+                f"<span style='font-size:.88rem;font-weight:700;flex:1;min-width:0'>{_team}</span>"
+                f"<span style='font-size:.7rem;color:#64748B;min-width:4.5rem;text-align:right'>"
+                f"{_cnt} pick{'s' if _cnt != 1 else ''}</span>"
+                f"<span style='font-size:.75rem;min-width:7rem'>{_fires}</span>"
+                f"</div>"
+            )
+        st.markdown(
+            f"<div style='border-radius:12px;padding:.4rem .85rem;"
+            f"border:1px solid rgba(128,128,128,.12)'>{_heatmap_rows}</div>",
+            unsafe_allow_html=True,
+        )
+
+    st.divider()
+
     # ── Quick filters ─────────────────────────────────────────────────────────
     quick_filter = st.radio(
         "Filter",
@@ -396,6 +441,15 @@ with tab_match:
                 mpicks = all_picks[all_picks['match_id'] == mid] if not all_picks.empty else pd.DataFrame()
                 with st.container(border=True):
                     st.markdown(_match_card_html(m, mpicks), unsafe_allow_html=True)
+                    _mu_status = m['status']
+                    if _mu_status == 'live':        _mu_label = "📖 Match Center"
+                    elif _mu_status == 'completed': _mu_label = "📊 Match Summary"
+                    else:                           _mu_label = "📖 Match Preview"
+                    _btn_c1, _btn_c2 = st.columns([5, 2])
+                    with _btn_c2:
+                        if st.button(_mu_label, key=f"mu_link_{mid}", use_container_width=True):
+                            st.session_state["_nav_match_id"] = mid
+                            st.switch_page("pages/matchup.py")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -427,7 +481,6 @@ with tab_person:
         completed_up = pd.DataFrame()
 
     streak  = _win_streak(user_picks)
-    fav_ctys = _favorite_countries(user_picks)
     best_pk, worst_pk = _best_and_worst(completed_up) if not completed_up.empty else (None, None)
 
     # ── Header card ───────────────────────────────────────────────────────────
@@ -455,6 +508,10 @@ with tab_person:
         f"</div></div>",
         unsafe_allow_html=True,
     )
+    _ach_c1, _ach_c2 = st.columns([4, 1])
+    with _ach_c2:
+        if st.button(f"🏅 Achievements", key="view_ach_btn", use_container_width=True):
+            st.switch_page("pages/achievements.py")
 
     # ── Streak + Best/Worst ───────────────────────────────────────────────────
     if streak >= 2 or best_pk is not None or worst_pk is not None:
@@ -532,19 +589,24 @@ with tab_person:
                     unsafe_allow_html=True,
                 )
 
-    # ── Favorite Countries ────────────────────────────────────────────────────
-    if fav_ctys:
-        st.markdown("#### 🌎 Favorite Countries")
-        fc_cols = st.columns(min(len(fav_ctys), 5))
-        for i, (team, cnt) in enumerate(fav_ctys):
+    # ── Best Countries ────────────────────────────────────────────────────────
+    best_ctys = _best_countries_for_user(completed_up, user_picks)
+    st.markdown(f"#### 🌎 Best Countries for {active_user}")
+    if not best_ctys:
+        st.caption("No winning countries yet — keep picking!")
+    else:
+        fc_cols = st.columns(min(len(best_ctys), 5))
+        for i, (team, pts, cnt) in enumerate(best_ctys):
             flag = get_flag(team)
+            pts_label = f"{pts:.0f}" if pts == int(pts) else f"{pts:.1f}"
             with fc_cols[i]:
                 st.markdown(
                     f"<div style='text-align:center;background:rgba(148,163,184,.07);"
                     f"border-radius:10px;padding:.4rem .3rem'>"
                     f"<div style='font-size:1.8rem;line-height:1'>{flag}</div>"
                     f"<div style='font-size:.72rem;font-weight:700;color:var(--text-color)'>{team}</div>"
-                    f"<div style='font-size:.62rem;color:#64748B'>{cnt} pick{'s' if cnt != 1 else ''}</div>"
+                    f"<div style='font-size:.65rem;color:#4ADE80;font-weight:700'>"
+                    f"{pts_label} pt{'s' if pts != 1.0 else ''}</div>"
                     f"</div>",
                     unsafe_allow_html=True,
                 )

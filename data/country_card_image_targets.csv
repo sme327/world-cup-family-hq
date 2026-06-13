@@ -54,7 +54,7 @@ Czechia,czechia,animals,European Brown Bear,european_brown_bear,European Brown B
 Czechia,czechia,animals,White-tailed Eagle,white_tailed_eagle,White-tailed Eagle,data/country_card_images/czechia/white_tailed_eagle.jpg,no,animals,downloaded
 Czechia,czechia,animals,Red Deer,red_deer,Red Deer,data/country_card_images/czechia/red_deer.jpg,no,animals,downloaded
 Czechia,czechia,foods,Svíčková (beef with cream sauce),svickova_beef_with_cream_sauce,Svíčková (beef with cream sauce) Czechia,data/country_card_images/czechia/svickova_beef_with_cream_sauce.jpg,no,foods,downloaded
-Czechia,czechia,foods,Trdelník (chimney cake),trdelnik_chimney_cake,Trdelník (chimney cake) Czechia,data/country_card_images/czechia/trdelnik_chimney_cake.jpg,no,foods,missing
+Czechia,czechia,foods,Trdelník (chimney cake),trdelnik_chimney_cake,Trdelník (chimney cake) Czechia,data/country_card_images/czechia/trdelnik_chimney_cake.jpg,no,foods,downloaded
 Czechia,czechia,foods,Pilsner beer,pilsner_beer,Pilsner beer Czechia,data/country_card_images/czechia/pilsner_beer.jpg,no,foods,downloaded
 Czechia,czechia,foods,Goulash,goulash,Goulash Czechia,data/country_card_images/czechia/goulash.jpg,no,foods,downloaded
 Czechia,czechia,landmarks,Prague Castle,prague_castle,Prague Castle Czechia,data/country_card_images/czechia/prague_castle.jpg,no,landmarks,downloaded
@@ -65,7 +65,7 @@ Czechia,czechia,cheer_reasons,Prague,prague,Prague Czechia,data/country_card_ima
 Czechia,czechia,cheer_reasons,Beer,beer,Beer Czechia,data/country_card_images/czechia/beer.jpg,no,cheer_reasons,downloaded
 Czechia,czechia,cheer_reasons,Ice hockey legends,ice_hockey_legends,Ice hockey legends Czechia,data/country_card_images/czechia/ice_hockey_legends.jpg,no,cheer_reasons,downloaded
 Czechia,czechia,cheer_reasons,Beautiful castles,beautiful_castles,Beautiful castles Czechia,data/country_card_images/czechia/beautiful_castles.jpg,no,cheer_reasons,downloaded
-Czechia,czechia,cheer_reasons,Václav Havel's homeland,vaclav_havel_s_homeland,Václav Havel's homeland Czechia,data/country_card_images/czechia/vaclav_havel_s_homeland.jpg,no,cheer_reasons,missing
+Czechia,czechia,cheer_reasons,Václav Havel's homeland,vaclav_havel_s_homeland,Václav Havel's homeland Czechia,data/country_card_images/czechia/vaclav_havel_s_homeland.jpg,no,cheer_reasons,downloaded
 Canada,canada,animals,Beaver,beaver,Beaver,data/country_card_images/canada/beaver.jpg,no,animals,downloaded
 Canada,canada,animals,Moose,moose,Moose,data/country_card_images/canada/moose.jpg,no,animals,downloaded
 Canada,canada,animals,Polar Bear,polar_bear,Polar Bear,data/country_card_images/canada/polar_bear.jpg,no,animals,downloaded
@@ -83,7 +83,7 @@ Canada,canada,cheer_reasons,Maple syrup,maple_syrup,Maple syrup Canada,data/coun
 Canada,canada,cheer_reasons,Niagara Falls,niagara_falls,Niagara Falls Canada,data/country_card_images/canada/niagara_falls.jpg,yes,landmarks,downloaded
 Canada,canada,cheer_reasons,Polar bears ‍,polar_bears,Polar bears ‍ Canada,data/country_card_images/canada/polar_bears.jpg,no,cheer_reasons,downloaded
 Canada,canada,cheer_reasons,Co-hosting this World Cup,co_hosting_this_world_cup,Co-hosting this World Cup Canada,data/country_card_images/canada/co_hosting_this_world_cup.jpg,no,cheer_reasons,downloaded
-Canada,canada,cheer_reasons,Alphonso Davies is a superstar,alphonso_davies_is_a_superstar,Alphonso Davies is a superstar Canada,data/country_card_images/canada/alphonso_davies_is_a_superstar.jpg,no,cheer_reasons,missing
+Canada,canada,cheer_reasons,Alphonso Davies is a superstar,alphonso_davies_is_a_superstar,Alphonso Davies is a superstar Canada,data/country_card_images/canada/alphonso_davies_is_a_superstar.jpg,no,cheer_reasons,downloaded
 Bosnia and Herzegovina,bosnia-and-herzegovina,animals,Brown Bear,brown_bear,Brown Bear,data/country_card_images/bosnia-and-herzegovina/brown_bear.jpg,no,animals,downloaded
 Bosnia and Herzegovina,bosnia-and-herzegovina,animals,Lynx,lynx,Lynx,data/country_card_images/bosnia-and-herzegovina/lynx.jpg,no,animals,downloaded
 Bosnia and Herzegovina,bosnia-and-herzegovina,animals,Chamois,chamois,Chamois,data/country_card_images/bosnia-and-herzegovina/chamois.jpg,no,animals,downloaded
@@ -100,31 +100,31 @@ Bosnia and Herzegovina,bosnia-and-herzegovina,cheer_reasons,Stari Most bridge,st
 Bosnia and Herzegovina,bosnia-and-herzegovina,cheer_reasons,Ćevapi (best grilled meat ever!),cevapi_best_grilled_meat_ever,Ćevapi (best grilled meat ever!) Bosnia and Herzegovina,data/country_card_images/bosnia-and-herzegovina/cevapi_best_grilled_meat_ever.jpg,no,cheer_reasons,missing
 Bosnia and Herzegovina,bosnia-and-herzegovina,cheer_reasons,Comeback story,comeback_story,Comeback story Bosnia and Herzegovina,data/country_card_images/bosnia-and-herzegovina/comeback_story.jpg,no,cheer_reasons,downloaded
 Bosnia and Herzegovina,bosnia-and-herzegovina,cheer_reasons,Beautiful mountains,beautiful_mountains,Beautiful mountains Bosnia and Herzegovina,data/country_card_images/bosnia-and-herzegovina/beautiful_mountains.jpg,no,cheer_reasons,downloaded
-Bosnia and Herzegovina,bosnia-and-herzegovina,cheer_reasons,History of resilience,history_of_resilience,History of resilience Bosnia and Herzegovina,data/country_card_images/bosnia-and-herzegovina/history_of_resilience.jpg,no,cheer_reasons,missing
+Bosnia and Herzegovina,bosnia-and-herzegovina,cheer_reasons,History of resilience,history_of_resilience,History of resilience Bosnia and Herzegovina,data/country_card_images/bosnia-and-herzegovina/history_of_resilience.jpg,no,cheer_reasons,downloaded
 Qatar,qatar,animals,Arabian Oryx,arabian_oryx,Arabian Oryx,data/country_card_images/qatar/arabian_oryx.jpg,no,animals,downloaded
 Qatar,qatar,animals,Dugong,dugong,Dugong,data/country_card_images/qatar/dugong.jpg,no,animals,downloaded
 Qatar,qatar,animals,Sooty Falcon,sooty_falcon,Sooty Falcon,data/country_card_images/qatar/sooty_falcon.jpg,no,animals,downloaded
 Qatar,qatar,animals,Arabian Leopard,arabian_leopard,Arabian Leopard,data/country_card_images/qatar/arabian_leopard.jpg,no,animals,downloaded
-Qatar,qatar,foods,Machboos (spiced rice & meat),machboos_spiced_rice_meat,Machboos (spiced rice & meat) Qatar,data/country_card_images/qatar/machboos_spiced_rice_meat.jpg,no,foods,missing
+Qatar,qatar,foods,Machboos (spiced rice & meat),machboos_spiced_rice_meat,Machboos (spiced rice & meat) Qatar,data/country_card_images/qatar/machboos_spiced_rice_meat.jpg,no,foods,downloaded
 Qatar,qatar,foods,Harees,harees,Harees Qatar,data/country_card_images/qatar/harees.jpg,no,foods,missing
 Qatar,qatar,foods,Luqaimat (sweet dumplings),luqaimat_sweet_dumplings,Luqaimat (sweet dumplings) Qatar,data/country_card_images/qatar/luqaimat_sweet_dumplings.jpg,no,foods,missing
-Qatar,qatar,foods,Kabsa,kabsa,Kabsa Qatar,data/country_card_images/qatar/kabsa.jpg,no,foods,missing
+Qatar,qatar,foods,Kabsa,kabsa,Kabsa Qatar,data/country_card_images/qatar/kabsa.jpg,no,foods,downloaded
 Qatar,qatar,landmarks,Museum of Islamic Art,museum_of_islamic_art,Museum of Islamic Art Qatar,data/country_card_images/qatar/museum_of_islamic_art.jpg,no,landmarks,downloaded
 Qatar,qatar,landmarks,Souq Waqif,souq_waqif,Souq Waqif Qatar,data/country_card_images/qatar/souq_waqif.jpg,no,landmarks,downloaded
 Qatar,qatar,landmarks,The Pearl,the_pearl,The Pearl Qatar,data/country_card_images/qatar/the_pearl.jpg,no,landmarks,downloaded
-Qatar,qatar,landmarks,Lusail Stadium,lusail_stadium,Lusail Stadium Qatar,data/country_card_images/qatar/lusail_stadium.jpg,no,landmarks,missing
-Qatar,qatar,cheer_reasons,Hosted the 2022 World Cup,hosted_the_2022_world_cup,Hosted the 2022 World Cup Qatar,data/country_card_images/qatar/hosted_the_2022_world_cup.jpg,no,cheer_reasons,missing
+Qatar,qatar,landmarks,Lusail Stadium,lusail_stadium,Lusail Stadium Qatar,data/country_card_images/qatar/lusail_stadium.jpg,no,landmarks,downloaded
+Qatar,qatar,cheer_reasons,Hosted the 2022 World Cup,hosted_the_2022_world_cup,Hosted the 2022 World Cup Qatar,data/country_card_images/qatar/hosted_the_2022_world_cup.jpg,no,cheer_reasons,downloaded
 Qatar,qatar,cheer_reasons,Arabian Oryx,arabian_oryx,Arabian Oryx Qatar,data/country_card_images/qatar/arabian_oryx.jpg,yes,animals,downloaded
-Qatar,qatar,cheer_reasons,Pearl diving history,pearl_diving_history,Pearl diving history Qatar,data/country_card_images/qatar/pearl_diving_history.jpg,no,cheer_reasons,missing
+Qatar,qatar,cheer_reasons,Pearl diving history,pearl_diving_history,Pearl diving history Qatar,data/country_card_images/qatar/pearl_diving_history.jpg,no,cheer_reasons,downloaded
 Qatar,qatar,cheer_reasons,Stunning modern architecture,stunning_modern_architecture,Stunning modern architecture Qatar,data/country_card_images/qatar/stunning_modern_architecture.jpg,no,cheer_reasons,downloaded
 Qatar,qatar,cheer_reasons,Desert adventures,desert_adventures,Desert adventures Qatar,data/country_card_images/qatar/desert_adventures.jpg,no,cheer_reasons,downloaded
 Switzerland,switzerland,animals,Ibex,ibex,Ibex,data/country_card_images/switzerland/ibex.jpg,no,animals,downloaded
 Switzerland,switzerland,animals,Marmot,marmot,Marmot,data/country_card_images/switzerland/marmot.jpg,no,animals,downloaded
 Switzerland,switzerland,animals,Golden Eagle,golden_eagle,Golden Eagle,data/country_card_images/switzerland/golden_eagle.jpg,no,animals,downloaded
 Switzerland,switzerland,animals,St. Bernard dog,st_bernard_dog,St. Bernard dog,data/country_card_images/switzerland/st_bernard_dog.jpg,no,animals,downloaded
-Switzerland,switzerland,foods,Fondue,fondue,Fondue Switzerland,data/country_card_images/switzerland/fondue.jpg,no,foods,missing
-Switzerland,switzerland,foods,Raclette,raclette,Raclette Switzerland,data/country_card_images/switzerland/raclette.jpg,no,foods,missing
-Switzerland,switzerland,foods,Swiss chocolate,swiss_chocolate,Swiss chocolate Switzerland,data/country_card_images/switzerland/swiss_chocolate.jpg,no,foods,missing
+Switzerland,switzerland,foods,Fondue,fondue,Fondue Switzerland,data/country_card_images/switzerland/fondue.jpg,no,foods,downloaded
+Switzerland,switzerland,foods,Raclette,raclette,Raclette Switzerland,data/country_card_images/switzerland/raclette.jpg,no,foods,downloaded
+Switzerland,switzerland,foods,Swiss chocolate,swiss_chocolate,Swiss chocolate Switzerland,data/country_card_images/switzerland/swiss_chocolate.jpg,no,foods,downloaded
 Switzerland,switzerland,foods,Rösti (potato cake),rosti_potato_cake,Rösti (potato cake) Switzerland,data/country_card_images/switzerland/rosti_potato_cake.jpg,no,foods,missing
 Switzerland,switzerland,landmarks,Matterhorn,matterhorn,Matterhorn Switzerland,data/country_card_images/switzerland/matterhorn.jpg,no,landmarks,downloaded
 Switzerland,switzerland,landmarks,Lake Geneva,lake_geneva,Lake Geneva Switzerland,data/country_card_images/switzerland/lake_geneva.jpg,no,landmarks,downloaded
@@ -134,7 +134,7 @@ Switzerland,switzerland,cheer_reasons,Chocolate,chocolate,Chocolate Switzerland,
 Switzerland,switzerland,cheer_reasons,Skiing,skiing,Skiing Switzerland,data/country_card_images/switzerland/skiing.jpg,no,cheer_reasons,downloaded
 Switzerland,switzerland,cheer_reasons,Alps,alps,Alps Switzerland,data/country_card_images/switzerland/alps.jpg,no,cheer_reasons,downloaded
 Switzerland,switzerland,cheer_reasons,Watches ⌚,watches,Watches ⌚ Switzerland,data/country_card_images/switzerland/watches.jpg,no,cheer_reasons,downloaded
-Switzerland,switzerland,cheer_reasons,World's most famous knife,world_s_most_famous_knife,World's most famous knife Switzerland,data/country_card_images/switzerland/world_s_most_famous_knife.jpg,no,cheer_reasons,missing
+Switzerland,switzerland,cheer_reasons,World's most famous knife,world_s_most_famous_knife,World's most famous knife Switzerland,data/country_card_images/switzerland/world_s_most_famous_knife.jpg,no,cheer_reasons,downloaded
 Brazil,brazil,animals,Toucan,toucan,Toucan,data/country_card_images/brazil/toucan.jpg,no,animals,downloaded
 Brazil,brazil,animals,Jaguar,jaguar,Jaguar,data/country_card_images/brazil/jaguar.jpg,no,animals,downloaded
 Brazil,brazil,animals,Capybara,capybara,Capybara,data/country_card_images/brazil/capybara.jpg,no,animals,downloaded
@@ -144,7 +144,7 @@ Brazil,brazil,foods,Churrasco (BBQ),churrasco_bbq,Churrasco (BBQ) Brazil,data/co
 Brazil,brazil,foods,Brigadeiro (chocolate truffle),brigadeiro_chocolate_truffle,Brigadeiro (chocolate truffle) Brazil,data/country_card_images/brazil/brigadeiro_chocolate_truffle.jpg,no,foods,downloaded
 Brazil,brazil,foods,Açaí,acai,Açaí Brazil,data/country_card_images/brazil/acai.jpg,no,foods,downloaded
 Brazil,brazil,foods,Feijoada (bean stew),feijoada_bean_stew,Feijoada (bean stew) Brazil,data/country_card_images/brazil/feijoada_bean_stew.jpg,no,foods,downloaded
-Brazil,brazil,landmarks,Christ the Redeemer,christ_the_redeemer,Christ the Redeemer Brazil,data/country_card_images/brazil/christ_the_redeemer.jpg,no,landmarks,missing
+Brazil,brazil,landmarks,Christ the Redeemer,christ_the_redeemer,Christ the Redeemer Brazil,data/country_card_images/brazil/christ_the_redeemer.jpg,no,landmarks,downloaded
 Brazil,brazil,landmarks,Amazon Rainforest,amazon_rainforest,Amazon Rainforest Brazil,data/country_card_images/brazil/amazon_rainforest.jpg,no,landmarks,downloaded
 Brazil,brazil,landmarks,Iguazu Falls,iguazu_falls,Iguazu Falls Brazil,data/country_card_images/brazil/iguazu_falls.jpg,no,landmarks,downloaded
 Brazil,brazil,landmarks,Copacabana Beach,copacabana_beach,Copacabana Beach Brazil,data/country_card_images/brazil/copacabana_beach.jpg,no,landmarks,downloaded
@@ -152,16 +152,16 @@ Brazil,brazil,cheer_reasons,Won the World Cup 5 TIMES,won_the_world_cup_5_times,
 Brazil,brazil,cheer_reasons,Samba dancing,samba_dancing,Samba dancing Brazil,data/country_card_images/brazil/samba_dancing.jpg,no,cheer_reasons,downloaded
 Brazil,brazil,cheer_reasons,Amazon rainforest,amazon_rainforest,Amazon rainforest Brazil,data/country_card_images/brazil/amazon_rainforest.jpg,yes,landmarks,downloaded
 Brazil,brazil,cheer_reasons,Carnaval,carnaval,Carnaval Brazil,data/country_card_images/brazil/carnaval.jpg,no,cheer_reasons,downloaded
-Brazil,brazil,cheer_reasons,Rodney Dourado is amazing,rodney_dourado_is_amazing,Rodney Dourado is amazing Brazil,data/country_card_images/brazil/rodney_dourado_is_amazing.jpg,no,cheer_reasons,missing
-Morocco,morocco,animals,Barbary Lion (extinct but symbol),barbary_lion_extinct_but_symbol,Barbary Lion (extinct but symbol),data/country_card_images/morocco/barbary_lion_extinct_but_symbol.jpg,no,animals,missing
+Brazil,brazil,cheer_reasons,Rodney Dourado is amazing,rodney_dourado_is_amazing,Rodney Dourado is amazing Brazil,data/country_card_images/brazil/rodney_dourado_is_amazing.jpg,no,cheer_reasons,downloaded
+Morocco,morocco,animals,Barbary Lion (extinct but symbol),barbary_lion_extinct_but_symbol,Barbary Lion (extinct but symbol),data/country_card_images/morocco/barbary_lion_extinct_but_symbol.jpg,no,animals,downloaded
 Morocco,morocco,animals,Argan Tree Goat,argan_tree_goat,Argan Tree Goat,data/country_card_images/morocco/argan_tree_goat.jpg,no,animals,downloaded
-Morocco,morocco,animals,Barbary Macaque,barbary_macaque,Barbary Macaque,data/country_card_images/morocco/barbary_macaque.jpg,no,animals,missing
+Morocco,morocco,animals,Barbary Macaque,barbary_macaque,Barbary Macaque,data/country_card_images/morocco/barbary_macaque.jpg,no,animals,downloaded
 Morocco,morocco,animals,Desert Fox,desert_fox,Desert Fox,data/country_card_images/morocco/desert_fox.jpg,no,animals,downloaded
 Morocco,morocco,foods,Tagine,tagine,Tagine Morocco,data/country_card_images/morocco/tagine.jpg,no,foods,downloaded
 Morocco,morocco,foods,Couscous,couscous,Couscous Morocco,data/country_card_images/morocco/couscous.jpg,no,foods,downloaded
 Morocco,morocco,foods,Pastilla (sweet-savory pie),pastilla_sweet_savory_pie,Pastilla (sweet-savory pie) Morocco,data/country_card_images/morocco/pastilla_sweet_savory_pie.jpg,no,foods,downloaded
 Morocco,morocco,foods,Mint tea,mint_tea,Mint tea Morocco,data/country_card_images/morocco/mint_tea.jpg,no,foods,downloaded
-Morocco,morocco,landmarks,Medina of Marrakech,medina_of_marrakech,Medina of Marrakech Morocco,data/country_card_images/morocco/medina_of_marrakech.jpg,no,landmarks,missing
+Morocco,morocco,landmarks,Medina of Marrakech,medina_of_marrakech,Medina of Marrakech Morocco,data/country_card_images/morocco/medina_of_marrakech.jpg,no,landmarks,downloaded
 Morocco,morocco,landmarks,Sahara Desert,sahara_desert,Sahara Desert Morocco,data/country_card_images/morocco/sahara_desert.jpg,no,landmarks,downloaded
 Morocco,morocco,landmarks,Hassan II Mosque,hassan_ii_mosque,Hassan II Mosque Morocco,data/country_card_images/morocco/hassan_ii_mosque.jpg,no,landmarks,downloaded
 Morocco,morocco,landmarks,Atlas Mountains,atlas_mountains,Atlas Mountains Morocco,data/country_card_images/morocco/atlas_mountains.jpg,no,landmarks,downloaded
@@ -177,23 +177,23 @@ Haiti,haiti,animals,Rhinoceros Iguana,rhinoceros_iguana,Rhinoceros Iguana,data/c
 Haiti,haiti,foods,Griot (fried pork),griot_fried_pork,Griot (fried pork) Haiti,data/country_card_images/haiti/griot_fried_pork.jpg,no,foods,downloaded
 Haiti,haiti,foods,Akasan (corn porridge),akasan_corn_porridge,Akasan (corn porridge) Haiti,data/country_card_images/haiti/akasan_corn_porridge.jpg,no,foods,missing
 Haiti,haiti,foods,Pikliz (spicy slaw),pikliz_spicy_slaw,Pikliz (spicy slaw) Haiti,data/country_card_images/haiti/pikliz_spicy_slaw.jpg,no,foods,missing
-Haiti,haiti,foods,Joumou (pumpkin soup),joumou_pumpkin_soup,Joumou (pumpkin soup) Haiti,data/country_card_images/haiti/joumou_pumpkin_soup.jpg,no,foods,missing
+Haiti,haiti,foods,Joumou (pumpkin soup),joumou_pumpkin_soup,Joumou (pumpkin soup) Haiti,data/country_card_images/haiti/joumou_pumpkin_soup.jpg,no,foods,downloaded
 Haiti,haiti,landmarks,Citadelle Laferrière,citadelle_laferriere,Citadelle Laferrière Haiti,data/country_card_images/haiti/citadelle_laferriere.jpg,no,landmarks,downloaded
-Haiti,haiti,landmarks,Sans-Souci Palace,sans_souci_palace,Sans-Souci Palace Haiti,data/country_card_images/haiti/sans_souci_palace.jpg,no,landmarks,missing
+Haiti,haiti,landmarks,Sans-Souci Palace,sans_souci_palace,Sans-Souci Palace Haiti,data/country_card_images/haiti/sans_souci_palace.jpg,no,landmarks,downloaded
 Haiti,haiti,landmarks,Labadee Beach,labadee_beach,Labadee Beach Haiti,data/country_card_images/haiti/labadee_beach.jpg,no,landmarks,downloaded
 Haiti,haiti,landmarks,Bassin-Bleu Waterfall,bassin_bleu_waterfall,Bassin-Bleu Waterfall Haiti,data/country_card_images/haiti/bassin_bleu_waterfall.jpg,no,landmarks,missing
 Haiti,haiti,cheer_reasons,First Black republic in history,first_black_republic_in_history,First Black republic in history Haiti,data/country_card_images/haiti/first_black_republic_in_history.jpg,no,cheer_reasons,downloaded
 Haiti,haiti,cheer_reasons,Beautiful beaches,beautiful_beaches,Beautiful beaches Haiti,data/country_card_images/haiti/beautiful_beaches.jpg,no,cheer_reasons,downloaded
-Haiti,haiti,cheer_reasons,Amazing music (Kompa),amazing_music_kompa,Amazing music (Kompa) Haiti,data/country_card_images/haiti/amazing_music_kompa.jpg,no,cheer_reasons,missing
+Haiti,haiti,cheer_reasons,Amazing music (Kompa),amazing_music_kompa,Amazing music (Kompa) Haiti,data/country_card_images/haiti/amazing_music_kompa.jpg,no,cheer_reasons,downloaded
 Haiti,haiti,cheer_reasons,Underdogs story,underdogs_story,Underdogs story Haiti,data/country_card_images/haiti/underdogs_story.jpg,no,cheer_reasons,downloaded
 Haiti,haiti,cheer_reasons,Haitian Creole language,haitian_creole_language,Haitian Creole language Haiti,data/country_card_images/haiti/haitian_creole_language.jpg,no,cheer_reasons,downloaded
 Scotland,scotland,animals,Red Deer,red_deer,Red Deer,data/country_card_images/scotland/red_deer.jpg,no,animals,downloaded
 Scotland,scotland,animals,Red Squirrel,red_squirrel,Red Squirrel,data/country_card_images/scotland/red_squirrel.jpg,no,animals,downloaded
-Scotland,scotland,animals,Puffin,puffin,Puffin,data/country_card_images/scotland/puffin.jpg,no,animals,missing
+Scotland,scotland,animals,Puffin,puffin,Puffin,data/country_card_images/scotland/puffin.jpg,no,animals,downloaded
 Scotland,scotland,animals,Highland Cattle,highland_cattle,Highland Cattle,data/country_card_images/scotland/highland_cattle.jpg,no,animals,downloaded
-Scotland,scotland,animals,Golden Eagle,golden_eagle,Golden Eagle,data/country_card_images/scotland/golden_eagle.jpg,no,animals,missing
-Scotland,scotland,foods,Haggis,haggis,Haggis Scotland,data/country_card_images/scotland/haggis.jpg,no,foods,missing
-Scotland,scotland,foods,Fish and Chips,fish_and_chips,Fish and Chips Scotland,data/country_card_images/scotland/fish_and_chips.jpg,no,foods,missing
+Scotland,scotland,animals,Golden Eagle,golden_eagle,Golden Eagle,data/country_card_images/scotland/golden_eagle.jpg,no,animals,downloaded
+Scotland,scotland,foods,Haggis,haggis,Haggis Scotland,data/country_card_images/scotland/haggis.jpg,no,foods,downloaded
+Scotland,scotland,foods,Fish and Chips,fish_and_chips,Fish and Chips Scotland,data/country_card_images/scotland/fish_and_chips.jpg,no,foods,downloaded
 Scotland,scotland,foods,Shortbread,shortbread,Shortbread Scotland,data/country_card_images/scotland/shortbread.jpg,no,foods,missing
 Scotland,scotland,foods,Cranachan (raspberry cream),cranachan_raspberry_cream,Cranachan (raspberry cream) Scotland,data/country_card_images/scotland/cranachan_raspberry_cream.jpg,no,foods,missing
 Scotland,scotland,foods,Scotch whisky,scotch_whisky,Scotch whisky Scotland,data/country_card_images/scotland/scotch_whisky.jpg,no,foods,downloaded
@@ -209,8 +209,8 @@ Scotland,scotland,cheer_reasons,Loch Ness Monster,loch_ness_monster,Loch Ness Mo
 USA,usa,animals,Bald Eagle,bald_eagle,Bald Eagle,data/country_card_images/usa/bald_eagle.jpg,no,animals,downloaded
 USA,usa,animals,Bison,bison,Bison,data/country_card_images/usa/bison.jpg,no,animals,downloaded
 USA,usa,animals,Grizzly Bear,grizzly_bear,Grizzly Bear,data/country_card_images/usa/grizzly_bear.jpg,no,animals,downloaded
-USA,usa,animals,Florida Manatee,florida_manatee,Florida Manatee,data/country_card_images/usa/florida_manatee.jpg,no,animals,missing
-USA,usa,animals,Gray Wolf,gray_wolf,Gray Wolf,data/country_card_images/usa/gray_wolf.jpg,no,animals,missing
+USA,usa,animals,Florida Manatee,florida_manatee,Florida Manatee,data/country_card_images/usa/florida_manatee.jpg,no,animals,downloaded
+USA,usa,animals,Gray Wolf,gray_wolf,Gray Wolf,data/country_card_images/usa/gray_wolf.jpg,no,animals,downloaded
 USA,usa,foods,Cheeseburger,cheeseburger,Cheeseburger USA,data/country_card_images/usa/cheeseburger.jpg,no,foods,downloaded
 USA,usa,foods,Hot dogs,hot_dogs,Hot dogs USA,data/country_card_images/usa/hot_dogs.jpg,no,foods,downloaded
 USA,usa,foods,BBQ,bbq,BBQ USA,data/country_card_images/usa/bbq.jpg,no,foods,downloaded
@@ -233,7 +233,7 @@ Paraguay,paraguay,foods,Sopa Paraguaya (corn bread),sopa_paraguaya_corn_bread,So
 Paraguay,paraguay,foods,Chipa (cheese bread),chipa_cheese_bread,Chipa (cheese bread) Paraguay,data/country_card_images/paraguay/chipa_cheese_bread.jpg,no,foods,downloaded
 Paraguay,paraguay,foods,Asado (BBQ),asado_bbq,Asado (BBQ) Paraguay,data/country_card_images/paraguay/asado_bbq.jpg,no,foods,downloaded
 Paraguay,paraguay,foods,Bori-Bori (chicken soup),bori_bori_chicken_soup,Bori-Bori (chicken soup) Paraguay,data/country_card_images/paraguay/bori_bori_chicken_soup.jpg,no,foods,missing
-Paraguay,paraguay,landmarks,Pantanal Wetlands,pantanal_wetlands,Pantanal Wetlands Paraguay,data/country_card_images/paraguay/pantanal_wetlands.jpg,no,landmarks,missing
+Paraguay,paraguay,landmarks,Pantanal Wetlands,pantanal_wetlands,Pantanal Wetlands Paraguay,data/country_card_images/paraguay/pantanal_wetlands.jpg,no,landmarks,downloaded
 Paraguay,paraguay,landmarks,Iguazu Falls,iguazu_falls,Iguazu Falls Paraguay,data/country_card_images/paraguay/iguazu_falls.jpg,no,landmarks,downloaded
 Paraguay,paraguay,landmarks,Jesuit Missions,jesuit_missions,Jesuit Missions Paraguay,data/country_card_images/paraguay/jesuit_missions.jpg,no,landmarks,downloaded
 Paraguay,paraguay,landmarks,Cerro Corá National Park,cerro_cora_national_park,Cerro Corá National Park Paraguay,data/country_card_images/paraguay/cerro_cora_national_park.jpg,no,landmarks,downloaded
@@ -248,11 +248,11 @@ Australia,australia,animals,Platypus,platypus,Platypus,data/country_card_images/
 Australia,australia,animals,Wombat,wombat,Wombat,data/country_card_images/australia/wombat.jpg,no,animals,downloaded
 Australia,australia,animals,Quokka,quokka,Quokka,data/country_card_images/australia/quokka.jpg,no,animals,downloaded
 Australia,australia,animals,Saltwater Crocodile,saltwater_crocodile,Saltwater Crocodile,data/country_card_images/australia/saltwater_crocodile.jpg,no,animals,downloaded
-Australia,australia,foods,Meat Pie,meat_pie,Meat Pie Australia,data/country_card_images/australia/meat_pie.jpg,no,foods,missing
-Australia,australia,foods,Tim Tams (chocolate biscuits),tim_tams_chocolate_biscuits,Tim Tams (chocolate biscuits) Australia,data/country_card_images/australia/tim_tams_chocolate_biscuits.jpg,no,foods,missing
-Australia,australia,foods,Pavlova,pavlova,Pavlova Australia,data/country_card_images/australia/pavlova.jpg,no,foods,missing
-Australia,australia,foods,Vegemite on toast,vegemite_on_toast,Vegemite on toast Australia,data/country_card_images/australia/vegemite_on_toast.jpg,no,foods,missing
-Australia,australia,foods,Lamingtons,lamingtons,Lamingtons Australia,data/country_card_images/australia/lamingtons.jpg,no,foods,missing
+Australia,australia,foods,Meat Pie,meat_pie,Meat Pie Australia,data/country_card_images/australia/meat_pie.jpg,no,foods,downloaded
+Australia,australia,foods,Tim Tams (chocolate biscuits),tim_tams_chocolate_biscuits,Tim Tams (chocolate biscuits) Australia,data/country_card_images/australia/tim_tams_chocolate_biscuits.jpg,no,foods,downloaded
+Australia,australia,foods,Pavlova,pavlova,Pavlova Australia,data/country_card_images/australia/pavlova.jpg,no,foods,downloaded
+Australia,australia,foods,Vegemite on toast,vegemite_on_toast,Vegemite on toast Australia,data/country_card_images/australia/vegemite_on_toast.jpg,no,foods,downloaded
+Australia,australia,foods,Lamingtons,lamingtons,Lamingtons Australia,data/country_card_images/australia/lamingtons.jpg,no,foods,downloaded
 Australia,australia,landmarks,Sydney Opera House,sydney_opera_house,Sydney Opera House Australia,data/country_card_images/australia/sydney_opera_house.jpg,no,landmarks,downloaded
 Australia,australia,landmarks,Great Barrier Reef,great_barrier_reef,Great Barrier Reef Australia,data/country_card_images/australia/great_barrier_reef.jpg,no,landmarks,downloaded
 Australia,australia,landmarks,Uluru,uluru,Uluru Australia,data/country_card_images/australia/uluru.jpg,no,landmarks,downloaded
@@ -262,13 +262,13 @@ Australia,australia,cheer_reasons,Kangaroos,kangaroos,Kangaroos Australia,data/c
 Australia,australia,cheer_reasons,Koalas,koalas,Koalas Australia,data/country_card_images/australia/koalas.jpg,no,cheer_reasons,downloaded
 Australia,australia,cheer_reasons,Beaches,beaches,Beaches Australia,data/country_card_images/australia/beaches.jpg,no,cheer_reasons,downloaded
 Australia,australia,cheer_reasons,Outback adventures,outback_adventures,Outback adventures Australia,data/country_card_images/australia/outback_adventures.jpg,no,cheer_reasons,downloaded
-Australia,australia,cheer_reasons,Matildas are superstars,matildas_are_superstars,Matildas are superstars Australia,data/country_card_images/australia/matildas_are_superstars.jpg,no,cheer_reasons,missing
+Australia,australia,cheer_reasons,Matildas are superstars,matildas_are_superstars,Matildas are superstars Australia,data/country_card_images/australia/matildas_are_superstars.jpg,no,cheer_reasons,downloaded
 Türkiye,turkiye,animals,Anatolian Leopard,anatolian_leopard,Anatolian Leopard,data/country_card_images/turkiye/anatolian_leopard.jpg,no,animals,downloaded
 Türkiye,turkiye,animals,Sea Turtle,sea_turtle,Sea Turtle,data/country_card_images/turkiye/sea_turtle.jpg,no,animals,downloaded
 Türkiye,turkiye,animals,Stork,stork,Stork,data/country_card_images/turkiye/stork.jpg,no,animals,downloaded
-Türkiye,turkiye,animals,Flamingo,flamingo,Flamingo,data/country_card_images/turkiye/flamingo.jpg,no,animals,missing
-Türkiye,turkiye,foods,Kebab,kebab,Kebab Türkiye,data/country_card_images/turkiye/kebab.jpg,no,foods,missing
-Türkiye,turkiye,foods,Baklava,baklava,Baklava Türkiye,data/country_card_images/turkiye/baklava.jpg,no,foods,missing
+Türkiye,turkiye,animals,Flamingo,flamingo,Flamingo,data/country_card_images/turkiye/flamingo.jpg,no,animals,downloaded
+Türkiye,turkiye,foods,Kebab,kebab,Kebab Türkiye,data/country_card_images/turkiye/kebab.jpg,no,foods,downloaded
+Türkiye,turkiye,foods,Baklava,baklava,Baklava Türkiye,data/country_card_images/turkiye/baklava.jpg,no,foods,downloaded
 Türkiye,turkiye,foods,Turkish Delight,turkish_delight,Turkish Delight Türkiye,data/country_card_images/turkiye/turkish_delight.jpg,no,foods,missing
 Türkiye,turkiye,foods,Börek (pastry),borek_pastry,Börek (pastry) Türkiye,data/country_card_images/turkiye/borek_pastry.jpg,no,foods,downloaded
 Türkiye,turkiye,foods,Lahmacun,lahmacun,Lahmacun Türkiye,data/country_card_images/turkiye/lahmacun.jpg,no,foods,downloaded
@@ -277,7 +277,7 @@ Türkiye,turkiye,landmarks,Ephesus,ephesus,Ephesus Türkiye,data/country_card_im
 Türkiye,turkiye,landmarks,Cappadocia (balloon rides!),cappadocia_balloon_rides,Cappadocia (balloon rides!) Türkiye,data/country_card_images/turkiye/cappadocia_balloon_rides.jpg,no,landmarks,downloaded
 Türkiye,turkiye,landmarks,Grand Bazaar,grand_bazaar,Grand Bazaar Türkiye,data/country_card_images/turkiye/grand_bazaar.jpg,no,landmarks,downloaded
 Türkiye,turkiye,cheer_reasons,Two continents in one country,two_continents_in_one_country,Two continents in one country Türkiye,data/country_card_images/turkiye/two_continents_in_one_country.jpg,no,cheer_reasons,downloaded
-Türkiye,turkiye,cheer_reasons,Baklava,baklava,Baklava Türkiye,data/country_card_images/turkiye/baklava.jpg,yes,foods,pending
+Türkiye,turkiye,cheer_reasons,Baklava,baklava,Baklava Türkiye,data/country_card_images/turkiye/baklava.jpg,yes,foods,downloaded
 Türkiye,turkiye,cheer_reasons,Hot air balloons in Cappadocia,hot_air_balloons_in_cappadocia,Hot air balloons in Cappadocia Türkiye,data/country_card_images/turkiye/hot_air_balloons_in_cappadocia.jpg,no,cheer_reasons,downloaded
 Türkiye,turkiye,cheer_reasons,3rd place in 2002,3rd_place_in_2002,3rd place in 2002 Türkiye,data/country_card_images/turkiye/3rd_place_in_2002.jpg,no,cheer_reasons,downloaded
 Türkiye,turkiye,cheer_reasons,Istanbul is magical,istanbul_is_magical,Istanbul is magical Türkiye,data/country_card_images/turkiye/istanbul_is_magical.jpg,no,cheer_reasons,downloaded
@@ -299,7 +299,7 @@ Germany,germany,cheer_reasons,4x World Cup winners,4x_world_cup_winners,4x World
 Germany,germany,cheer_reasons,Legendary cars,legendary_cars,Legendary cars Germany,data/country_card_images/germany/legendary_cars.jpg,no,cheer_reasons,downloaded
 Germany,germany,cheer_reasons,Amazing castles,amazing_castles,Amazing castles Germany,data/country_card_images/germany/amazing_castles.jpg,no,cheer_reasons,downloaded
 Germany,germany,cheer_reasons,World Cup 2014 champs,world_cup_2014_champs,World Cup 2014 champs Germany,data/country_card_images/germany/world_cup_2014_champs.jpg,no,cheer_reasons,downloaded
-Curaçao,curacao,animals,Sea Turtle,sea_turtle,Sea Turtle,data/country_card_images/curacao/sea_turtle.jpg,no,animals,missing
+Curaçao,curacao,animals,Sea Turtle,sea_turtle,Sea Turtle,data/country_card_images/curacao/sea_turtle.jpg,no,animals,downloaded
 Curaçao,curacao,animals,Flamingo,flamingo,Flamingo,data/country_card_images/curacao/flamingo.jpg,no,animals,downloaded
 Curaçao,curacao,animals,Burrowing Owl,burrowing_owl,Burrowing Owl,data/country_card_images/curacao/burrowing_owl.jpg,no,animals,downloaded
 Curaçao,curacao,animals,Triggerfish,triggerfish,Triggerfish,data/country_card_images/curacao/triggerfish.jpg,no,animals,downloaded
@@ -311,7 +311,7 @@ Curaçao,curacao,foods,Bolo Preto (black cake),bolo_preto_black_cake,Bolo Preto 
 Curaçao,curacao,landmarks,Willemstad Floating Market,willemstad_floating_market,Willemstad Floating Market Curaçao,data/country_card_images/curacao/willemstad_floating_market.jpg,no,landmarks,downloaded
 Curaçao,curacao,landmarks,Boca Tabla,boca_tabla,Boca Tabla Curaçao,data/country_card_images/curacao/boca_tabla.jpg,no,landmarks,missing
 Curaçao,curacao,landmarks,Hato Caves,hato_caves,Hato Caves Curaçao,data/country_card_images/curacao/hato_caves.jpg,no,landmarks,downloaded
-Curaçao,curacao,landmarks,Klein Curaçao Island,klein_curacao_island,Klein Curaçao Island Curaçao,data/country_card_images/curacao/klein_curacao_island.jpg,no,landmarks,missing
+Curaçao,curacao,landmarks,Klein Curaçao Island,klein_curacao_island,Klein Curaçao Island Curaçao,data/country_card_images/curacao/klein_curacao_island.jpg,no,landmarks,downloaded
 Curaçao,curacao,cheer_reasons,Colorful buildings,colorful_buildings,Colorful buildings Curaçao,data/country_card_images/curacao/colorful_buildings.jpg,no,cheer_reasons,downloaded
 Curaçao,curacao,cheer_reasons,Caribbean beaches,caribbean_beaches,Caribbean beaches Curaçao,data/country_card_images/curacao/caribbean_beaches.jpg,no,cheer_reasons,downloaded
 Curaçao,curacao,cheer_reasons,Smallest country in World Cup history,smallest_country_in_world_cup_history,Smallest country in World Cup history Curaçao,data/country_card_images/curacao/smallest_country_in_world_cup_history.jpg,no,cheer_reasons,missing
@@ -323,13 +323,13 @@ Ivory Coast,ivory-coast,animals,Pigmy Hippopotamus,pigmy_hippopotamus,Pigmy Hipp
 Ivory Coast,ivory-coast,animals,African Grey Parrot,african_grey_parrot,African Grey Parrot,data/country_card_images/ivory-coast/african_grey_parrot.jpg,no,animals,downloaded
 Ivory Coast,ivory-coast,foods,Attiéké (cassava couscous),attieke_cassava_couscous,Attiéké (cassava couscous) Ivory Coast,data/country_card_images/ivory-coast/attieke_cassava_couscous.jpg,no,foods,missing
 Ivory Coast,ivory-coast,foods,Aloco (fried plantain),aloco_fried_plantain,Aloco (fried plantain) Ivory Coast,data/country_card_images/ivory-coast/aloco_fried_plantain.jpg,no,foods,missing
-Ivory Coast,ivory-coast,foods,Fufu,fufu,Fufu Ivory Coast,data/country_card_images/ivory-coast/fufu.jpg,no,foods,missing
+Ivory Coast,ivory-coast,foods,Fufu,fufu,Fufu Ivory Coast,data/country_card_images/ivory-coast/fufu.jpg,no,foods,downloaded
 Ivory Coast,ivory-coast,foods,Kedjenou (chicken stew),kedjenou_chicken_stew,Kedjenou (chicken stew) Ivory Coast,data/country_card_images/ivory-coast/kedjenou_chicken_stew.jpg,no,foods,missing
 Ivory Coast,ivory-coast,landmarks,Man National Park,man_national_park,Man National Park Ivory Coast,data/country_card_images/ivory-coast/man_national_park.jpg,no,landmarks,downloaded
 Ivory Coast,ivory-coast,landmarks,Basilica of Our Lady of Peace,basilica_of_our_lady_of_peace,Basilica of Our Lady of Peace Ivory Coast,data/country_card_images/ivory-coast/basilica_of_our_lady_of_peace.jpg,no,landmarks,downloaded
 Ivory Coast,ivory-coast,landmarks,Grand-Bassam,grand_bassam,Grand-Bassam Ivory Coast,data/country_card_images/ivory-coast/grand_bassam.jpg,no,landmarks,downloaded
-Ivory Coast,ivory-coast,landmarks,Tai Forest,tai_forest,Tai Forest Ivory Coast,data/country_card_images/ivory-coast/tai_forest.jpg,no,landmarks,missing
-Ivory Coast,ivory-coast,cheer_reasons,Didier Drogba's homeland,didier_drogba_s_homeland,Didier Drogba's homeland Ivory Coast,data/country_card_images/ivory-coast/didier_drogba_s_homeland.jpg,no,cheer_reasons,missing
+Ivory Coast,ivory-coast,landmarks,Tai Forest,tai_forest,Tai Forest Ivory Coast,data/country_card_images/ivory-coast/tai_forest.jpg,no,landmarks,downloaded
+Ivory Coast,ivory-coast,cheer_reasons,Didier Drogba's homeland,didier_drogba_s_homeland,Didier Drogba's homeland Ivory Coast,data/country_card_images/ivory-coast/didier_drogba_s_homeland.jpg,no,cheer_reasons,downloaded
 Ivory Coast,ivory-coast,cheer_reasons,Cocoa country (chocolate!),cocoa_country_chocolate,Cocoa country (chocolate!) Ivory Coast,data/country_card_images/ivory-coast/cocoa_country_chocolate.jpg,no,cheer_reasons,downloaded
 Ivory Coast,ivory-coast,cheer_reasons,Chimpanzees,chimpanzees,Chimpanzees Ivory Coast,data/country_card_images/ivory-coast/chimpanzees.jpg,no,cheer_reasons,downloaded
 Ivory Coast,ivory-coast,cheer_reasons,African Champions,african_champions,African Champions Ivory Coast,data/country_card_images/ivory-coast/african_champions.jpg,no,cheer_reasons,downloaded
@@ -338,8 +338,8 @@ Ecuador,ecuador,animals,Galápagos Giant Tortoise,galapagos_giant_tortoise,Galá
 Ecuador,ecuador,animals,Blue-footed Booby,blue_footed_booby,Blue-footed Booby,data/country_card_images/ecuador/blue_footed_booby.jpg,no,animals,downloaded
 Ecuador,ecuador,animals,Andean Condor,andean_condor,Andean Condor,data/country_card_images/ecuador/andean_condor.jpg,no,animals,downloaded
 Ecuador,ecuador,animals,Pink River Dolphin,pink_river_dolphin,Pink River Dolphin,data/country_card_images/ecuador/pink_river_dolphin.jpg,no,animals,downloaded
-Ecuador,ecuador,foods,Ceviche,ceviche,Ceviche Ecuador,data/country_card_images/ecuador/ceviche.jpg,no,foods,missing
-Ecuador,ecuador,foods,Llapingachos (potato cakes),llapingachos_potato_cakes,Llapingachos (potato cakes) Ecuador,data/country_card_images/ecuador/llapingachos_potato_cakes.jpg,no,foods,missing
+Ecuador,ecuador,foods,Ceviche,ceviche,Ceviche Ecuador,data/country_card_images/ecuador/ceviche.jpg,no,foods,downloaded
+Ecuador,ecuador,foods,Llapingachos (potato cakes),llapingachos_potato_cakes,Llapingachos (potato cakes) Ecuador,data/country_card_images/ecuador/llapingachos_potato_cakes.jpg,no,foods,downloaded
 Ecuador,ecuador,foods,Fanesca (spring soup),fanesca_spring_soup,Fanesca (spring soup) Ecuador,data/country_card_images/ecuador/fanesca_spring_soup.jpg,no,foods,missing
 Ecuador,ecuador,foods,Cuy (guinea pig),cuy_guinea_pig,Cuy (guinea pig) Ecuador,data/country_card_images/ecuador/cuy_guinea_pig.jpg,no,foods,missing
 Ecuador,ecuador,landmarks,Galápagos Islands,galapagos_islands,Galápagos Islands Ecuador,data/country_card_images/ecuador/galapagos_islands.jpg,no,landmarks,downloaded
@@ -350,7 +350,7 @@ Ecuador,ecuador,cheer_reasons,Galápagos Islands,galapagos_islands,Galápagos Is
 Ecuador,ecuador,cheer_reasons,Standing on the Equator,standing_on_the_equator,Standing on the Equator Ecuador,data/country_card_images/ecuador/standing_on_the_equator.jpg,no,cheer_reasons,downloaded
 Ecuador,ecuador,cheer_reasons,Blue-footed Boobies,blue_footed_boobies,Blue-footed Boobies Ecuador,data/country_card_images/ecuador/blue_footed_boobies.jpg,no,cheer_reasons,downloaded
 Ecuador,ecuador,cheer_reasons,Amazing volcanoes,amazing_volcanoes,Amazing volcanoes Ecuador,data/country_card_images/ecuador/amazing_volcanoes.jpg,no,cheer_reasons,downloaded
-Ecuador,ecuador,cheer_reasons,Ceviche,ceviche,Ceviche Ecuador,data/country_card_images/ecuador/ceviche.jpg,yes,foods,pending
+Ecuador,ecuador,cheer_reasons,Ceviche,ceviche,Ceviche Ecuador,data/country_card_images/ecuador/ceviche.jpg,yes,foods,downloaded
 Netherlands,netherlands,animals,Tulip (national flower),tulip_national_flower,Tulip (national flower),data/country_card_images/netherlands/tulip_national_flower.jpg,no,animals,downloaded
 Netherlands,netherlands,animals,Heron,heron,Heron,data/country_card_images/netherlands/heron.jpg,no,animals,downloaded
 Netherlands,netherlands,animals,Badger,badger,Badger,data/country_card_images/netherlands/badger.jpg,no,animals,downloaded
@@ -367,7 +367,7 @@ Netherlands,netherlands,landmarks,Windmills of Kinderdijk,windmills_of_kinderdij
 Netherlands,netherlands,cheer_reasons,Tulips,tulips,Tulips Netherlands,data/country_card_images/netherlands/tulips.jpg,no,cheer_reasons,downloaded
 Netherlands,netherlands,cheer_reasons,Windmills,windmills,Windmills Netherlands,data/country_card_images/netherlands/windmills.jpg,no,cheer_reasons,downloaded
 Netherlands,netherlands,cheer_reasons,Total Football legends,total_football_legends,Total Football legends Netherlands,data/country_card_images/netherlands/total_football_legends.jpg,no,cheer_reasons,downloaded
-Netherlands,netherlands,cheer_reasons,3x World Cup finalists,3x_world_cup_finalists,3x World Cup finalists Netherlands,data/country_card_images/netherlands/3x_world_cup_finalists.jpg,no,cheer_reasons,missing
+Netherlands,netherlands,cheer_reasons,3x World Cup finalists,3x_world_cup_finalists,3x World Cup finalists Netherlands,data/country_card_images/netherlands/3x_world_cup_finalists.jpg,no,cheer_reasons,downloaded
 Netherlands,netherlands,cheer_reasons,Van Dijk is a wall,van_dijk_is_a_wall,Van Dijk is a wall Netherlands,data/country_card_images/netherlands/van_dijk_is_a_wall.jpg,no,cheer_reasons,downloaded
 Japan,japan,animals,Japanese Macaque (Snow Monkey),japanese_macaque_snow_monkey,Japanese Macaque (Snow Monkey),data/country_card_images/japan/japanese_macaque_snow_monkey.jpg,no,animals,downloaded
 Japan,japan,animals,Red-crowned Crane,red_crowned_crane,Red-crowned Crane,data/country_card_images/japan/red_crowned_crane.jpg,no,animals,downloaded
@@ -398,13 +398,13 @@ Sweden,sweden,foods,Gravlax (cured salmon),gravlax_cured_salmon,Gravlax (cured s
 Sweden,sweden,foods,Smörgåsbord,smorgasbord,Smörgåsbord Sweden,data/country_card_images/sweden/smorgasbord.jpg,no,foods,downloaded
 Sweden,sweden,foods,ABBA-themed candy,abba_themed_candy,ABBA-themed candy Sweden,data/country_card_images/sweden/abba_themed_candy.jpg,no,foods,missing
 Sweden,sweden,landmarks,Stockholm Old Town,stockholm_old_town,Stockholm Old Town Sweden,data/country_card_images/sweden/stockholm_old_town.jpg,no,landmarks,downloaded
-Sweden,sweden,landmarks,IKEA birthplace (Älmhult),ikea_birthplace_almhult,IKEA birthplace (Älmhult) Sweden,data/country_card_images/sweden/ikea_birthplace_almhult.jpg,no,landmarks,missing
+Sweden,sweden,landmarks,IKEA birthplace (Älmhult),ikea_birthplace_almhult,IKEA birthplace (Älmhult) Sweden,data/country_card_images/sweden/ikea_birthplace_almhult.jpg,no,landmarks,downloaded
 Sweden,sweden,landmarks,ABBA Museum,abba_museum,ABBA Museum Sweden,data/country_card_images/sweden/abba_museum.jpg,no,landmarks,downloaded
 Sweden,sweden,landmarks,Northern Lights,northern_lights,Northern Lights Sweden,data/country_card_images/sweden/northern_lights.jpg,no,landmarks,downloaded
 Sweden,sweden,cheer_reasons,ABBA,abba,ABBA Sweden,data/country_card_images/sweden/abba.jpg,no,cheer_reasons,downloaded
 Sweden,sweden,cheer_reasons,IKEA,ikea,IKEA Sweden,data/country_card_images/sweden/ikea.jpg,no,cheer_reasons,downloaded
 Sweden,sweden,cheer_reasons,Minecraft,minecraft,Minecraft Sweden,data/country_card_images/sweden/minecraft.jpg,no,cheer_reasons,downloaded
-Sweden,sweden,cheer_reasons,Zlatan Ibrahimović legend,zlatan_ibrahimovic_legend,Zlatan Ibrahimović legend Sweden,data/country_card_images/sweden/zlatan_ibrahimovic_legend.jpg,no,cheer_reasons,missing
+Sweden,sweden,cheer_reasons,Zlatan Ibrahimović legend,zlatan_ibrahimovic_legend,Zlatan Ibrahimović legend Sweden,data/country_card_images/sweden/zlatan_ibrahimovic_legend.jpg,no,cheer_reasons,downloaded
 Sweden,sweden,cheer_reasons,Moose,moose,Moose Sweden,data/country_card_images/sweden/moose.jpg,yes,animals,downloaded
 Tunisia,tunisia,animals,Fennec Fox,fennec_fox,Fennec Fox,data/country_card_images/tunisia/fennec_fox.jpg,no,animals,downloaded
 Tunisia,tunisia,animals,Barbary Stag,barbary_stag,Barbary Stag,data/country_card_images/tunisia/barbary_stag.jpg,no,animals,downloaded
@@ -417,10 +417,10 @@ Tunisia,tunisia,foods,Lablabi (chickpea soup),lablabi_chickpea_soup,Lablabi (chi
 Tunisia,tunisia,landmarks,Carthage ruins,carthage_ruins,Carthage ruins Tunisia,data/country_card_images/tunisia/carthage_ruins.jpg,no,landmarks,downloaded
 Tunisia,tunisia,landmarks,Sidi Bou Said,sidi_bou_said,Sidi Bou Said Tunisia,data/country_card_images/tunisia/sidi_bou_said.jpg,no,landmarks,downloaded
 Tunisia,tunisia,landmarks,El Djem Amphitheater,el_djem_amphitheater,El Djem Amphitheater Tunisia,data/country_card_images/tunisia/el_djem_amphitheater.jpg,no,landmarks,downloaded
-Tunisia,tunisia,landmarks,Sahara Desert,sahara_desert,Sahara Desert Tunisia,data/country_card_images/tunisia/sahara_desert.jpg,no,landmarks,missing
+Tunisia,tunisia,landmarks,Sahara Desert,sahara_desert,Sahara Desert Tunisia,data/country_card_images/tunisia/sahara_desert.jpg,no,landmarks,downloaded
 Tunisia,tunisia,cheer_reasons,Fennec fox,fennec_fox,Fennec fox Tunisia,data/country_card_images/tunisia/fennec_fox.jpg,yes,animals,downloaded
-Tunisia,tunisia,cheer_reasons,Sahara Desert,sahara_desert,Sahara Desert Tunisia,data/country_card_images/tunisia/sahara_desert.jpg,yes,landmarks,pending
-Tunisia,tunisia,cheer_reasons,First African team to win a WC match,first_african_team_to_win_a_wc_match,First African team to win a WC match Tunisia,data/country_card_images/tunisia/first_african_team_to_win_a_wc_match.jpg,no,cheer_reasons,missing
+Tunisia,tunisia,cheer_reasons,Sahara Desert,sahara_desert,Sahara Desert Tunisia,data/country_card_images/tunisia/sahara_desert.jpg,yes,landmarks,downloaded
+Tunisia,tunisia,cheer_reasons,First African team to win a WC match,first_african_team_to_win_a_wc_match,First African team to win a WC match Tunisia,data/country_card_images/tunisia/first_african_team_to_win_a_wc_match.jpg,no,cheer_reasons,downloaded
 Tunisia,tunisia,cheer_reasons,Carthage ruins,carthage_ruins,Carthage ruins Tunisia,data/country_card_images/tunisia/carthage_ruins.jpg,yes,landmarks,downloaded
 Tunisia,tunisia,cheer_reasons,Delicious couscous,delicious_couscous,Delicious couscous Tunisia,data/country_card_images/tunisia/delicious_couscous.jpg,no,cheer_reasons,downloaded
 Belgium,belgium,animals,Belgian Blue Cattle,belgian_blue_cattle,Belgian Blue Cattle,data/country_card_images/belgium/belgian_blue_cattle.jpg,no,animals,downloaded
@@ -438,8 +438,8 @@ Belgium,belgium,landmarks,Ghent Gravensteen Castle,ghent_gravensteen_castle,Ghen
 Belgium,belgium,cheer_reasons,Belgian waffles,belgian_waffles,Belgian waffles Belgium,data/country_card_images/belgium/belgian_waffles.jpg,yes,foods,downloaded
 Belgium,belgium,cheer_reasons,Chocolate,chocolate,Chocolate Belgium,data/country_card_images/belgium/chocolate.jpg,no,cheer_reasons,downloaded
 Belgium,belgium,cheer_reasons,3rd place in 2018,3rd_place_in_2018,3rd place in 2018 Belgium,data/country_card_images/belgium/3rd_place_in_2018.jpg,no,cheer_reasons,downloaded
-Belgium,belgium,cheer_reasons,Kevin De Bruyne is a genius,kevin_de_bruyne_is_a_genius,Kevin De Bruyne is a genius Belgium,data/country_card_images/belgium/kevin_de_bruyne_is_a_genius.jpg,no,cheer_reasons,missing
-Belgium,belgium,cheer_reasons,3 languages in one country,3_languages_in_one_country,3 languages in one country Belgium,data/country_card_images/belgium/3_languages_in_one_country.jpg,no,cheer_reasons,missing
+Belgium,belgium,cheer_reasons,Kevin De Bruyne is a genius,kevin_de_bruyne_is_a_genius,Kevin De Bruyne is a genius Belgium,data/country_card_images/belgium/kevin_de_bruyne_is_a_genius.jpg,no,cheer_reasons,downloaded
+Belgium,belgium,cheer_reasons,3 languages in one country,3_languages_in_one_country,3 languages in one country Belgium,data/country_card_images/belgium/3_languages_in_one_country.jpg,no,cheer_reasons,downloaded
 Egypt,egypt,animals,Egyptian Cobra,egyptian_cobra,Egyptian Cobra,data/country_card_images/egypt/egyptian_cobra.jpg,no,animals,downloaded
 Egypt,egypt,animals,Nile Crocodile,nile_crocodile,Nile Crocodile,data/country_card_images/egypt/nile_crocodile.jpg,no,animals,downloaded
 Egypt,egypt,animals,African Wild Cat,african_wild_cat,African Wild Cat,data/country_card_images/egypt/african_wild_cat.jpg,no,animals,downloaded
@@ -453,13 +453,13 @@ Egypt,egypt,landmarks,Great Pyramids of Giza,great_pyramids_of_giza,Great Pyrami
 Egypt,egypt,landmarks,Sphinx,sphinx,Sphinx Egypt,data/country_card_images/egypt/sphinx.jpg,no,landmarks,downloaded
 Egypt,egypt,landmarks,Valley of the Kings,valley_of_the_kings,Valley of the Kings Egypt,data/country_card_images/egypt/valley_of_the_kings.jpg,no,landmarks,downloaded
 Egypt,egypt,landmarks,Luxor Temple,luxor_temple,Luxor Temple Egypt,data/country_card_images/egypt/luxor_temple.jpg,no,landmarks,downloaded
-Egypt,egypt,cheer_reasons,Pyramids of Giza,pyramids_of_giza,Pyramids of Giza Egypt,data/country_card_images/egypt/pyramids_of_giza.jpg,no,cheer_reasons,missing
-Egypt,egypt,cheer_reasons,Nile River,nile_river,Nile River Egypt,data/country_card_images/egypt/nile_river.jpg,no,cheer_reasons,missing
-Egypt,egypt,cheer_reasons,Mohamed Salah (world's best?),mohamed_salah_world_s_best,Mohamed Salah (world's best?) Egypt,data/country_card_images/egypt/mohamed_salah_world_s_best.jpg,no,cheer_reasons,missing
+Egypt,egypt,cheer_reasons,Pyramids of Giza,pyramids_of_giza,Pyramids of Giza Egypt,data/country_card_images/egypt/pyramids_of_giza.jpg,no,cheer_reasons,downloaded
+Egypt,egypt,cheer_reasons,Nile River,nile_river,Nile River Egypt,data/country_card_images/egypt/nile_river.jpg,no,cheer_reasons,downloaded
+Egypt,egypt,cheer_reasons,Mohamed Salah (world's best?),mohamed_salah_world_s_best,Mohamed Salah (world's best?) Egypt,data/country_card_images/egypt/mohamed_salah_world_s_best.jpg,no,cheer_reasons,downloaded
 Egypt,egypt,cheer_reasons,Mummies & pharaohs,mummies_pharaohs,Mummies & pharaohs Egypt,data/country_card_images/egypt/mummies_pharaohs.jpg,no,cheer_reasons,downloaded
 Egypt,egypt,cheer_reasons,Ancient mysteries,ancient_mysteries,Ancient mysteries Egypt,data/country_card_images/egypt/ancient_mysteries.jpg,no,cheer_reasons,downloaded
 Iran,iran,animals,Persian Leopard,persian_leopard,Persian Leopard,data/country_card_images/iran/persian_leopard.jpg,no,animals,downloaded
-Iran,iran,animals,Asiatic Cheetah (critically endangered!),asiatic_cheetah_critically_endangered,Asiatic Cheetah (critically endangered!),data/country_card_images/iran/asiatic_cheetah_critically_endangered.jpg,no,animals,missing
+Iran,iran,animals,Asiatic Cheetah (critically endangered!),asiatic_cheetah_critically_endangered,Asiatic Cheetah (critically endangered!),data/country_card_images/iran/asiatic_cheetah_critically_endangered.jpg,no,animals,downloaded
 Iran,iran,animals,Asiatic Lion,asiatic_lion,Asiatic Lion,data/country_card_images/iran/asiatic_lion.jpg,no,animals,downloaded
 Iran,iran,animals,Iranian Ground Squirrel,iranian_ground_squirrel,Iranian Ground Squirrel,data/country_card_images/iran/iranian_ground_squirrel.jpg,no,animals,downloaded
 Iran,iran,foods,Kabab Koobideh,kabab_koobideh,Kabab Koobideh Iran,data/country_card_images/iran/kabab_koobideh.jpg,no,foods,downloaded
@@ -472,9 +472,9 @@ Iran,iran,landmarks,Alamut Castle,alamut_castle,Alamut Castle Iran,data/country_
 Iran,iran,landmarks,Golestan Palace,golestan_palace,Golestan Palace Iran,data/country_card_images/iran/golestan_palace.jpg,no,landmarks,downloaded
 Iran,iran,cheer_reasons,Ancient Persia,ancient_persia,Ancient Persia Iran,data/country_card_images/iran/ancient_persia.jpg,no,cheer_reasons,downloaded
 Iran,iran,cheer_reasons,Persian carpets,persian_carpets,Persian carpets Iran,data/country_card_images/iran/persian_carpets.jpg,no,cheer_reasons,downloaded
-Iran,iran,cheer_reasons,Critically endangered Asiatic cheetah,critically_endangered_asiatic_cheetah,Critically endangered Asiatic cheetah Iran,data/country_card_images/iran/critically_endangered_asiatic_cheetah.jpg,no,cheer_reasons,missing
+Iran,iran,cheer_reasons,Critically endangered Asiatic cheetah,critically_endangered_asiatic_cheetah,Critically endangered Asiatic cheetah Iran,data/country_card_images/iran/critically_endangered_asiatic_cheetah.jpg,no,cheer_reasons,downloaded
 Iran,iran,cheer_reasons,Saffron,saffron,Saffron Iran,data/country_card_images/iran/saffron.jpg,no,cheer_reasons,downloaded
-Iran,iran,cheer_reasons,Mehdi Taremi is dangerous,mehdi_taremi_is_dangerous,Mehdi Taremi is dangerous Iran,data/country_card_images/iran/mehdi_taremi_is_dangerous.jpg,no,cheer_reasons,missing
+Iran,iran,cheer_reasons,Mehdi Taremi is dangerous,mehdi_taremi_is_dangerous,Mehdi Taremi is dangerous Iran,data/country_card_images/iran/mehdi_taremi_is_dangerous.jpg,no,cheer_reasons,downloaded
 New Zealand,new-zealand,animals,Kiwi,kiwi,Kiwi,data/country_card_images/new-zealand/kiwi.jpg,no,animals,downloaded
 New Zealand,new-zealand,animals,Tuatara (living dinosaur!),tuatara_living_dinosaur,Tuatara (living dinosaur!),data/country_card_images/new-zealand/tuatara_living_dinosaur.jpg,no,animals,downloaded
 New Zealand,new-zealand,animals,Hector's Dolphin,hector_s_dolphin,Hector's Dolphin,data/country_card_images/new-zealand/hector_s_dolphin.jpg,no,animals,downloaded
@@ -506,18 +506,18 @@ Spain,spain,landmarks,Sagrada Familia,sagrada_familia,Sagrada Familia Spain,data
 Spain,spain,landmarks,Alhambra,alhambra,Alhambra Spain,data/country_card_images/spain/alhambra.jpg,no,landmarks,downloaded
 Spain,spain,landmarks,Park Güell,park_guell,Park Güell Spain,data/country_card_images/spain/park_guell.jpg,no,landmarks,downloaded
 Spain,spain,landmarks,Prado Museum,prado_museum,Prado Museum Spain,data/country_card_images/spain/prado_museum.jpg,no,landmarks,downloaded
-Spain,spain,landmarks,La Tomatina festival,la_tomatina_festival,La Tomatina festival Spain,data/country_card_images/spain/la_tomatina_festival.jpg,no,landmarks,missing
+Spain,spain,landmarks,La Tomatina festival,la_tomatina_festival,La Tomatina festival Spain,data/country_card_images/spain/la_tomatina_festival.jpg,no,landmarks,downloaded
 Spain,spain,cheer_reasons,Paella,paella,Paella Spain,data/country_card_images/spain/paella.jpg,yes,foods,downloaded
 Spain,spain,cheer_reasons,Sagrada Familia,sagrada_familia,Sagrada Familia Spain,data/country_card_images/spain/sagrada_familia.jpg,yes,landmarks,downloaded
 Spain,spain,cheer_reasons,World Cup 2010 champions,world_cup_2010_champions,World Cup 2010 champions Spain,data/country_card_images/spain/world_cup_2010_champions.jpg,no,cheer_reasons,downloaded
-Spain,spain,cheer_reasons,Iberian Lynx (endangered beauty),iberian_lynx_endangered_beauty,Iberian Lynx (endangered beauty) Spain,data/country_card_images/spain/iberian_lynx_endangered_beauty.jpg,no,cheer_reasons,missing
+Spain,spain,cheer_reasons,Iberian Lynx (endangered beauty),iberian_lynx_endangered_beauty,Iberian Lynx (endangered beauty) Spain,data/country_card_images/spain/iberian_lynx_endangered_beauty.jpg,no,cheer_reasons,downloaded
 Spain,spain,cheer_reasons,La Liga best league,la_liga_best_league,La Liga best league Spain,data/country_card_images/spain/la_liga_best_league.jpg,no,cheer_reasons,downloaded
 Cape Verde,cape-verde,animals,Loggerhead Sea Turtle,loggerhead_sea_turtle,Loggerhead Sea Turtle,data/country_card_images/cape-verde/loggerhead_sea_turtle.jpg,no,animals,downloaded
 Cape Verde,cape-verde,animals,Osprey,osprey,Osprey,data/country_card_images/cape-verde/osprey.jpg,no,animals,downloaded
 Cape Verde,cape-verde,animals,Cape Verde Giant Skink,cape_verde_giant_skink,Cape Verde Giant Skink,data/country_card_images/cape-verde/cape_verde_giant_skink.jpg,no,animals,downloaded
 Cape Verde,cape-verde,animals,Humpback Whale,humpback_whale,Humpback Whale,data/country_card_images/cape-verde/humpback_whale.jpg,no,animals,downloaded
-Cape Verde,cape-verde,foods,Cachupa (bean & corn stew),cachupa_bean_corn_stew,Cachupa (bean & corn stew) Cape Verde,data/country_card_images/cape-verde/cachupa_bean_corn_stew.jpg,no,foods,missing
-Cape Verde,cape-verde,foods,Pastéis de bacalhau (fish cakes),pasteis_de_bacalhau_fish_cakes,Pastéis de bacalhau (fish cakes) Cape Verde,data/country_card_images/cape-verde/pasteis_de_bacalhau_fish_cakes.jpg,no,foods,missing
+Cape Verde,cape-verde,foods,Cachupa (bean & corn stew),cachupa_bean_corn_stew,Cachupa (bean & corn stew) Cape Verde,data/country_card_images/cape-verde/cachupa_bean_corn_stew.jpg,no,foods,downloaded
+Cape Verde,cape-verde,foods,Pastéis de bacalhau (fish cakes),pasteis_de_bacalhau_fish_cakes,Pastéis de bacalhau (fish cakes) Cape Verde,data/country_card_images/cape-verde/pasteis_de_bacalhau_fish_cakes.jpg,no,foods,downloaded
 Cape Verde,cape-verde,foods,Catchupa rica,catchupa_rica,Catchupa rica Cape Verde,data/country_card_images/cape-verde/catchupa_rica.jpg,no,foods,missing
 Cape Verde,cape-verde,foods,Grogue (sugarcane spirit),grogue_sugarcane_spirit,Grogue (sugarcane spirit) Cape Verde,data/country_card_images/cape-verde/grogue_sugarcane_spirit.jpg,no,foods,missing
 Cape Verde,cape-verde,landmarks,Santo Antão island,santo_antao_island,Santo Antão island Cape Verde,data/country_card_images/cape-verde/santo_antao_island.jpg,no,landmarks,downloaded
@@ -527,7 +527,7 @@ Cape Verde,cape-verde,landmarks,Cape Verde volcanic peaks,cape_verde_volcanic_pe
 Cape Verde,cape-verde,cheer_reasons,Volcanic island paradise,volcanic_island_paradise,Volcanic island paradise Cape Verde,data/country_card_images/cape-verde/volcanic_island_paradise.jpg,no,cheer_reasons,downloaded
 Cape Verde,cape-verde,cheer_reasons,Sea turtles,sea_turtles,Sea turtles Cape Verde,data/country_card_images/cape-verde/sea_turtles.jpg,no,cheer_reasons,downloaded
 Cape Verde,cape-verde,cheer_reasons,Morna music,morna_music,Morna music Cape Verde,data/country_card_images/cape-verde/morna_music.jpg,no,cheer_reasons,downloaded
-Cape Verde,cape-verde,cheer_reasons,Smallest team in Group H,smallest_team_in_group_h,Smallest team in Group H Cape Verde,data/country_card_images/cape-verde/smallest_team_in_group_h.jpg,no,cheer_reasons,missing
+Cape Verde,cape-verde,cheer_reasons,Smallest team in Group H,smallest_team_in_group_h,Smallest team in Group H Cape Verde,data/country_card_images/cape-verde/smallest_team_in_group_h.jpg,no,cheer_reasons,downloaded
 Cape Verde,cape-verde,cheer_reasons,Beautiful beaches,beautiful_beaches,Beautiful beaches Cape Verde,data/country_card_images/cape-verde/beautiful_beaches.jpg,no,cheer_reasons,downloaded
 Saudi Arabia,saudi-arabia,animals,Arabian Oryx,arabian_oryx,Arabian Oryx,data/country_card_images/saudi-arabia/arabian_oryx.jpg,no,animals,downloaded
 Saudi Arabia,saudi-arabia,animals,Arabian Leopard,arabian_leopard,Arabian Leopard,data/country_card_images/saudi-arabia/arabian_leopard.jpg,no,animals,downloaded
@@ -542,7 +542,7 @@ Saudi Arabia,saudi-arabia,landmarks,Madain Saleh (Hegra),madain_saleh_hegra,Mada
 Saudi Arabia,saudi-arabia,landmarks,Diriyah,diriyah,Diriyah Saudi Arabia,data/country_card_images/saudi-arabia/diriyah.jpg,no,landmarks,downloaded
 Saudi Arabia,saudi-arabia,landmarks,Edge of the World,edge_of_the_world,Edge of the World Saudi Arabia,data/country_card_images/saudi-arabia/edge_of_the_world.jpg,no,landmarks,downloaded
 Saudi Arabia,saudi-arabia,cheer_reasons,Beat Argentina in 2022,beat_argentina_in_2022,Beat Argentina in 2022 Saudi Arabia,data/country_card_images/saudi-arabia/beat_argentina_in_2022.jpg,no,cheer_reasons,downloaded
-Saudi Arabia,saudi-arabia,cheer_reasons,Saudi Pro League stars,saudi_pro_league_stars,Saudi Pro League stars Saudi Arabia,data/country_card_images/saudi-arabia/saudi_pro_league_stars.jpg,no,cheer_reasons,missing
+Saudi Arabia,saudi-arabia,cheer_reasons,Saudi Pro League stars,saudi_pro_league_stars,Saudi Pro League stars Saudi Arabia,data/country_card_images/saudi-arabia/saudi_pro_league_stars.jpg,no,cheer_reasons,downloaded
 Saudi Arabia,saudi-arabia,cheer_reasons,Arabian Oryx,arabian_oryx,Arabian Oryx Saudi Arabia,data/country_card_images/saudi-arabia/arabian_oryx.jpg,yes,animals,downloaded
 Saudi Arabia,saudi-arabia,cheer_reasons,Dates,dates,Dates Saudi Arabia,data/country_card_images/saudi-arabia/dates.jpg,yes,foods,downloaded
 Saudi Arabia,saudi-arabia,cheer_reasons,Mecca & ancient history,mecca_ancient_history,Mecca & ancient history Saudi Arabia,data/country_card_images/saudi-arabia/mecca_ancient_history.jpg,no,cheer_reasons,downloaded
@@ -559,11 +559,11 @@ Uruguay,uruguay,landmarks,Punta del Este,punta_del_este,Punta del Este Uruguay,d
 Uruguay,uruguay,landmarks,Montevideo's Old City,montevideo_s_old_city,Montevideo's Old City Uruguay,data/country_card_images/uruguay/montevideo_s_old_city.jpg,no,landmarks,downloaded
 Uruguay,uruguay,landmarks,Colonia del Sacramento,colonia_del_sacramento,Colonia del Sacramento Uruguay,data/country_card_images/uruguay/colonia_del_sacramento.jpg,no,landmarks,downloaded
 Uruguay,uruguay,landmarks,Casapueblo,casapueblo,Casapueblo Uruguay,data/country_card_images/uruguay/casapueblo.jpg,no,landmarks,downloaded
-Uruguay,uruguay,cheer_reasons,Won the FIRST EVER World Cup,won_the_first_ever_world_cup,Won the FIRST EVER World Cup Uruguay,data/country_card_images/uruguay/won_the_first_ever_world_cup.jpg,no,cheer_reasons,missing
+Uruguay,uruguay,cheer_reasons,Won the FIRST EVER World Cup,won_the_first_ever_world_cup,Won the FIRST EVER World Cup Uruguay,data/country_card_images/uruguay/won_the_first_ever_world_cup.jpg,no,cheer_reasons,downloaded
 Uruguay,uruguay,cheer_reasons,Mate tea,mate_tea,Mate tea Uruguay,data/country_card_images/uruguay/mate_tea.jpg,yes,foods,downloaded
 Uruguay,uruguay,cheer_reasons,Best BBQ in the world,best_bbq_in_the_world,Best BBQ in the world Uruguay,data/country_card_images/uruguay/best_bbq_in_the_world.jpg,no,cheer_reasons,missing
-Uruguay,uruguay,cheer_reasons,Only 3.5 million people but 2x champions,only_3_5_million_people_but_2x_champions,Only 3.5 million people but 2x champions Uruguay,data/country_card_images/uruguay/only_3_5_million_people_but_2x_champions.jpg,no,cheer_reasons,missing
-Uruguay,uruguay,cheer_reasons,Luis Suárez is a legend,luis_suarez_is_a_legend,Luis Suárez is a legend Uruguay,data/country_card_images/uruguay/luis_suarez_is_a_legend.jpg,no,cheer_reasons,missing
+Uruguay,uruguay,cheer_reasons,Only 3.5 million people but 2x champions,only_3_5_million_people_but_2x_champions,Only 3.5 million people but 2x champions Uruguay,data/country_card_images/uruguay/only_3_5_million_people_but_2x_champions.jpg,no,cheer_reasons,downloaded
+Uruguay,uruguay,cheer_reasons,Luis Suárez is a legend,luis_suarez_is_a_legend,Luis Suárez is a legend Uruguay,data/country_card_images/uruguay/luis_suarez_is_a_legend.jpg,no,cheer_reasons,downloaded
 France,france,animals,Alpine Marmot,alpine_marmot,Alpine Marmot,data/country_card_images/france/alpine_marmot.jpg,no,animals,downloaded
 France,france,animals,Chamois,chamois,Chamois,data/country_card_images/france/chamois.jpg,no,animals,downloaded
 France,france,animals,European Wolf,european_wolf,European Wolf,data/country_card_images/france/european_wolf.jpg,no,animals,downloaded
@@ -579,10 +579,10 @@ France,france,landmarks,Mont Blanc,mont_blanc,Mont Blanc France,data/country_car
 France,france,landmarks,Palace of Versailles,palace_of_versailles,Palace of Versailles France,data/country_card_images/france/palace_of_versailles.jpg,no,landmarks,downloaded
 France,france,landmarks,D-Day Beaches,d_day_beaches,D-Day Beaches France,data/country_card_images/france/d_day_beaches.jpg,no,landmarks,downloaded
 France,france,cheer_reasons,Eiffel Tower,eiffel_tower,Eiffel Tower France,data/country_card_images/france/eiffel_tower.jpg,yes,landmarks,downloaded
-France,france,cheer_reasons,Kylian Mbappé is the fastest player alive,kylian_mbappe_is_the_fastest_player_alive,Kylian Mbappé is the fastest player alive France,data/country_card_images/france/kylian_mbappe_is_the_fastest_player_alive.jpg,no,cheer_reasons,missing
+France,france,cheer_reasons,Kylian Mbappé is the fastest player alive,kylian_mbappe_is_the_fastest_player_alive,Kylian Mbappé is the fastest player alive France,data/country_card_images/france/kylian_mbappe_is_the_fastest_player_alive.jpg,no,cheer_reasons,downloaded
 France,france,cheer_reasons,2x World Cup winners,2x_world_cup_winners,2x World Cup winners France,data/country_card_images/france/2x_world_cup_winners.jpg,no,cheer_reasons,downloaded
-France,france,cheer_reasons,Croissants,croissants,Croissants France,data/country_card_images/france/croissants.jpg,no,cheer_reasons,missing
-France,france,cheer_reasons,French fashion,french_fashion,French fashion France,data/country_card_images/france/french_fashion.jpg,no,cheer_reasons,missing
+France,france,cheer_reasons,Croissants,croissants,Croissants France,data/country_card_images/france/croissants.jpg,no,cheer_reasons,downloaded
+France,france,cheer_reasons,French fashion,french_fashion,French fashion France,data/country_card_images/france/french_fashion.jpg,no,cheer_reasons,downloaded
 Senegal,senegal,animals,African Lion,african_lion,African Lion,data/country_card_images/senegal/african_lion.jpg,no,animals,downloaded
 Senegal,senegal,animals,Chimpanzee,chimpanzee,Chimpanzee,data/country_card_images/senegal/chimpanzee.jpg,no,animals,downloaded
 Senegal,senegal,animals,African Elephant,african_elephant,African Elephant,data/country_card_images/senegal/african_elephant.jpg,no,animals,downloaded
@@ -595,8 +595,8 @@ Senegal,senegal,landmarks,Goree Island,goree_island,Goree Island Senegal,data/co
 Senegal,senegal,landmarks,Pink Lake (Lac Rose),pink_lake_lac_rose,Pink Lake (Lac Rose) Senegal,data/country_card_images/senegal/pink_lake_lac_rose.jpg,no,landmarks,downloaded
 Senegal,senegal,landmarks,Dakar Rally finish,dakar_rally_finish,Dakar Rally finish Senegal,data/country_card_images/senegal/dakar_rally_finish.jpg,no,landmarks,downloaded
 Senegal,senegal,landmarks,Djoudj Bird Sanctuary,djoudj_bird_sanctuary,Djoudj Bird Sanctuary Senegal,data/country_card_images/senegal/djoudj_bird_sanctuary.jpg,no,landmarks,downloaded
-Senegal,senegal,cheer_reasons,Africa Cup of Nations champs,africa_cup_of_nations_champs,Africa Cup of Nations champs Senegal,data/country_card_images/senegal/africa_cup_of_nations_champs.jpg,no,cheer_reasons,missing
-Senegal,senegal,cheer_reasons,Sadio Mané is a superstar,sadio_mane_is_a_superstar,Sadio Mané is a superstar Senegal,data/country_card_images/senegal/sadio_mane_is_a_superstar.jpg,no,cheer_reasons,missing
+Senegal,senegal,cheer_reasons,Africa Cup of Nations champs,africa_cup_of_nations_champs,Africa Cup of Nations champs Senegal,data/country_card_images/senegal/africa_cup_of_nations_champs.jpg,no,cheer_reasons,downloaded
+Senegal,senegal,cheer_reasons,Sadio Mané is a superstar,sadio_mane_is_a_superstar,Sadio Mané is a superstar Senegal,data/country_card_images/senegal/sadio_mane_is_a_superstar.jpg,no,cheer_reasons,downloaded
 Senegal,senegal,cheer_reasons,African wildlife,african_wildlife,African wildlife Senegal,data/country_card_images/senegal/african_wildlife.jpg,no,cheer_reasons,missing
 Senegal,senegal,cheer_reasons,Colorful boubou clothing,colorful_boubou_clothing,Colorful boubou clothing Senegal,data/country_card_images/senegal/colorful_boubou_clothing.jpg,no,cheer_reasons,missing
 Senegal,senegal,cheer_reasons,Djembe drumming,djembe_drumming,Djembe drumming Senegal,data/country_card_images/senegal/djembe_drumming.jpg,no,cheer_reasons,downloaded
@@ -623,20 +623,20 @@ Iraq,iraq,animals,Fallow Deer,fallow_deer,Fallow Deer,data/country_card_images/i
 Iraq,iraq,animals,Persian Fallow Deer,persian_fallow_deer,Persian Fallow Deer,data/country_card_images/iraq/persian_fallow_deer.jpg,no,animals,downloaded
 Iraq,iraq,animals,Iraqi Babbler,iraqi_babbler,Iraqi Babbler,data/country_card_images/iraq/iraqi_babbler.jpg,no,animals,downloaded
 Iraq,iraq,animals,Kuhl's Pipistrelle,kuhl_s_pipistrelle,Kuhl's Pipistrelle,data/country_card_images/iraq/kuhl_s_pipistrelle.jpg,no,animals,downloaded
-Iraq,iraq,foods,Masgûf (grilled carp),masguf_grilled_carp,Masgûf (grilled carp) Iraq,data/country_card_images/iraq/masguf_grilled_carp.jpg,no,foods,missing
+Iraq,iraq,foods,Masgûf (grilled carp),masguf_grilled_carp,Masgûf (grilled carp) Iraq,data/country_card_images/iraq/masguf_grilled_carp.jpg,no,foods,downloaded
 Iraq,iraq,foods,Kubba (rice dumpling),kubba_rice_dumpling,Kubba (rice dumpling) Iraq,data/country_card_images/iraq/kubba_rice_dumpling.jpg,no,foods,missing
-Iraq,iraq,foods,Dolma (stuffed vegetables),dolma_stuffed_vegetables,Dolma (stuffed vegetables) Iraq,data/country_card_images/iraq/dolma_stuffed_vegetables.jpg,no,foods,missing
-Iraq,iraq,foods,Iraqi biryani,iraqi_biryani,Iraqi biryani Iraq,data/country_card_images/iraq/iraqi_biryani.jpg,no,foods,missing
+Iraq,iraq,foods,Dolma (stuffed vegetables),dolma_stuffed_vegetables,Dolma (stuffed vegetables) Iraq,data/country_card_images/iraq/dolma_stuffed_vegetables.jpg,no,foods,downloaded
+Iraq,iraq,foods,Iraqi biryani,iraqi_biryani,Iraqi biryani Iraq,data/country_card_images/iraq/iraqi_biryani.jpg,no,foods,downloaded
 Iraq,iraq,foods,Samoon bread,samoon_bread,Samoon bread Iraq,data/country_card_images/iraq/samoon_bread.jpg,no,foods,downloaded
 Iraq,iraq,landmarks,Ziggurat of Ur,ziggurat_of_ur,Ziggurat of Ur Iraq,data/country_card_images/iraq/ziggurat_of_ur.jpg,no,landmarks,downloaded
 Iraq,iraq,landmarks,Babylon ruins,babylon_ruins,Babylon ruins Iraq,data/country_card_images/iraq/babylon_ruins.jpg,no,landmarks,downloaded
 Iraq,iraq,landmarks,Erbil Citadel,erbil_citadel,Erbil Citadel Iraq,data/country_card_images/iraq/erbil_citadel.jpg,no,landmarks,downloaded
 Iraq,iraq,landmarks,Marshes of Southern Iraq,marshes_of_southern_iraq,Marshes of Southern Iraq Iraq,data/country_card_images/iraq/marshes_of_southern_iraq.jpg,no,landmarks,downloaded
 Iraq,iraq,cheer_reasons,Ancient Mesopotamia,ancient_mesopotamia,Ancient Mesopotamia Iraq,data/country_card_images/iraq/ancient_mesopotamia.jpg,no,cheer_reasons,downloaded
-Iraq,iraq,cheer_reasons,Where writing was invented,where_writing_was_invented,Where writing was invented Iraq,data/country_card_images/iraq/where_writing_was_invented.jpg,no,cheer_reasons,missing
+Iraq,iraq,cheer_reasons,Where writing was invented,where_writing_was_invented,Where writing was invented Iraq,data/country_card_images/iraq/where_writing_was_invented.jpg,no,cheer_reasons,downloaded
 Iraq,iraq,cheer_reasons,Euphrates & Tigris rivers,euphrates_tigris_rivers,Euphrates & Tigris rivers Iraq,data/country_card_images/iraq/euphrates_tigris_rivers.jpg,no,cheer_reasons,downloaded
 Iraq,iraq,cheer_reasons,Incredible history,incredible_history,Incredible history Iraq,data/country_card_images/iraq/incredible_history.jpg,no,cheer_reasons,downloaded
-Iraq,iraq,cheer_reasons,Tigris River fish feast,tigris_river_fish_feast,Tigris River fish feast Iraq,data/country_card_images/iraq/tigris_river_fish_feast.jpg,no,cheer_reasons,missing
+Iraq,iraq,cheer_reasons,Tigris River fish feast,tigris_river_fish_feast,Tigris River fish feast Iraq,data/country_card_images/iraq/tigris_river_fish_feast.jpg,no,cheer_reasons,downloaded
 Argentina,argentina,animals,Puma,puma,Puma,data/country_card_images/argentina/puma.jpg,no,animals,downloaded
 Argentina,argentina,animals,Giant Anteater,giant_anteater,Giant Anteater,data/country_card_images/argentina/giant_anteater.jpg,no,animals,downloaded
 Argentina,argentina,animals,Andean Condor,andean_condor,Andean Condor,data/country_card_images/argentina/andean_condor.jpg,no,animals,downloaded
@@ -652,10 +652,10 @@ Argentina,argentina,landmarks,Patagonia,patagonia,Patagonia Argentina,data/count
 Argentina,argentina,landmarks,Perito Moreno Glacier,perito_moreno_glacier,Perito Moreno Glacier Argentina,data/country_card_images/argentina/perito_moreno_glacier.jpg,no,landmarks,downloaded
 Argentina,argentina,landmarks,Buenos Aires Obelisk,buenos_aires_obelisk,Buenos Aires Obelisk Argentina,data/country_card_images/argentina/buenos_aires_obelisk.jpg,no,landmarks,downloaded
 Argentina,argentina,cheer_reasons,LIONEL MESSI,lionel_messi,LIONEL MESSI Argentina,data/country_card_images/argentina/lionel_messi.jpg,no,cheer_reasons,downloaded
-Argentina,argentina,cheer_reasons,3x World Cup champions,3x_world_cup_champions,3x World Cup champions Argentina,data/country_card_images/argentina/3x_world_cup_champions.jpg,no,cheer_reasons,missing
-Argentina,argentina,cheer_reasons,Best BBQ in the world,best_bbq_in_the_world,Best BBQ in the world Argentina,data/country_card_images/argentina/best_bbq_in_the_world.jpg,no,cheer_reasons,missing
-Argentina,argentina,cheer_reasons,Tango dancing,tango_dancing,Tango dancing Argentina,data/country_card_images/argentina/tango_dancing.jpg,no,cheer_reasons,missing
-Argentina,argentina,cheer_reasons,Patagonia wilderness,patagonia_wilderness,Patagonia wilderness Argentina,data/country_card_images/argentina/patagonia_wilderness.jpg,no,cheer_reasons,missing
+Argentina,argentina,cheer_reasons,3x World Cup champions,3x_world_cup_champions,3x World Cup champions Argentina,data/country_card_images/argentina/3x_world_cup_champions.jpg,no,cheer_reasons,downloaded
+Argentina,argentina,cheer_reasons,Best BBQ in the world,best_bbq_in_the_world,Best BBQ in the world Argentina,data/country_card_images/argentina/best_bbq_in_the_world.jpg,no,cheer_reasons,downloaded
+Argentina,argentina,cheer_reasons,Tango dancing,tango_dancing,Tango dancing Argentina,data/country_card_images/argentina/tango_dancing.jpg,no,cheer_reasons,downloaded
+Argentina,argentina,cheer_reasons,Patagonia wilderness,patagonia_wilderness,Patagonia wilderness Argentina,data/country_card_images/argentina/patagonia_wilderness.jpg,no,cheer_reasons,downloaded
 Algeria,algeria,animals,Fennec Fox,fennec_fox,Fennec Fox,data/country_card_images/algeria/fennec_fox.jpg,no,animals,downloaded
 Algeria,algeria,animals,Barbary Macaque,barbary_macaque,Barbary Macaque,data/country_card_images/algeria/barbary_macaque.jpg,no,animals,downloaded
 Algeria,algeria,animals,Saharan Cheetah,saharan_cheetah,Saharan Cheetah,data/country_card_images/algeria/saharan_cheetah.jpg,no,animals,downloaded
@@ -666,10 +666,10 @@ Algeria,algeria,foods,Merguez sausage,merguez_sausage,Merguez sausage Algeria,da
 Algeria,algeria,foods,Méchoui (roasted lamb),mechoui_roasted_lamb,Méchoui (roasted lamb) Algeria,data/country_card_images/algeria/mechoui_roasted_lamb.jpg,no,foods,downloaded
 Algeria,algeria,foods,Makroud (date pastry),makroud_date_pastry,Makroud (date pastry) Algeria,data/country_card_images/algeria/makroud_date_pastry.jpg,no,foods,downloaded
 Algeria,algeria,landmarks,Timgad Roman ruins,timgad_roman_ruins,Timgad Roman ruins Algeria,data/country_card_images/algeria/timgad_roman_ruins.jpg,no,landmarks,downloaded
-Algeria,algeria,landmarks,Tassili n'Ajjer rock art,tassili_n_ajjer_rock_art,Tassili n'Ajjer rock art Algeria,data/country_card_images/algeria/tassili_n_ajjer_rock_art.jpg,no,landmarks,missing
+Algeria,algeria,landmarks,Tassili n'Ajjer rock art,tassili_n_ajjer_rock_art,Tassili n'Ajjer rock art Algeria,data/country_card_images/algeria/tassili_n_ajjer_rock_art.jpg,no,landmarks,downloaded
 Algeria,algeria,landmarks,Casbah of Algiers,casbah_of_algiers,Casbah of Algiers Algeria,data/country_card_images/algeria/casbah_of_algiers.jpg,no,landmarks,downloaded
 Algeria,algeria,landmarks,Sahara Desert dunes,sahara_desert_dunes,Sahara Desert dunes Algeria,data/country_card_images/algeria/sahara_desert_dunes.jpg,no,landmarks,downloaded
-Algeria,algeria,cheer_reasons,World's largest desert,world_s_largest_desert,World's largest desert Algeria,data/country_card_images/algeria/world_s_largest_desert.jpg,no,cheer_reasons,missing
+Algeria,algeria,cheer_reasons,World's largest desert,world_s_largest_desert,World's largest desert Algeria,data/country_card_images/algeria/world_s_largest_desert.jpg,no,cheer_reasons,downloaded
 Algeria,algeria,cheer_reasons,Fennec Fox,fennec_fox,Fennec Fox Algeria,data/country_card_images/algeria/fennec_fox.jpg,yes,animals,downloaded
 Algeria,algeria,cheer_reasons,Riyad Mahrez is lightning fast,riyad_mahrez_is_lightning_fast,Riyad Mahrez is lightning fast Algeria,data/country_card_images/algeria/riyad_mahrez_is_lightning_fast.jpg,no,cheer_reasons,missing
 Algeria,algeria,cheer_reasons,Sahara sunsets,sahara_sunsets,Sahara sunsets Algeria,data/country_card_images/algeria/sahara_sunsets.jpg,no,cheer_reasons,downloaded
@@ -689,11 +689,11 @@ Austria,austria,landmarks,Vienna State Opera,vienna_state_opera,Vienna State Ope
 Austria,austria,landmarks,Hohensalzburg Castle,hohensalzburg_castle,Hohensalzburg Castle Austria,data/country_card_images/austria/hohensalzburg_castle.jpg,no,landmarks,downloaded
 Austria,austria,landmarks,Austrian Alps,austrian_alps,Austrian Alps Austria,data/country_card_images/austria/austrian_alps.jpg,no,landmarks,downloaded
 Austria,austria,landmarks,Prater Ferris Wheel,prater_ferris_wheel,Prater Ferris Wheel Austria,data/country_card_images/austria/prater_ferris_wheel.jpg,no,landmarks,downloaded
-Austria,austria,cheer_reasons,Mozart's homeland,mozart_s_homeland,Mozart's homeland Austria,data/country_card_images/austria/mozart_s_homeland.jpg,no,cheer_reasons,missing
+Austria,austria,cheer_reasons,Mozart's homeland,mozart_s_homeland,Mozart's homeland Austria,data/country_card_images/austria/mozart_s_homeland.jpg,no,cheer_reasons,downloaded
 Austria,austria,cheer_reasons,Vienna is magical,vienna_is_magical,Vienna is magical Austria,data/country_card_images/austria/vienna_is_magical.jpg,no,cheer_reasons,downloaded
 Austria,austria,cheer_reasons,Best chocolate cake (Sachertorte),best_chocolate_cake_sachertorte,Best chocolate cake (Sachertorte) Austria,data/country_card_images/austria/best_chocolate_cake_sachertorte.jpg,no,cheer_reasons,missing
 Austria,austria,cheer_reasons,Alps skiing,alps_skiing,Alps skiing Austria,data/country_card_images/austria/alps_skiing.jpg,no,cheer_reasons,downloaded
-Austria,austria,cheer_reasons,David Alaba is amazing,david_alaba_is_amazing,David Alaba is amazing Austria,data/country_card_images/austria/david_alaba_is_amazing.jpg,no,cheer_reasons,missing
+Austria,austria,cheer_reasons,David Alaba is amazing,david_alaba_is_amazing,David Alaba is amazing Austria,data/country_card_images/austria/david_alaba_is_amazing.jpg,no,cheer_reasons,downloaded
 Jordan,jordan,animals,Arabian Oryx,arabian_oryx,Arabian Oryx,data/country_card_images/jordan/arabian_oryx.jpg,no,animals,downloaded
 Jordan,jordan,animals,Sand Cat,sand_cat,Sand Cat,data/country_card_images/jordan/sand_cat.jpg,no,animals,downloaded
 Jordan,jordan,animals,Syrian Brown Bear,syrian_brown_bear,Syrian Brown Bear,data/country_card_images/jordan/syrian_brown_bear.jpg,no,animals,downloaded
@@ -707,8 +707,8 @@ Jordan,jordan,landmarks,Petra (rose-red city),petra_rose_red_city,Petra (rose-re
 Jordan,jordan,landmarks,Dead Sea,dead_sea,Dead Sea Jordan,data/country_card_images/jordan/dead_sea.jpg,no,landmarks,downloaded
 Jordan,jordan,landmarks,Wadi Rum desert,wadi_rum_desert,Wadi Rum desert Jordan,data/country_card_images/jordan/wadi_rum_desert.jpg,no,landmarks,downloaded
 Jordan,jordan,landmarks,Roman Theater of Jerash,roman_theater_of_jerash,Roman Theater of Jerash Jordan,data/country_card_images/jordan/roman_theater_of_jerash.jpg,no,landmarks,downloaded
-Jordan,jordan,cheer_reasons,Petra,petra,Petra Jordan,data/country_card_images/jordan/petra.jpg,no,cheer_reasons,missing
-Jordan,jordan,cheer_reasons,Dead Sea (saltiest lake!),dead_sea_saltiest_lake,Dead Sea (saltiest lake!) Jordan,data/country_card_images/jordan/dead_sea_saltiest_lake.jpg,no,cheer_reasons,missing
+Jordan,jordan,cheer_reasons,Petra,petra,Petra Jordan,data/country_card_images/jordan/petra.jpg,no,cheer_reasons,downloaded
+Jordan,jordan,cheer_reasons,Dead Sea (saltiest lake!),dead_sea_saltiest_lake,Dead Sea (saltiest lake!) Jordan,data/country_card_images/jordan/dead_sea_saltiest_lake.jpg,no,cheer_reasons,downloaded
 Jordan,jordan,cheer_reasons,Wadi Rum desert,wadi_rum_desert,Wadi Rum desert Jordan,data/country_card_images/jordan/wadi_rum_desert.jpg,yes,landmarks,downloaded
 Jordan,jordan,cheer_reasons,Falafel & hummus,falafel_hummus,Falafel & hummus Jordan,data/country_card_images/jordan/falafel_hummus.jpg,no,cheer_reasons,downloaded
 Jordan,jordan,cheer_reasons,Underdog story,underdog_story,Underdog story Jordan,data/country_card_images/jordan/underdog_story.jpg,no,cheer_reasons,downloaded
@@ -721,77 +721,77 @@ Portugal,portugal,foods,Bacalhau (salted cod),bacalhau_salted_cod,Bacalhau (salt
 Portugal,portugal,foods,Piri-piri chicken,piri_piri_chicken,Piri-piri chicken Portugal,data/country_card_images/portugal/piri_piri_chicken.jpg,no,foods,downloaded
 Portugal,portugal,foods,Francesinha sandwich,francesinha_sandwich,Francesinha sandwich Portugal,data/country_card_images/portugal/francesinha_sandwich.jpg,no,foods,downloaded
 Portugal,portugal,landmarks,Belém Tower,belem_tower,Belém Tower Portugal,data/country_card_images/portugal/belem_tower.jpg,no,landmarks,downloaded
-Portugal,portugal,landmarks,Jerónimos Monastery,jeronimos_monastery,Jerónimos Monastery Portugal,data/country_card_images/portugal/jeronimos_monastery.jpg,no,landmarks,missing
+Portugal,portugal,landmarks,Jerónimos Monastery,jeronimos_monastery,Jerónimos Monastery Portugal,data/country_card_images/portugal/jeronimos_monastery.jpg,no,landmarks,downloaded
 Portugal,portugal,landmarks,Pena Palace,pena_palace,Pena Palace Portugal,data/country_card_images/portugal/pena_palace.jpg,no,landmarks,downloaded
 Portugal,portugal,landmarks,Douro Valley,douro_valley,Douro Valley Portugal,data/country_card_images/portugal/douro_valley.jpg,no,landmarks,downloaded
 Portugal,portugal,landmarks,Sintra,sintra,Sintra Portugal,data/country_card_images/portugal/sintra.jpg,no,landmarks,downloaded
-Portugal,portugal,cheer_reasons,Cristiano Ronaldo (GOAT debate!),cristiano_ronaldo_goat_debate,Cristiano Ronaldo (GOAT debate!) Portugal,data/country_card_images/portugal/cristiano_ronaldo_goat_debate.jpg,no,cheer_reasons,missing
+Portugal,portugal,cheer_reasons,Cristiano Ronaldo (GOAT debate!),cristiano_ronaldo_goat_debate,Cristiano Ronaldo (GOAT debate!) Portugal,data/country_card_images/portugal/cristiano_ronaldo_goat_debate.jpg,no,cheer_reasons,downloaded
 Portugal,portugal,cheer_reasons,Pastéis de nata,pasteis_de_nata,Pastéis de nata Portugal,data/country_card_images/portugal/pasteis_de_nata.jpg,no,cheer_reasons,downloaded
 Portugal,portugal,cheer_reasons,Fado music,fado_music,Fado music Portugal,data/country_card_images/portugal/fado_music.jpg,no,cheer_reasons,downloaded
 Portugal,portugal,cheer_reasons,3rd place 2022,3rd_place_2022,3rd place 2022 Portugal,data/country_card_images/portugal/3rd_place_2022.jpg,no,cheer_reasons,downloaded
 Portugal,portugal,cheer_reasons,Beautiful Lisbon,beautiful_lisbon,Beautiful Lisbon Portugal,data/country_card_images/portugal/beautiful_lisbon.jpg,no,cheer_reasons,downloaded
 DR Congo,dr-congo,animals,Bonobo (our closest relative!),bonobo_our_closest_relative,Bonobo (our closest relative!),data/country_card_images/dr-congo/bonobo_our_closest_relative.jpg,no,animals,downloaded
-DR Congo,dr-congo,animals,Okapi (unicorn-like animal!),okapi_unicorn_like_animal,Okapi (unicorn-like animal!),data/country_card_images/dr-congo/okapi_unicorn_like_animal.jpg,no,animals,missing
+DR Congo,dr-congo,animals,Okapi (unicorn-like animal!),okapi_unicorn_like_animal,Okapi (unicorn-like animal!),data/country_card_images/dr-congo/okapi_unicorn_like_animal.jpg,no,animals,downloaded
 DR Congo,dr-congo,animals,Congo Peafowl,congo_peafowl,Congo Peafowl,data/country_card_images/dr-congo/congo_peafowl.jpg,no,animals,downloaded
 DR Congo,dr-congo,animals,Forest Elephant,forest_elephant,Forest Elephant,data/country_card_images/dr-congo/forest_elephant.jpg,no,animals,downloaded
 DR Congo,dr-congo,foods,Fufu & Moambe (palm nut sauce),fufu_moambe_palm_nut_sauce,Fufu & Moambe (palm nut sauce) DR Congo,data/country_card_images/dr-congo/fufu_moambe_palm_nut_sauce.jpg,no,foods,missing
-DR Congo,dr-congo,foods,Pondu (cassava leaf stew),pondu_cassava_leaf_stew,Pondu (cassava leaf stew) DR Congo,data/country_card_images/dr-congo/pondu_cassava_leaf_stew.jpg,no,foods,missing
-DR Congo,dr-congo,foods,Makayabu (salted fish),makayabu_salted_fish,Makayabu (salted fish) DR Congo,data/country_card_images/dr-congo/makayabu_salted_fish.jpg,no,foods,missing
+DR Congo,dr-congo,foods,Pondu (cassava leaf stew),pondu_cassava_leaf_stew,Pondu (cassava leaf stew) DR Congo,data/country_card_images/dr-congo/pondu_cassava_leaf_stew.jpg,no,foods,downloaded
+DR Congo,dr-congo,foods,Makayabu (salted fish),makayabu_salted_fish,Makayabu (salted fish) DR Congo,data/country_card_images/dr-congo/makayabu_salted_fish.jpg,no,foods,downloaded
 DR Congo,dr-congo,foods,Liboke (banana leaf-wrapped fish),liboke_banana_leaf_wrapped_fish,Liboke (banana leaf-wrapped fish) DR Congo,data/country_card_images/dr-congo/liboke_banana_leaf_wrapped_fish.jpg,no,foods,missing
 DR Congo,dr-congo,landmarks,Virunga National Park,virunga_national_park,Virunga National Park DR Congo,data/country_card_images/dr-congo/virunga_national_park.jpg,no,landmarks,downloaded
-DR Congo,dr-congo,landmarks,Congo River,congo_river,Congo River DR Congo,data/country_card_images/dr-congo/congo_river.jpg,no,landmarks,missing
+DR Congo,dr-congo,landmarks,Congo River,congo_river,Congo River DR Congo,data/country_card_images/dr-congo/congo_river.jpg,no,landmarks,downloaded
 DR Congo,dr-congo,landmarks,Kahuzi-Biega Gorillas,kahuzi_biega_gorillas,Kahuzi-Biega Gorillas DR Congo,data/country_card_images/dr-congo/kahuzi_biega_gorillas.jpg,no,landmarks,downloaded
 DR Congo,dr-congo,landmarks,Lola ya Bonobo sanctuary,lola_ya_bonobo_sanctuary,Lola ya Bonobo sanctuary DR Congo,data/country_card_images/dr-congo/lola_ya_bonobo_sanctuary.jpg,no,landmarks,downloaded
 DR Congo,dr-congo,cheer_reasons,Bonobos,bonobos,Bonobos DR Congo,data/country_card_images/dr-congo/bonobos.jpg,no,cheer_reasons,downloaded
 DR Congo,dr-congo,cheer_reasons,Okapi (Africa's unicorn!),okapi_africa_s_unicorn,Okapi (Africa's unicorn!) DR Congo,data/country_card_images/dr-congo/okapi_africa_s_unicorn.jpg,no,cheer_reasons,downloaded
-DR Congo,dr-congo,cheer_reasons,Congo River,congo_river,Congo River DR Congo,data/country_card_images/dr-congo/congo_river.jpg,yes,landmarks,pending
+DR Congo,dr-congo,cheer_reasons,Congo River,congo_river,Congo River DR Congo,data/country_card_images/dr-congo/congo_river.jpg,yes,landmarks,downloaded
 DR Congo,dr-congo,cheer_reasons,Gorilla trekking,gorilla_trekking,Gorilla trekking DR Congo,data/country_card_images/dr-congo/gorilla_trekking.jpg,no,cheer_reasons,downloaded
-DR Congo,dr-congo,cheer_reasons,Incredible biodiversity,incredible_biodiversity,Incredible biodiversity DR Congo,data/country_card_images/dr-congo/incredible_biodiversity.jpg,no,cheer_reasons,missing
+DR Congo,dr-congo,cheer_reasons,Incredible biodiversity,incredible_biodiversity,Incredible biodiversity DR Congo,data/country_card_images/dr-congo/incredible_biodiversity.jpg,no,cheer_reasons,downloaded
 Uzbekistan,uzbekistan,animals,Snow Leopard,snow_leopard,Snow Leopard,data/country_card_images/uzbekistan/snow_leopard.jpg,no,animals,downloaded
 Uzbekistan,uzbekistan,animals,Bactrian Camel,bactrian_camel,Bactrian Camel,data/country_card_images/uzbekistan/bactrian_camel.jpg,no,animals,downloaded
 Uzbekistan,uzbekistan,animals,Saiga Antelope,saiga_antelope,Saiga Antelope,data/country_card_images/uzbekistan/saiga_antelope.jpg,no,animals,downloaded
 Uzbekistan,uzbekistan,animals,Marco Polo Sheep,marco_polo_sheep,Marco Polo Sheep,data/country_card_images/uzbekistan/marco_polo_sheep.jpg,no,animals,downloaded
-Uzbekistan,uzbekistan,foods,Plov (rice pilaf),plov_rice_pilaf,Plov (rice pilaf) Uzbekistan,data/country_card_images/uzbekistan/plov_rice_pilaf.jpg,no,foods,missing
+Uzbekistan,uzbekistan,foods,Plov (rice pilaf),plov_rice_pilaf,Plov (rice pilaf) Uzbekistan,data/country_card_images/uzbekistan/plov_rice_pilaf.jpg,no,foods,downloaded
 Uzbekistan,uzbekistan,foods,Shashlik (grilled meat),shashlik_grilled_meat,Shashlik (grilled meat) Uzbekistan,data/country_card_images/uzbekistan/shashlik_grilled_meat.jpg,no,foods,missing
 Uzbekistan,uzbekistan,foods,Samsa (pastry),samsa_pastry,Samsa (pastry) Uzbekistan,data/country_card_images/uzbekistan/samsa_pastry.jpg,no,foods,missing
 Uzbekistan,uzbekistan,foods,Lagman (noodle soup),lagman_noodle_soup,Lagman (noodle soup) Uzbekistan,data/country_card_images/uzbekistan/lagman_noodle_soup.jpg,no,foods,missing
-Uzbekistan,uzbekistan,foods,Chuchvara (dumplings),chuchvara_dumplings,Chuchvara (dumplings) Uzbekistan,data/country_card_images/uzbekistan/chuchvara_dumplings.jpg,no,foods,missing
+Uzbekistan,uzbekistan,foods,Chuchvara (dumplings),chuchvara_dumplings,Chuchvara (dumplings) Uzbekistan,data/country_card_images/uzbekistan/chuchvara_dumplings.jpg,no,foods,downloaded
 Uzbekistan,uzbekistan,landmarks,Samarkand Registan,samarkand_registan,Samarkand Registan Uzbekistan,data/country_card_images/uzbekistan/samarkand_registan.jpg,no,landmarks,downloaded
 Uzbekistan,uzbekistan,landmarks,Bukhara Old City,bukhara_old_city,Bukhara Old City Uzbekistan,data/country_card_images/uzbekistan/bukhara_old_city.jpg,no,landmarks,downloaded
 Uzbekistan,uzbekistan,landmarks,Khiva,khiva,Khiva Uzbekistan,data/country_card_images/uzbekistan/khiva.jpg,no,landmarks,downloaded
-Uzbekistan,uzbekistan,landmarks,Silk Road markets,silk_road_markets,Silk Road markets Uzbekistan,data/country_card_images/uzbekistan/silk_road_markets.jpg,no,landmarks,missing
+Uzbekistan,uzbekistan,landmarks,Silk Road markets,silk_road_markets,Silk Road markets Uzbekistan,data/country_card_images/uzbekistan/silk_road_markets.jpg,no,landmarks,downloaded
 Uzbekistan,uzbekistan,cheer_reasons,Snow leopards,snow_leopards,Snow leopards Uzbekistan,data/country_card_images/uzbekistan/snow_leopards.jpg,no,cheer_reasons,downloaded
 Uzbekistan,uzbekistan,cheer_reasons,Silk Road history,silk_road_history,Silk Road history Uzbekistan,data/country_card_images/uzbekistan/silk_road_history.jpg,no,cheer_reasons,downloaded
-Uzbekistan,uzbekistan,cheer_reasons,Samarkand (most beautiful city you've never heard of!),samarkand_most_beautiful_city_you_ve_never_heard_of,Samarkand (most beautiful city you've never heard of!) Uzbekistan,data/country_card_images/uzbekistan/samarkand_most_beautiful_city_you_ve_never_heard_of.jpg,no,cheer_reasons,missing
+Uzbekistan,uzbekistan,cheer_reasons,Samarkand (most beautiful city you've never heard of!),samarkand_most_beautiful_city_you_ve_never_heard_of,Samarkand (most beautiful city you've never heard of!) Uzbekistan,data/country_card_images/uzbekistan/samarkand_most_beautiful_city_you_ve_never_heard_of.jpg,no,cheer_reasons,downloaded
 Uzbekistan,uzbekistan,cheer_reasons,First World Cup!,first_world_cup,First World Cup! Uzbekistan,data/country_card_images/uzbekistan/first_world_cup.jpg,no,cheer_reasons,downloaded
-Uzbekistan,uzbekistan,cheer_reasons,Plov (world's best rice dish?),plov_world_s_best_rice_dish,Plov (world's best rice dish?) Uzbekistan,data/country_card_images/uzbekistan/plov_world_s_best_rice_dish.jpg,no,cheer_reasons,missing
+Uzbekistan,uzbekistan,cheer_reasons,Plov (world's best rice dish?),plov_world_s_best_rice_dish,Plov (world's best rice dish?) Uzbekistan,data/country_card_images/uzbekistan/plov_world_s_best_rice_dish.jpg,no,cheer_reasons,downloaded
 Colombia,colombia,animals,Andean Condor,andean_condor,Andean Condor,data/country_card_images/colombia/andean_condor.jpg,no,animals,downloaded
 Colombia,colombia,animals,Spectacled Bear,spectacled_bear,Spectacled Bear,data/country_card_images/colombia/spectacled_bear.jpg,no,animals,downloaded
 Colombia,colombia,animals,Poison Dart Frog,poison_dart_frog,Poison Dart Frog,data/country_card_images/colombia/poison_dart_frog.jpg,no,animals,downloaded
 Colombia,colombia,animals,Pink River Dolphin,pink_river_dolphin,Pink River Dolphin,data/country_card_images/colombia/pink_river_dolphin.jpg,no,animals,downloaded
 Colombia,colombia,animals,Jaguar,jaguar,Jaguar,data/country_card_images/colombia/jaguar.jpg,no,animals,downloaded
-Colombia,colombia,foods,Bandeja Paisa (rice & beans feast),bandeja_paisa_rice_beans_feast,Bandeja Paisa (rice & beans feast) Colombia,data/country_card_images/colombia/bandeja_paisa_rice_beans_feast.jpg,no,foods,missing
-Colombia,colombia,foods,Arepas,arepas,Arepas Colombia,data/country_card_images/colombia/arepas.jpg,no,foods,missing
+Colombia,colombia,foods,Bandeja Paisa (rice & beans feast),bandeja_paisa_rice_beans_feast,Bandeja Paisa (rice & beans feast) Colombia,data/country_card_images/colombia/bandeja_paisa_rice_beans_feast.jpg,no,foods,downloaded
+Colombia,colombia,foods,Arepas,arepas,Arepas Colombia,data/country_card_images/colombia/arepas.jpg,no,foods,downloaded
 Colombia,colombia,foods,Sancocho (hearty stew),sancocho_hearty_stew,Sancocho (hearty stew) Colombia,data/country_card_images/colombia/sancocho_hearty_stew.jpg,no,foods,missing
-Colombia,colombia,foods,Empanadas,empanadas,Empanadas Colombia,data/country_card_images/colombia/empanadas.jpg,no,foods,missing
+Colombia,colombia,foods,Empanadas,empanadas,Empanadas Colombia,data/country_card_images/colombia/empanadas.jpg,no,foods,downloaded
 Colombia,colombia,foods,Ajiaco soup,ajiaco_soup,Ajiaco soup Colombia,data/country_card_images/colombia/ajiaco_soup.jpg,no,foods,missing
 Colombia,colombia,landmarks,Cartagena old city,cartagena_old_city,Cartagena old city Colombia,data/country_card_images/colombia/cartagena_old_city.jpg,no,landmarks,downloaded
 Colombia,colombia,landmarks,Coffee region,coffee_region,Coffee region Colombia,data/country_card_images/colombia/coffee_region.jpg,no,landmarks,downloaded
-Colombia,colombia,landmarks,Cocora Valley,cocora_valley,Cocora Valley Colombia,data/country_card_images/colombia/cocora_valley.jpg,no,landmarks,missing
+Colombia,colombia,landmarks,Cocora Valley,cocora_valley,Cocora Valley Colombia,data/country_card_images/colombia/cocora_valley.jpg,no,landmarks,downloaded
 Colombia,colombia,landmarks,Tayrona National Park,tayrona_national_park,Tayrona National Park Colombia,data/country_card_images/colombia/tayrona_national_park.jpg,no,landmarks,downloaded
 Colombia,colombia,landmarks,Gold Museum,gold_museum,Gold Museum Colombia,data/country_card_images/colombia/gold_museum.jpg,no,landmarks,downloaded
-Colombia,colombia,cheer_reasons,James Rodríguez golden boot 2014,james_rodriguez_golden_boot_2014,James Rodríguez golden boot 2014 Colombia,data/country_card_images/colombia/james_rodriguez_golden_boot_2014.jpg,no,cheer_reasons,missing
+Colombia,colombia,cheer_reasons,James Rodríguez golden boot 2014,james_rodriguez_golden_boot_2014,James Rodríguez golden boot 2014 Colombia,data/country_card_images/colombia/james_rodriguez_golden_boot_2014.jpg,no,cheer_reasons,downloaded
 Colombia,colombia,cheer_reasons,Coffee,coffee,Coffee Colombia,data/country_card_images/colombia/coffee.jpg,no,cheer_reasons,downloaded
-Colombia,colombia,cheer_reasons,Cartagena beauty,cartagena_beauty,Cartagena beauty Colombia,data/country_card_images/colombia/cartagena_beauty.jpg,no,cheer_reasons,missing
-Colombia,colombia,cheer_reasons,Amazon biodiversity,amazon_biodiversity,Amazon biodiversity Colombia,data/country_card_images/colombia/amazon_biodiversity.jpg,no,cheer_reasons,missing
-Colombia,colombia,cheer_reasons,Lucho Díaz is electrifying,lucho_diaz_is_electrifying,Lucho Díaz is electrifying Colombia,data/country_card_images/colombia/lucho_diaz_is_electrifying.jpg,no,cheer_reasons,missing
+Colombia,colombia,cheer_reasons,Cartagena beauty,cartagena_beauty,Cartagena beauty Colombia,data/country_card_images/colombia/cartagena_beauty.jpg,no,cheer_reasons,downloaded
+Colombia,colombia,cheer_reasons,Amazon biodiversity,amazon_biodiversity,Amazon biodiversity Colombia,data/country_card_images/colombia/amazon_biodiversity.jpg,no,cheer_reasons,downloaded
+Colombia,colombia,cheer_reasons,Lucho Díaz is electrifying,lucho_diaz_is_electrifying,Lucho Díaz is electrifying Colombia,data/country_card_images/colombia/lucho_diaz_is_electrifying.jpg,no,cheer_reasons,downloaded
 England,england,animals,Red Squirrel,red_squirrel,Red Squirrel,data/country_card_images/england/red_squirrel.jpg,no,animals,downloaded
 England,england,animals,Badger,badger,Badger,data/country_card_images/england/badger.jpg,no,animals,downloaded
 England,england,animals,Red Fox,red_fox,Red Fox,data/country_card_images/england/red_fox.jpg,no,animals,downloaded
 England,england,animals,Roe Deer,roe_deer,Roe Deer,data/country_card_images/england/roe_deer.jpg,no,animals,downloaded
 England,england,animals,Puffin,puffin,Puffin,data/country_card_images/england/puffin.jpg,no,animals,downloaded
-England,england,foods,Fish and Chips,fish_and_chips,Fish and Chips England,data/country_card_images/england/fish_and_chips.jpg,no,foods,missing
-England,england,foods,Sunday Roast,sunday_roast,Sunday Roast England,data/country_card_images/england/sunday_roast.jpg,no,foods,missing
+England,england,foods,Fish and Chips,fish_and_chips,Fish and Chips England,data/country_card_images/england/fish_and_chips.jpg,no,foods,downloaded
+England,england,foods,Sunday Roast,sunday_roast,Sunday Roast England,data/country_card_images/england/sunday_roast.jpg,no,foods,downloaded
 England,england,foods,Yorkshire Pudding,yorkshire_pudding,Yorkshire Pudding England,data/country_card_images/england/yorkshire_pudding.jpg,no,foods,downloaded
 England,england,foods,Scones with clotted cream,scones_with_clotted_cream,Scones with clotted cream England,data/country_card_images/england/scones_with_clotted_cream.jpg,no,foods,downloaded
 England,england,foods,Full English Breakfast,full_english_breakfast,Full English Breakfast England,data/country_card_images/england/full_english_breakfast.jpg,no,foods,downloaded
@@ -800,10 +800,10 @@ England,england,landmarks,Tower of London,tower_of_london,Tower of London Englan
 England,england,landmarks,Stonehenge,stonehenge,Stonehenge England,data/country_card_images/england/stonehenge.jpg,no,landmarks,downloaded
 England,england,landmarks,Buckingham Palace,buckingham_palace,Buckingham Palace England,data/country_card_images/england/buckingham_palace.jpg,no,landmarks,downloaded
 England,england,landmarks,Lake District,lake_district,Lake District England,data/country_card_images/england/lake_district.jpg,no,landmarks,downloaded
-England,england,cheer_reasons,Invented football,invented_football,Invented football England,data/country_card_images/england/invented_football.jpg,no,cheer_reasons,missing
-England,england,cheer_reasons,Harry Kane is a goal machine,harry_kane_is_a_goal_machine,Harry Kane is a goal machine England,data/country_card_images/england/harry_kane_is_a_goal_machine.jpg,no,cheer_reasons,missing
-England,england,cheer_reasons,Premier League (world's best league),premier_league_world_s_best_league,Premier League (world's best league) England,data/country_card_images/england/premier_league_world_s_best_league.jpg,no,cheer_reasons,missing
-England,england,cheer_reasons,1966 World Cup winners,1966_world_cup_winners,1966 World Cup winners England,data/country_card_images/england/1966_world_cup_winners.jpg,no,cheer_reasons,missing
+England,england,cheer_reasons,Invented football,invented_football,Invented football England,data/country_card_images/england/invented_football.jpg,no,cheer_reasons,downloaded
+England,england,cheer_reasons,Harry Kane is a goal machine,harry_kane_is_a_goal_machine,Harry Kane is a goal machine England,data/country_card_images/england/harry_kane_is_a_goal_machine.jpg,no,cheer_reasons,downloaded
+England,england,cheer_reasons,Premier League (world's best league),premier_league_world_s_best_league,Premier League (world's best league) England,data/country_card_images/england/premier_league_world_s_best_league.jpg,no,cheer_reasons,downloaded
+England,england,cheer_reasons,1966 World Cup winners,1966_world_cup_winners,1966 World Cup winners England,data/country_card_images/england/1966_world_cup_winners.jpg,no,cheer_reasons,downloaded
 England,england,cheer_reasons,Royal castles,royal_castles,Royal castles England,data/country_card_images/england/royal_castles.jpg,no,cheer_reasons,downloaded
 Croatia,croatia,animals,Brown Bear,brown_bear,Brown Bear,data/country_card_images/croatia/brown_bear.jpg,no,animals,downloaded
 Croatia,croatia,animals,Lynx,lynx,Lynx,data/country_card_images/croatia/lynx.jpg,no,animals,downloaded
@@ -817,17 +817,17 @@ Croatia,croatia,landmarks,Plitvice Lakes National Park,plitvice_lakes_national_p
 Croatia,croatia,landmarks,Dubrovnik Old Town,dubrovnik_old_town,Dubrovnik Old Town Croatia,data/country_card_images/croatia/dubrovnik_old_town.jpg,no,landmarks,downloaded
 Croatia,croatia,landmarks,Hvar island,hvar_island,Hvar island Croatia,data/country_card_images/croatia/hvar_island.jpg,no,landmarks,downloaded
 Croatia,croatia,landmarks,Diocletian's Palace,diocletian_s_palace,Diocletian's Palace Croatia,data/country_card_images/croatia/diocletian_s_palace.jpg,no,landmarks,downloaded
-Croatia,croatia,cheer_reasons,Luka Modrić is ageless,luka_modric_is_ageless,Luka Modrić is ageless Croatia,data/country_card_images/croatia/luka_modric_is_ageless.jpg,no,cheer_reasons,missing
+Croatia,croatia,cheer_reasons,Luka Modrić is ageless,luka_modric_is_ageless,Luka Modrić is ageless Croatia,data/country_card_images/croatia/luka_modric_is_ageless.jpg,no,cheer_reasons,downloaded
 Croatia,croatia,cheer_reasons,2018 World Cup finalists,2018_world_cup_finalists,2018 World Cup finalists Croatia,data/country_card_images/croatia/2018_world_cup_finalists.jpg,no,cheer_reasons,downloaded
 Croatia,croatia,cheer_reasons,Dalmatian dogs,dalmatian_dogs,Dalmatian dogs Croatia,data/country_card_images/croatia/dalmatian_dogs.jpg,no,cheer_reasons,downloaded
 Croatia,croatia,cheer_reasons,Dubrovnik (Game of Thrones!),dubrovnik_game_of_thrones,Dubrovnik (Game of Thrones!) Croatia,data/country_card_images/croatia/dubrovnik_game_of_thrones.jpg,no,cheer_reasons,downloaded
-Croatia,croatia,cheer_reasons,Under 4 million people reached the final!,under_4_million_people_reached_the_final,Under 4 million people reached the final! Croatia,data/country_card_images/croatia/under_4_million_people_reached_the_final.jpg,no,cheer_reasons,missing
+Croatia,croatia,cheer_reasons,Under 4 million people reached the final!,under_4_million_people_reached_the_final,Under 4 million people reached the final! Croatia,data/country_card_images/croatia/under_4_million_people_reached_the_final.jpg,no,cheer_reasons,downloaded
 Ghana,ghana,animals,African Forest Elephant,african_forest_elephant,African Forest Elephant,data/country_card_images/ghana/african_forest_elephant.jpg,no,animals,downloaded
 Ghana,ghana,animals,Drill,drill,Drill,data/country_card_images/ghana/drill.jpg,no,animals,downloaded
 Ghana,ghana,animals,Mona Monkey,mona_monkey,Mona Monkey,data/country_card_images/ghana/mona_monkey.jpg,no,animals,downloaded
 Ghana,ghana,animals,Nile Crocodile,nile_crocodile,Nile Crocodile,data/country_card_images/ghana/nile_crocodile.jpg,no,animals,downloaded
 Ghana,ghana,animals,African Wild Dog,african_wild_dog,African Wild Dog,data/country_card_images/ghana/african_wild_dog.jpg,no,animals,downloaded
-Ghana,ghana,foods,Jollof Rice (West Africa's greatest debate!),jollof_rice_west_africa_s_greatest_debate,Jollof Rice (West Africa's greatest debate!) Ghana,data/country_card_images/ghana/jollof_rice_west_africa_s_greatest_debate.jpg,no,foods,missing
+Ghana,ghana,foods,Jollof Rice (West Africa's greatest debate!),jollof_rice_west_africa_s_greatest_debate,Jollof Rice (West Africa's greatest debate!) Ghana,data/country_card_images/ghana/jollof_rice_west_africa_s_greatest_debate.jpg,no,foods,downloaded
 Ghana,ghana,foods,Fufu & Light Soup,fufu_light_soup,Fufu & Light Soup Ghana,data/country_card_images/ghana/fufu_light_soup.jpg,no,foods,downloaded
 Ghana,ghana,foods,Kelewele (fried plantain),kelewele_fried_plantain,Kelewele (fried plantain) Ghana,data/country_card_images/ghana/kelewele_fried_plantain.jpg,no,foods,downloaded
 Ghana,ghana,foods,Kenkey,kenkey,Kenkey Ghana,data/country_card_images/ghana/kenkey.jpg,no,foods,downloaded
@@ -837,10 +837,10 @@ Ghana,ghana,landmarks,Kakum National Park,kakum_national_park,Kakum National Par
 Ghana,ghana,landmarks,Mole National Park,mole_national_park,Mole National Park Ghana,data/country_card_images/ghana/mole_national_park.jpg,no,landmarks,downloaded
 Ghana,ghana,landmarks,Larabanga Mosque,larabanga_mosque,Larabanga Mosque Ghana,data/country_card_images/ghana/larabanga_mosque.jpg,no,landmarks,downloaded
 Ghana,ghana,cheer_reasons,Jollof Rice,jollof_rice,Jollof Rice Ghana,data/country_card_images/ghana/jollof_rice.jpg,no,cheer_reasons,missing
-Ghana,ghana,cheer_reasons,Reached quarterfinals in 2010,reached_quarterfinals_in_2010,Reached quarterfinals in 2010 Ghana,data/country_card_images/ghana/reached_quarterfinals_in_2010.jpg,no,cheer_reasons,missing
+Ghana,ghana,cheer_reasons,Reached quarterfinals in 2010,reached_quarterfinals_in_2010,Reached quarterfinals in 2010 Ghana,data/country_card_images/ghana/reached_quarterfinals_in_2010.jpg,no,cheer_reasons,downloaded
 Ghana,ghana,cheer_reasons,Kente cloth,kente_cloth,Kente cloth Ghana,data/country_card_images/ghana/kente_cloth.jpg,no,cheer_reasons,missing
-Ghana,ghana,cheer_reasons,Black Stars nickname,black_stars_nickname,Black Stars nickname Ghana,data/country_card_images/ghana/black_stars_nickname.jpg,no,cheer_reasons,missing
-Ghana,ghana,cheer_reasons,André Ayew family dynasty,andre_ayew_family_dynasty,André Ayew family dynasty Ghana,data/country_card_images/ghana/andre_ayew_family_dynasty.jpg,no,cheer_reasons,missing
+Ghana,ghana,cheer_reasons,Black Stars nickname,black_stars_nickname,Black Stars nickname Ghana,data/country_card_images/ghana/black_stars_nickname.jpg,no,cheer_reasons,downloaded
+Ghana,ghana,cheer_reasons,André Ayew family dynasty,andre_ayew_family_dynasty,André Ayew family dynasty Ghana,data/country_card_images/ghana/andre_ayew_family_dynasty.jpg,no,cheer_reasons,downloaded
 Panama,panama,animals,Harpy Eagle,harpy_eagle,Harpy Eagle,data/country_card_images/panama/harpy_eagle.jpg,no,animals,downloaded
 Panama,panama,animals,Geoffroy's Tamarin,geoffroy_s_tamarin,Geoffroy's Tamarin,data/country_card_images/panama/geoffroy_s_tamarin.jpg,no,animals,downloaded
 Panama,panama,animals,Golden Frog,golden_frog,Golden Frog,data/country_card_images/panama/golden_frog.jpg,no,animals,downloaded
@@ -859,4 +859,4 @@ Panama,panama,cheer_reasons,Panama Canal,panama_canal,Panama Canal Panama,data/c
 Panama,panama,cheer_reasons,Harpy Eagles,harpy_eagles,Harpy Eagles Panama,data/country_card_images/panama/harpy_eagles.jpg,no,cheer_reasons,downloaded
 Panama,panama,cheer_reasons,Three-toed sloths,three_toed_sloths,Three-toed sloths Panama,data/country_card_images/panama/three_toed_sloths.jpg,no,cheer_reasons,downloaded
 Panama,panama,cheer_reasons,Connecting two oceans,connecting_two_oceans,Connecting two oceans Panama,data/country_card_images/panama/connecting_two_oceans.jpg,no,cheer_reasons,downloaded
-Panama,panama,cheer_reasons,Kuna Yala indigenous culture,kuna_yala_indigenous_culture,Kuna Yala indigenous culture Panama,data/country_card_images/panama/kuna_yala_indigenous_culture.jpg,no,cheer_reasons,missing
+Panama,panama,cheer_reasons,Kuna Yala indigenous culture,kuna_yala_indigenous_culture,Kuna Yala indigenous culture Panama,data/country_card_images/panama/kuna_yala_indigenous_culture.jpg,no,cheer_reasons,downloaded

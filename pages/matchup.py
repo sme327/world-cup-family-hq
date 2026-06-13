@@ -5,7 +5,7 @@ from services.teams import get_team_by_name, get_flag
 from services.picks import get_picks_for_match, save_pick, get_all_users
 from services.time_utils import fmt_match_time
 from services.images import get_country_image_html
-from services.roster import get_featured_players, get_team_summary, get_mls_players
+from services.roster import get_featured_players, get_team_summary, get_mls_players, get_team_roster
 from services.espn import get_match_recap
 
 
@@ -136,22 +136,78 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ── 2. Family Picks ───────────────────────────────────────────────────────────
-st.markdown('<div class="mu-section">🏷️ Family Picks</div>', unsafe_allow_html=True)
+# ── Picks data — computed early; used by multiple sections ────────────────────
+picks_df     = get_picks_for_match(match_id)
+pick_by_user = {
+    pk['user_name']: pk['picked_team']
+    for _, pk in picks_df.iterrows()
+} if not picks_df.empty else {}
 
-picks_df = get_picks_for_match(match_id)
-pick_by_user = {pk['user_name']: pk['picked_team'] for _, pk in picks_df.iterrows()} if not picks_df.empty else {}
+# ── Explore Country buttons ───────────────────────────────────────────────────
+xp_c1, xp_c2 = st.columns(2)
+with xp_c1:
+    if st.button(f"🌎 Explore {home_team}", key="xp_home", use_container_width=True):
+        st.session_state["_nav_country"] = home_team
+        st.switch_page("pages/country_profile.py")
+with xp_c2:
+    if st.button(f"🌎 Explore {away_team}", key="xp_away", use_container_width=True):
+        st.session_state["_nav_country"] = away_team
+        st.switch_page("pages/country_profile.py")
+
+# ── 1. Who Should I Cheer For? ────────────────────────────────────────────────
+st.divider()
+st.markdown('<div class="mu-section">🤔 Who Should I Cheer For?</div>', unsafe_allow_html=True)
+st.caption("Pick your side! Here's why you might love each team…")
+
+def _cheer_col(team, flag, data):
+    if data is None:
+        return
+    img = get_country_image_html(team, height='120px', border_radius='12px')
+    if img:
+        st.markdown(img, unsafe_allow_html=True)
+    st.markdown(
+        f"<div style='font-size:1.1rem;font-weight:800;margin:.4rem 0'>{flag} {team}</div>",
+        unsafe_allow_html=True,
+    )
+    reasons = _parse_pipe(data.get('cheer_reasons'))
+    if not reasons:
+        st.caption("They're still awesome!")
+        return
+    cols = st.columns(min(len(reasons), 4))
+    for i, reason in enumerate(reasons[:4]):
+        parts = reason.rsplit(' ', 1)
+        if len(parts) == 2:
+            label, emoji = parts[0].strip(), parts[1].strip()
+        else:
+            label, emoji = reason, "⭐"
+        with cols[i % len(cols)]:
+            st.markdown(
+                f"<div class='cheer-card'>"
+                f"<div style='font-size:2.2rem;line-height:1.1'>{emoji}</div>"
+                f"<div style='font-size:.82rem;font-weight:700;color:#0F172A;"
+                f"margin-top:.35rem;line-height:1.3'>{label}</div>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+
+cheer_c1, cheer_c2 = st.columns(2)
+with cheer_c1:
+    _cheer_col(home_team, home_flag, home_data)
+with cheer_c2:
+    _cheer_col(away_team, away_flag, away_data)
+
+# ── 2. Family Picks ───────────────────────────────────────────────────────────
+st.divider()
+st.markdown('<div class="mu-section">🏷️ Family Picks</div>', unsafe_allow_html=True)
 
 def _pick_card(team: str, flag: str, is_home: bool):
     pickers      = [(u['name'], u['avatar']) for _, u in users.iterrows() if pick_by_user.get(u['name']) == team]
     user_pick    = pick_by_user.get(active_user)
     picked_by_me = user_pick == team
 
-    # Card gradient colors
     bg = "linear-gradient(135deg,#1E3A5F,#2563EB)" if is_home else "linear-gradient(135deg,#064E3B,#059669)"
     default_border = "#3B82F6" if is_home else "#10B981"
 
-    # Result state for completed matches
     opacity = 1.0
     result_badge = pts_badge = ""
     if is_completed:
@@ -175,7 +231,6 @@ def _pick_card(team: str, flag: str, is_home: bool):
         for n, a in pickers
     ) or "<span style='color:rgba(255,255,255,.4);font-size:.85rem'>No picks yet</span>"
 
-    # Status label
     if not is_completed:
         if picked_by_me:
             status_label = f"<div style='color:#FCD34D;font-size:.82rem;font-weight:700;margin-top:.4rem'>✅ You picked this</div>"
@@ -194,7 +249,7 @@ def _pick_card(team: str, flag: str, is_home: bool):
         f"<div style='margin:.5rem 0'>{avatars_html}</div>"
         f"{pts_badge}{status_label}"
         f"</div>",
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     if not is_completed:
@@ -222,11 +277,8 @@ else:
 if is_completed:
     st.divider()
     st.markdown('<div class="mu-section">📋 Match Recap</div>', unsafe_allow_html=True)
-
     recap = get_match_recap(home_team, away_team, match['match_date'])
-
     if recap["found"] and recap["key_events"]:
-        # Timeline of goals and red cards
         events_html = ""
         for ev in recap["key_events"]:
             clock_str  = f"{ev['clock']}" if ev['clock'] else ""
@@ -240,7 +292,6 @@ if is_completed:
                 f"{player_str} {team_str}"
                 f"</div>"
             )
-
         st.markdown(
             "<div style='background:linear-gradient(160deg,#0F172A,#1E293B);border-radius:14px;"
             "padding:1rem 1.2rem;border:1px solid rgba(148,163,184,.12);margin-bottom:.8rem'>"
@@ -254,8 +305,6 @@ if is_completed:
         st.caption("Match confirmed — scoring details not yet available from ESPN.")
     else:
         st.caption("Match data not yet available. Check back in a few minutes.")
-
-    # Highlight & coverage links
     lnk1, lnk2, lnk3 = st.columns(3)
     with lnk1:
         st.link_button("🎥 Watch Highlights", recap["youtube_url"], use_container_width=True)
@@ -264,50 +313,163 @@ if is_completed:
     with lnk3:
         st.link_button("⚽ FIFA Match Centre", recap["fifa_url"], use_container_width=True)
 
-# ── 3. Who Should I Cheer For? ────────────────────────────────────────────────
-st.divider()
-st.markdown('<div class="mu-section">🤔 Who Should I Cheer For?</div>', unsafe_allow_html=True)
-st.caption("Pick your side! Here's why you might love each team…")
+# ── 3. Family Split Summary ───────────────────────────────────────────────────
+home_picks_info = [
+    (u['name'], u['avatar']) for _, u in users.iterrows()
+    if pick_by_user.get(u['name']) == home_team
+]
+away_picks_info = [
+    (u['name'], u['avatar']) for _, u in users.iterrows()
+    if pick_by_user.get(u['name']) == away_team
+]
 
-def _cheer_col(team, flag, data):
-    if data is None:
-        return
-    # Country image header
-    img = get_country_image_html(team, height='120px', border_radius='12px')
-    if img:
-        st.markdown(img, unsafe_allow_html=True)
-    st.markdown(
-        f"<div style='font-size:1.1rem;font-weight:800;margin:.4rem 0'>{flag} {team}</div>",
-        unsafe_allow_html=True
+if home_picks_info and away_picks_info:
+    h_avs = " ".join(
+        f"<span style='font-size:1.6rem' title='{n}'>{av}</span>"
+        for n, av in home_picks_info
     )
-    reasons = _parse_pipe(data.get('cheer_reasons'))
-    if not reasons:
-        st.caption("They're still awesome!")
-        return
-    cols = st.columns(min(len(reasons), 4))
-    for i, reason in enumerate(reasons[:4]):
-        # Format: "Text Label 🎯" — emoji at end, text before it
-        parts = reason.rsplit(' ', 1)
-        if len(parts) == 2:
-            label, emoji = parts[0].strip(), parts[1].strip()
-        else:
-            label, emoji = reason, "⭐"
-        with cols[i % len(cols)]:
-            st.markdown(
-                f"<div class='cheer-card'>"
-                f"<div style='font-size:2.2rem;line-height:1.1'>{emoji}</div>"
-                f"<div style='font-size:.82rem;font-weight:700;color:#0F172A;margin-top:.35rem;line-height:1.3'>{label}</div>"
-                f"</div>",
-                unsafe_allow_html=True
-            )
+    a_avs = " ".join(
+        f"<span style='font-size:1.6rem' title='{n}'>{av}</span>"
+        for n, av in away_picks_info
+    )
+    st.markdown(
+        f"<div style='background:rgba(30,58,95,.45);border:1px solid rgba(147,197,253,.15);"
+        f"border-radius:12px;padding:.85rem 1.1rem;margin:.5rem 0'>"
+        f"<div style='font-size:.8rem;font-weight:800;color:#93C5FD;margin-bottom:.55rem'>"
+        f"⚖️ Family Split</div>"
+        f"<div style='display:flex;gap:2rem;flex-wrap:wrap'>"
+        f"<div><div style='font-size:.85rem;font-weight:700;color:#F1F5F9'>"
+        f"{home_flag} {home_team}</div><div style='margin-top:.25rem'>{h_avs}</div></div>"
+        f"<div><div style='font-size:.85rem;font-weight:700;color:#F1F5F9'>"
+        f"{away_flag} {away_team}</div><div style='margin-top:.25rem'>{a_avs}</div></div>"
+        f"</div>"
+        f"<div style='font-size:.72rem;color:#64748B;margin-top:.4rem'>"
+        f"{len(home_picks_info)} vs {len(away_picks_info)}</div></div>",
+        unsafe_allow_html=True,
+    )
+elif home_picks_info or away_picks_info:
+    winning_team = home_team if home_picks_info else away_team
+    winning_flag = home_flag if home_picks_info else away_flag
+    all_avs = " ".join(
+        f"<span style='font-size:1.6rem' title='{n}'>{av}</span>"
+        for n, av in (home_picks_info or away_picks_info)
+    )
+    st.markdown(
+        f"<div style='background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);"
+        f"border-radius:12px;padding:.85rem 1.1rem;margin:.5rem 0'>"
+        f"<div style='font-size:.8rem;font-weight:800;color:#4ADE80;margin-bottom:.35rem'>"
+        f"👨‍👩‍👧‍👦 Family Consensus!</div>"
+        f"<div style='font-size:1rem;color:#F1F5F9;font-weight:700'>"
+        f"Everyone picked {winning_flag} {winning_team}!</div>"
+        f"<div style='margin-top:.35rem'>{all_avs}</div></div>",
+        unsafe_allow_html=True,
+    )
 
-cheer_c1, cheer_c2 = st.columns(2)
-with cheer_c1:
-    _cheer_col(home_team, home_flag, home_data)
-with cheer_c2:
-    _cheer_col(away_team, away_flag, away_data)
+# ── 4. Family Debate Corner ───────────────────────────────────────────────────
+st.divider()
+st.markdown('<div class="mu-section">💬 Family Debate Corner</div>', unsafe_allow_html=True)
 
-# ── 4. Key Players ────────────────────────────────────────────────────────────
+h_rank = home_data.get('fifa_ranking') if home_data is not None else None
+a_rank = away_data.get('fifa_ranking') if away_data is not None else None
+h_best = _safe(home_data.get('best_finish') if home_data is not None else None)
+a_best = _safe(away_data.get('best_finish') if away_data is not None else None)
+h_apps = home_data.get('wc_appearances') if home_data is not None else None
+a_apps = away_data.get('wc_appearances') if away_data is not None else None
+
+debate_cards = []
+
+if h_rank and a_rank:
+    diff = abs(int(h_rank) - int(a_rank))
+    if diff > 30:
+        underdog = away_team if int(h_rank) < int(a_rank) else home_team
+        fav      = home_team if int(h_rank) < int(a_rank) else away_team
+        debate_cards.append({
+            'icon': '🏆', 'color': '#7C3AED',
+            'title': 'Favorite vs Underdog',
+            'body': f"FIFA #{min(int(h_rank),int(a_rank))} {fav} vs #{max(int(h_rank),int(a_rank))} {underdog}.",
+            'question': f"Can {underdog} pull off the upset today?",
+        })
+    else:
+        debate_cards.append({
+            'icon': '⚖️', 'color': '#3B82F6',
+            'title': 'Well-Matched Teams',
+            'body': f"FIFA #{h_rank} {home_team} vs #{a_rank} {away_team} — very close in the rankings.",
+            'question': "Which team wants it more today?",
+        })
+
+h_capital = _safe(home_data.get('capital') if home_data else None)
+a_capital = _safe(away_data.get('capital') if away_data else None)
+if h_capital != "—" and a_capital != "—":
+    debate_cards.append({
+        'icon': '✈️', 'color': '#0369A1',
+        'title': 'Which country would you rather visit?',
+        'body': f"{home_team}'s capital {h_capital} or {away_team}'s capital {a_capital}?",
+        'question': "Pack your bags — where are you going?",
+    })
+
+h_foods = _parse_pipe(home_data.get('foods') if home_data else None)
+a_foods = _parse_pipe(away_data.get('foods') if away_data else None)
+if h_foods and a_foods:
+    debate_cards.append({
+        'icon': '🍽️', 'color': '#D97706',
+        'title': 'Better food?',
+        'body': f"{h_foods[0]} from {home_team} vs {a_foods[0]} from {away_team}.",
+        'question': "Which dish sounds tastier right now?",
+    })
+
+h_animals = _parse_pipe(home_data.get('animals') if home_data else None)
+a_animals = _parse_pipe(away_data.get('animals') if away_data else None)
+if h_animals and a_animals and len(debate_cards) < 4:
+    debate_cards.append({
+        'icon': '🦁', 'color': '#16A34A',
+        'title': 'Animal Showdown',
+        'body': f"{h_animals[0]} ({home_team}) vs {a_animals[0]} ({away_team}).",
+        'question': "Which animal would you want to see in the wild?",
+    })
+
+if h_apps and a_apps and abs(int(h_apps) - int(a_apps)) > 5 and len(debate_cards) < 4:
+    more_team = home_team if int(h_apps) > int(a_apps) else away_team
+    less_team = away_team if int(h_apps) > int(a_apps) else home_team
+    debate_cards.append({
+        'icon': '📜', 'color': '#D97706',
+        'title': 'Experience Gap',
+        'body': f"{more_team} has {max(int(h_apps),int(a_apps))} World Cup appearances; {less_team} has {min(int(h_apps),int(a_apps))}.",
+        'question': "Does experience matter more than hunger?",
+    })
+
+if ("Winner" in str(h_best) or "Winner" in str(a_best)) and len(debate_cards) < 4:
+    champ = home_team if "Winner" in str(h_best) else away_team
+    debate_cards.append({
+        'icon': '🥇', 'color': '#16A34A',
+        'title': 'Former Champions',
+        'body': f"{champ} has won the World Cup before!",
+        'question': "Does that history give them an edge, or extra pressure?",
+    })
+
+if not debate_cards:
+    debate_cards.append({
+        'icon': '🔥', 'color': '#DC2626',
+        'title': f"Group {match['group_letter']} Battle",
+        'body': f"Both {home_team} and {away_team} need points to advance.",
+        'question': "Who do you think needs this win more?",
+    })
+
+for card in debate_cards[:4]:
+    c_color = card['color']
+    st.markdown(
+        f"<div style='background:var(--secondary-background-color);"
+        f"border:1px solid rgba(148,163,184,.12);border-left:4px solid {c_color};"
+        f"border-radius:12px;padding:1rem 1.1rem;margin:.4rem 0'>"
+        f"<div style='font-size:1.1rem;font-weight:900;margin-bottom:.3rem'>"
+        f"{card['icon']} {card['title']}</div>"
+        f"<div style='font-size:1rem;opacity:.85;margin:.2rem 0;line-height:1.45'>{card['body']}</div>"
+        f"<div style='font-size:.95rem;font-weight:700;color:{c_color};margin-top:.4rem'>"
+        f"💬 {card['question']}</div>"
+        f"</div>",
+        unsafe_allow_html=True,
+    )
+
+# ── 5. Key Players ────────────────────────────────────────────────────────────
 st.divider()
 st.markdown('<div class="mu-section">⭐ Key Players</div>', unsafe_allow_html=True)
 
@@ -341,18 +503,18 @@ for col, team, flag, featured in [
     with col:
         st.markdown(
             f"<div style='font-size:1rem;font-weight:800;margin-bottom:.4rem'>{flag} {team}</div>",
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
         if featured:
             cards = "".join(_player_trading_card(p) for p in featured[:3])
             st.markdown(
                 f"<div style='display:flex;gap:.4rem;flex-wrap:wrap'>{cards}</div>",
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
         else:
             st.caption("Roster data unavailable.")
 
-# ── 5. Country Comparison ─────────────────────────────────────────────────────
+# ── 6. Country Comparison ─────────────────────────────────────────────────────
 st.divider()
 st.markdown('<div class="mu-section">🌍 Country Comparison</div>', unsafe_allow_html=True)
 
@@ -362,10 +524,10 @@ def _country_card(team, flag, data):
         return
     card = (
         "<div style='background:linear-gradient(160deg,#1E293B,#0F172A);"
-        "border-radius:14px;padding:1.1rem;color:white;height:100%'>"
-        f"<div style='font-size:3rem;margin-bottom:.3rem'>{flag}</div>"
-        f"<div style='font-size:1.3rem;font-weight:900;margin-bottom:.6rem'>{team}</div>"
-        "<div style='font-size:.82rem;line-height:1.8;color:#CBD5E1'>"
+        "border-radius:14px;padding:1.2rem;color:white;height:100%'>"
+        f"<div style='font-size:3rem;margin-bottom:.35rem'>{flag}</div>"
+        f"<div style='font-size:1.4rem;font-weight:900;margin-bottom:.7rem'>{team}</div>"
+        "<div style='font-size:1rem;line-height:2;color:#CBD5E1'>"
         f"🏙️ <b>Capital:</b> {_safe(data.get('capital'))}<br>"
         f"👥 <b>Population:</b> {_safe(data.get('population'))}<br>"
         f"🗣️ <b>Languages:</b> {_safe(data.get('languages'))}<br>"
@@ -386,37 +548,64 @@ with cc1:
 with cc2:
     _country_card(away_team, away_flag, away_data)
 
-# ── 6. Squad Comparison ───────────────────────────────────────────────────────
+# ── 7. Roster Snapshot ────────────────────────────────────────────────────────
 h_sum = get_team_summary(home_team)
 a_sum = get_team_summary(away_team)
 
-if h_sum and a_sum:
+if h_featured or a_featured:
     st.divider()
-    st.markdown('<div class="mu-section">📊 Squad Comparison</div>', unsafe_allow_html=True)
+    st.markdown('<div class="mu-section">📋 Roster Snapshot</div>', unsafe_allow_html=True)
 
-    def _squad_card_html(team, flag, s) -> str:
+    def _roster_snapshot_card(team, flag, featured, team_sum) -> str:
+        captain  = next((p for p in featured if "Captain"  in p['role']), None) if featured else None
+        youngest = next((p for p in featured if "Youngest" in p['role']), None) if featured else None
+        oldest   = next((p for p in featured if "Oldest"   in p['role']), None) if featured else None
+        avg_age  = float(team_sum.get('average_age', 0)) if team_sum else 0
+
+        try:
+            roster_df    = get_team_roster(team)
+            if not roster_df.empty:
+                club_counts  = roster_df['club'].value_counts()
+                top_club     = club_counts.index[0]
+                top_count    = int(club_counts.iloc[0])
+                tc_short     = top_club.split('(')[0].strip()[:22]
+                top_club_str = f"{tc_short} ({top_count} players)"
+            else:
+                top_club_str = "—"
+        except Exception:
+            top_club_str = "—"
+
+        rows = []
+        if youngest:
+            rows.append(f"👶 <b>Youngest:</b> {youngest['name']}, age {youngest['age']}")
+        if oldest:
+            rows.append(f"👴 <b>Oldest:</b> {oldest['name']}, age {oldest['age']}")
+        if captain:
+            rows.append(f"⭐ <b>Captain:</b> {captain['name']}")
+        if top_club_str != "—":
+            rows.append(f"🏟️ <b>Top club:</b> {top_club_str}")
+        if avg_age > 0:
+            rows.append(f"📅 <b>Avg age:</b> {avg_age:.1f}")
+
+        rows_html = "<br>".join(rows) if rows else "Roster data unavailable."
         return (
-            "<div class='squad-card'>"
-            f"<div style='font-size:2rem;margin-bottom:.2rem'>{flag}</div>"
-            f"<div style='font-size:.95rem;font-weight:800;margin-bottom:.5rem'>{team}</div>"
-            f"<div style='font-size:.82rem;line-height:1.9;color:#CBD5E1'>"
-            f"📅 Avg Age: <b>{float(s.get('average_age',0)):.1f}</b><br>"
-            f"🧤 GK:  <b>{int(s.get('goalkeepers',0))}</b><br>"
-            f"🛡️ DEF: <b>{int(s.get('defenders',0))}</b><br>"
-            f"⚙️ MID: <b>{int(s.get('midfielders',0))}</b><br>"
-            f"⚽ FWD: <b>{int(s.get('forwards',0))}</b>"
-            f"</div></div>"
+            "<div style='background:linear-gradient(160deg,#1E293B,#0F172A);"
+            "border-radius:12px;padding:1rem 1.1rem;color:white;flex:1'>"
+            f"<div style='font-size:1.5rem;margin-bottom:.25rem'>{flag}</div>"
+            f"<div style='font-size:1rem;font-weight:900;margin-bottom:.5rem'>{team}</div>"
+            f"<div style='font-size:.95rem;line-height:2;color:#CBD5E1'>{rows_html}</div>"
+            "</div>"
         )
 
-    h_card = _squad_card_html(home_team, home_flag, h_sum)
-    a_card = _squad_card_html(away_team, away_flag, a_sum)
+    h_rsc  = _roster_snapshot_card(home_team, home_flag, h_featured, h_sum)
+    a_rsc  = _roster_snapshot_card(away_team, away_flag, a_featured, a_sum)
     vs_div = "<div style='display:flex;align-items:center;justify-content:center;color:#94A3B8;font-size:1.4rem;padding:0 .5rem'>🆚</div>"
     st.markdown(
-        f"<div style='display:flex;gap:.5rem;align-items:stretch'>{h_card}{vs_div}{a_card}</div>",
-        unsafe_allow_html=True
+        f"<div style='display:flex;gap:.5rem;align-items:stretch'>{h_rsc}{vs_div}{a_rsc}</div>",
+        unsafe_allow_html=True,
     )
 
-# ── 7. MLS & US Connections ───────────────────────────────────────────────────
+# ── 8. MLS & US Connections ───────────────────────────────────────────────────
 h_mls = get_mls_players(home_team)
 a_mls = get_mls_players(away_team)
 
@@ -438,7 +627,7 @@ if not h_mls.empty or not a_mls.empty:
             f"{flag} {team} · {len(mls_df)} MLS Player{'s' if len(mls_df)!=1 else ''}</div>"
             f"<div style='border-top:1px solid rgba(255,255,255,.15);margin:.4rem 0'></div>"
             f"{rows}</div>",
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
     mls_c1, mls_c2 = st.columns(2)
@@ -451,110 +640,47 @@ if not h_mls.empty or not a_mls.empty:
         if a_mls.empty:
             st.caption(f"No MLS players on {away_team}'s squad.")
 
-# ── 8. Family Debate Corner ───────────────────────────────────────────────────
-st.divider()
-st.markdown('<div class="mu-section">💬 Family Debate Corner</div>', unsafe_allow_html=True)
-
-h_rank = home_data.get('fifa_ranking') if home_data is not None else None
-a_rank = away_data.get('fifa_ranking') if away_data is not None else None
-h_best = _safe(home_data.get('best_finish') if home_data is not None else None)
-a_best = _safe(away_data.get('best_finish') if away_data is not None else None)
-h_apps = home_data.get('wc_appearances') if home_data is not None else None
-a_apps = away_data.get('wc_appearances') if away_data is not None else None
-
-debate_cards = []
-
-if h_rank and a_rank:
-    diff = abs(int(h_rank) - int(a_rank))
-    if diff > 30:
-        underdog = away_team if int(h_rank) < int(a_rank) else home_team
-        fav      = home_team if int(h_rank) < int(a_rank) else away_team
-        debate_cards.append({
-            'icon': '🏆', 'color': '#7C3AED',
-            'title': 'Favorite vs Underdog',
-            'body': f"FIFA #{min(int(h_rank),int(a_rank))} {fav} vs #{max(int(h_rank),int(a_rank))} {underdog}.",
-            'question': f"Can {underdog} pull off the upset today?",
-        })
-    else:
-        debate_cards.append({
-            'icon': '⚖️', 'color': '#3B82F6',
-            'title': 'Well-Matched Teams',
-            'body': f"FIFA #{h_rank} {home_team} vs #{a_rank} {away_team} — very close in the rankings.",
-            'question': "Which team wants it more today?",
-        })
-
-if h_apps and a_apps and int(h_apps) > int(a_apps) + 5:
-    debate_cards.append({
-        'icon': '📜', 'color': '#D97706',
-        'title': 'Experience Gap',
-        'body': f"{home_team} has {h_apps} World Cup appearances; {away_team} has {a_apps}.",
-        'question': "Does experience matter more than hunger?",
-    })
-
-if "Winner" in str(h_best) or "Winner" in str(a_best):
-    champ = home_team if "Winner" in str(h_best) else away_team
-    debate_cards.append({
-        'icon': '🥇', 'color': '#16A34A',
-        'title': 'Former Champions',
-        'body': f"{champ} has won the World Cup before!",
-        'question': "Does that history give them an edge, or extra pressure?",
-    })
-
-if not debate_cards:
-    debate_cards.append({
-        'icon': '🔥', 'color': '#DC2626',
-        'title': f"Group {match['group_letter']} Battle",
-        'body': f"Both {home_team} and {away_team} need points to advance.",
-        'question': "Who do you think needs this win more?",
-    })
-
-for card in debate_cards:
-    c_color = card['color']
-    st.markdown(
-        f"<div class='debate-card' style='border-left-color:{c_color}'>"
-        f"<div style='font-size:.95rem;font-weight:800;color:#0F172A'>{card['icon']} {card['title']}</div>"
-        f"<div style='font-size:.85rem;color:#475569;margin:.2rem 0'>{card['body']}</div>"
-        f"<div style='font-size:.82rem;color:{c_color};font-style:italic;margin-top:.3rem'>"
-        f"💬 {card['question']}</div>"
-        f"</div>",
-        unsafe_allow_html=True
-    )
-
-# ── 9. Host City Explorer ─────────────────────────────────────────────────────
+# ── 9. Host City ──────────────────────────────────────────────────────────────
 st.divider()
 st.markdown('<div class="mu-section">🏙️ Host City</div>', unsafe_allow_html=True)
 
 CITY_FACTS = {
-    "Mexico City":   ("🇲🇽", "One of Earth's largest cities at 2,240m altitude — players tire faster here! The Azteca has hosted two World Cup finals."),
-    "Guadalajara":   ("🇲🇽", "Birthplace of mariachi music and home to tequila country! Mexico's second-largest city."),
-    "Monterrey":     ("🇲🇽", "Mexico's industrial powerhouse nestled in the Sierra Madre mountains."),
-    "East Rutherford": ("🇺🇸", "Right outside New York City — the World Cup FINAL will be played here on July 19!"),
-    "Arlington":     ("🇺🇸", "Home of AT&T Stadium (Dallas Cowboys), famous for the world's largest HD screen."),
-    "Los Angeles":   ("🇺🇸", "Hollywood, sunshine, and SoFi Stadium — home of the Rams and Chargers."),
-    "Santa Clara":   ("🇺🇸", "Silicon Valley! Levi's Stadium near the Golden Gate Bridge."),
-    "Philadelphia":  ("🇺🇸", "The City of Brotherly Love — where the Declaration of Independence was signed."),
-    "Miami Gardens": ("🇺🇸", "South Florida energy! Lionel Messi's Inter Miami plays just nearby."),
-    "Kansas City":   ("🇺🇸", "Home of legendary BBQ and Arrowhead — one of the loudest stadiums on Earth."),
-    "Foxborough":    ("🇺🇸", "Near Boston! Gillette Stadium, home of the Patriots and New England history."),
-    "Atlanta":       ("🇺🇸", "The ATL! Mercedes-Benz Stadium has a retractable roof over Atlanta United's home."),
-    "Seattle":       ("🇺🇸", "🏠 The Espinosa family home city! Lumen Field — Sounders FC territory."),
-    "Houston":       ("🇺🇸", "Space City! NRG Stadium is near NASA Mission Control."),
-    "Vancouver":     ("🇨🇦", "Mountains meet ocean — BC Place is one of the most beautiful settings of the tournament."),
-    "Toronto":       ("🇨🇦", "Canada's biggest city! BMO Field, home of Toronto FC and the CN Tower skyline."),
+    "Mexico City":    ("🇲🇽", "One of Earth's largest cities at 2,240m altitude — players tire faster here! The Azteca has hosted two World Cup finals."),
+    "Guadalajara":    ("🇲🇽", "Birthplace of mariachi music and home to tequila country! Mexico's second-largest city."),
+    "Monterrey":      ("🇲🇽", "Mexico's industrial powerhouse nestled in the Sierra Madre mountains."),
+    "East Rutherford":("🇺🇸", "Right outside New York City — the World Cup FINAL will be played here on July 19!"),
+    "Arlington":      ("🇺🇸", "Home of AT&T Stadium (Dallas Cowboys), famous for the world's largest HD screen."),
+    "Los Angeles":    ("🇺🇸", "Hollywood, sunshine, and SoFi Stadium — home of the Rams and Chargers."),
+    "Santa Clara":    ("🇺🇸", "Silicon Valley! Levi's Stadium near the Golden Gate Bridge."),
+    "Philadelphia":   ("🇺🇸", "The City of Brotherly Love — where the Declaration of Independence was signed."),
+    "Miami Gardens":  ("🇺🇸", "South Florida energy! Lionel Messi's Inter Miami plays just nearby."),
+    "Kansas City":    ("🇺🇸", "Home of legendary BBQ and Arrowhead — one of the loudest stadiums on Earth."),
+    "Foxborough":     ("🇺🇸", "Near Boston! Gillette Stadium, home of the Patriots and New England history."),
+    "Atlanta":        ("🇺🇸", "The ATL! Mercedes-Benz Stadium has a retractable roof over Atlanta United's home."),
+    "Seattle":        ("🇺🇸", "🏠 The Espinosa family home city! Lumen Field — Sounders FC territory."),
+    "Houston":        ("🇺🇸", "Space City! NRG Stadium is near NASA Mission Control."),
+    "Vancouver":      ("🇨🇦", "Mountains meet ocean — BC Place is one of the most beautiful settings of the tournament."),
+    "Toronto":        ("🇨🇦", "Canada's biggest city! BMO Field, home of Toronto FC and the CN Tower skyline."),
 }
 
 city = match['city']
-city_flag, city_fact = CITY_FACTS.get(city, ("📍", f"One of the 16 host cities for the 2026 World Cup."))
+city_flag, city_fact = CITY_FACTS.get(city, ("📍", "One of the 16 host cities for the 2026 World Cup."))
 
-st.markdown(
-    "<div class='city-card'>"
-    f"<div style='font-size:1.6rem;font-weight:900;margin-bottom:.1rem'>{city_flag} {city}</div>"
-    f"<div style='color:#94A3B8;font-size:.82rem;margin-bottom:.6rem'>🏟️ {match['venue']} · {match['host_country']}</div>"
-    f"<div style='font-size:.88rem;color:#CBD5E1;line-height:1.55'>{city_fact}</div>"
-    "</div>",
-    unsafe_allow_html=True
-)
-
-if st.button("🏙️ Full City Guide", key="host_city_btn"):
-    st.session_state["_nav_city"] = city
-    st.switch_page("pages/host_cities.py")
+city_left, city_right = st.columns([3, 2])
+with city_left:
+    st.markdown(
+        "<div class='city-card'>"
+        f"<div style='font-size:1.6rem;font-weight:900;margin-bottom:.1rem'>{city_flag} {city}</div>"
+        f"<div style='color:#94A3B8;font-size:.82rem;margin-bottom:.6rem'>"
+        f"🏟️ {match['venue']} · {match['host_country']}</div>"
+        f"<div style='font-size:.95rem;color:#CBD5E1;line-height:1.6'>{city_fact}</div>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    if st.button("🏙️ Full City Guide", key="host_city_btn"):
+        st.session_state["_nav_city"] = city
+        st.switch_page("pages/host_cities.py")
+with city_right:
+    city_img = get_country_image_html(match['host_country'], height='160px', border_radius='12px')
+    if city_img:
+        st.markdown(city_img, unsafe_allow_html=True)

@@ -381,6 +381,9 @@ def _formation_svg(roster_df: pd.DataFrame, captain_name: str = "") -> str:
         f"FORMATION {form}</text>"
     )
 
+    # Jersey silhouette path (centered at origin, torso ~32px tall x 34px wide)
+    JERSEY = "M -14,-16 L -22,-8 L -17,-6 L -17,16 L 17,16 L 17,-6 L 22,-8 L 14,-16 C 8,-20 -8,-20 -14,-16 Z"
+
     def _draw_row(players, y, tag):
         xs = _xs(len(players))
         for i, pl in enumerate(players):
@@ -388,14 +391,16 @@ def _formation_svg(roster_df: pd.DataFrame, captain_name: str = "") -> str:
             snum = str(int(pl["shirt_number"]))
             lname = _last(pl["player_name"])
             is_cap = cap_num is not None and int(pl["shirt_number"]) == cap_num
-            stroke = "#FCD34D" if is_cap else "rgba(255,255,255,0.5)"
+            stroke = "#FCD34D" if is_cap else "rgba(255,255,255,0.55)"
             sw = "2.5" if is_cap else "1.5"
-            p.append(f"<circle cx='{px}' cy='{y}' r='21' fill='#1D4ED8' stroke='{stroke}' stroke-width='{sw}' opacity='0.93'/>")
-            p.append(f"<text x='{px}' y='{y+5}' text-anchor='middle' font-size='13' font-weight='900' fill='white' font-family='system-ui,sans-serif'>{snum}</text>")
+            p.append(f"<g transform='translate({px},{y})'>")
+            p.append(f"<path d='{JERSEY}' fill='#1D4ED8' stroke='{stroke}' stroke-width='{sw}' stroke-linejoin='round' opacity='0.93'/>")
+            p.append(f"<text y='5' text-anchor='middle' font-size='12' font-weight='900' fill='white' font-family='system-ui,sans-serif'>{snum}</text>")
             if is_cap:
-                p.append(f"<circle cx='{px+15}' cy='{y-15}' r='8' fill='#FCD34D'/>")
-                p.append(f"<text x='{px+15}' y='{y-11}' text-anchor='middle' font-size='8.5' font-weight='900' fill='#1E293B' font-family='system-ui,sans-serif'>C</text>")
-            p.append(f"<text x='{px}' y='{y+34}' text-anchor='middle' font-size='9.5' font-weight='700' fill='rgba(255,255,255,0.83)' font-family='system-ui,sans-serif'>{lname}</text>")
+                p.append("<circle cx='15' cy='-14' r='8' fill='#FCD34D'/>")
+                p.append("<text x='15' y='-10' text-anchor='middle' font-size='8.5' font-weight='900' fill='#1E293B' font-family='system-ui,sans-serif'>C</text>")
+            p.append("</g>")
+            p.append(f"<text x='{px}' y='{y+27}' text-anchor='middle' font-size='9.5' font-weight='700' fill='rgba(255,255,255,0.83)' font-family='system-ui,sans-serif'>{lname}</text>")
         p.append(f"<text x='{W-16}' y='{y+5}' text-anchor='end' font-size='9' font-weight='800' fill='rgba(255,255,255,0.32)' font-family='system-ui,sans-serif' letter-spacing='0.5'>{tag}</text>")
 
     _draw_row(fwd_xi, ROW_Y["fwd"], "FWD")
@@ -409,7 +414,7 @@ def _formation_svg(roster_df: pd.DataFrame, captain_name: str = "") -> str:
         "border:1px solid rgba(148,163,184,.1)'>"
         + svg +
         "<div style='font-size:.63rem;color:#475569;text-align:center;margin-top:.3rem'>"
-        "Blue circle = player &nbsp;·&nbsp; Gold ring &amp; C badge = captain &nbsp;·&nbsp; Inferred starting XI"
+        "Best-guess lineup based on squad position counts &nbsp;·&nbsp; Gold C = captain &nbsp;·&nbsp; Not confirmed by team"
         "</div></div>"
     )
 
@@ -574,8 +579,8 @@ if has_hero:
     st.markdown(hero_html, unsafe_allow_html=True)
 
 # ── Section 2: Country Banner ─────────────────────────────────────────────────
-flag_size     = "2.5rem" if has_hero else "4rem"
-header_pad    = "1rem 1.5rem 1.2rem" if has_hero else "2rem"
+flag_size     = "3.25rem" if has_hero else "5.2rem"   # 30% larger than before
+header_pad    = "0.75rem 1.2rem 0.9rem" if has_hero else "1.6rem"  # ~20% smaller box
 border_radius = "0 0 16px 16px" if has_hero else "16px"
 
 st.markdown(
@@ -662,7 +667,7 @@ facts = [
     ("🗣️", "Languages",     _safe(team.get("languages"))),
     ("💰", "Currency",      _safe(team.get("currency"))),
     ("🌍", "Continent",     stamp["continent"]),
-    ("⚽", "Confederation", _safe(team.get("confederation"))),
+    ("🎽", "Team Nickname", _safe(details.get("nickname")) or "—"),
 ]
 for col, (icon, label, val) in zip(list(row1) + list(row2), facts):
     col.markdown(_stat_card(icon, label, val), unsafe_allow_html=True)
@@ -860,61 +865,31 @@ home_stadium  = details.get("home_stadium", "—")
 
 # ── Team Snapshot ─────────────────────────────────────────────────────────────
 st.markdown("#### 📊 Team Snapshot")
+_avg_age = f"{float(summary.get('average_age', 0)):.1f}" if summary else "—"
 ss_cols = st.columns(4)
 for col, (icon, label, val) in zip(ss_cols, [
-    ("🏅", "FIFA Ranking",     f"#{_safe(team.get('fifa_ranking'))}"),
-    ("🏆", "Best WC Finish",   _safe(team.get("best_finish"))),
-    ("👔", "Coach",            _safe(team.get("coach"))),
-    ("🎽", "Captain",          captain_name),
+    ("🏅", "FIFA Ranking",   f"#{_safe(team.get('fifa_ranking'))}"),
+    ("🔢", "WC Appearances", _safe(team.get("wc_appearances"), "—")),
+    ("🏆", "Best WC Finish", _safe(team.get("best_finish"))),
+    ("🌐", "Confederation",  _safe(team.get("confederation"))),
 ]):
     col.markdown(_stat_card(icon, label, val), unsafe_allow_html=True)
 
-ss2_cols = st.columns(3)
+ss2_cols = st.columns(4)
 for col, (icon, label, val) in zip(ss2_cols, [
-    ("🌐", "Confederation",    _safe(team.get("confederation"))),
-    ("🔢", "WC Appearances",   _safe(team.get("wc_appearances"), "—")),
-    ("🏟️", "Home Stadium",     home_stadium),
+    ("🏟️", "Home Stadium", home_stadium),
+    ("👔", "Coach",         _safe(team.get("coach"))),
+    ("🎽", "Captain",       captain_name),
+    ("📅", "Avg Age",       _avg_age),
 ]):
     col.markdown(_stat_card(icon, label, val), unsafe_allow_html=True)
 
 # ── Formation View ────────────────────────────────────────────────────────────
 if not roster.empty:
     st.markdown("#### 🟩 Predicted Starting XI")
-    _form_col, _form_info = st.columns([2, 1])
-    with _form_col:
+    _sv_col, _ = st.columns([2, 1])
+    with _sv_col:
         st.markdown(_formation_svg(roster, captain_name), unsafe_allow_html=True)
-    with _form_info:
-        if summary:
-            st.markdown(
-                "<div style='background:linear-gradient(160deg,#1E293B,#0F172A);border-radius:12px;"
-                "padding:.85rem 1rem;border:1px solid rgba(148,163,184,.1);margin-top:.5rem'>"
-                "<div style='font-size:.74rem;font-weight:800;color:#64748B;text-transform:uppercase;"
-                "letter-spacing:.05em;margin-bottom:.6rem'>Full Squad</div>",
-                unsafe_allow_html=True
-            )
-            for _icon, _key, _lbl in [
-                ("🧤", "goalkeepers", "Goalkeepers"),
-                ("🛡️", "defenders",   "Defenders"),
-                ("⚙️", "midfielders", "Midfielders"),
-                ("⚽", "forwards",    "Forwards"),
-            ]:
-                _val = summary.get(_key, 0)
-                st.markdown(
-                    f"<div style='display:flex;justify-content:space-between;align-items:center;"
-                    f"padding:.2rem 0;border-bottom:1px solid rgba(148,163,184,.07)'>"
-                    f"<span style='font-size:.78rem;color:#94A3B8'>{_icon} {_lbl}</span>"
-                    f"<span style='font-size:.88rem;font-weight:900;color:#F1F5F9'>{int(_val)}</span>"
-                    f"</div>",
-                    unsafe_allow_html=True
-                )
-            avg = summary.get("average_age", 0)
-            st.markdown(
-                f"<div style='display:flex;justify-content:space-between;align-items:center;padding:.2rem 0'>"
-                f"<span style='font-size:.78rem;color:#94A3B8'>📅 Avg Age</span>"
-                f"<span style='font-size:.88rem;font-weight:900;color:#F1F5F9'>{float(avg):.1f}</span>"
-                "</div></div>",
-                unsafe_allow_html=True
-            )
 
 # ── Players To Know ───────────────────────────────────────────────────────────
 if featured:

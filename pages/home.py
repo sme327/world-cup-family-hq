@@ -7,14 +7,15 @@ from services.teams import get_flag
 from services.activity import (
     format_activity_message,
     get_recent_family_discoveries,
-    get_best_activity_per_user,
+    get_tiered_family_activity,
+    STORY_TIERS,
 )
+from services.picks import get_picks_for_match
 from services.passport import (
     get_country_of_the_day, get_family_stamp_statuses,
     get_stamp, get_top_favorites,
 )
 from services.images import get_country_image_html, get_country_image_data_uri
-from services.achievements import get_recent_achievement_unlocks
 from services.time_utils import fmt_match_time, pt_date_str
 from services.database import get_connection
 
@@ -56,6 +57,24 @@ st.markdown("""
 }
 /* ── Leaderboard ─────────────────────────────────── */
 .lb-row { padding:.55rem .7rem; border-radius:8px; margin:.25rem 0; min-height:3.6rem; }
+/* ── Story tier variants ─────────────────────────── */
+.story-t1 {
+    background:rgba(251,191,36,.09) !important;
+    border-color:#D97706 !important;
+    border-left:3px solid #D97706 !important;
+}
+.story-t2 {
+    background:rgba(16,185,129,.07) !important;
+    border-color:#10B981 !important;
+    border-left:3px solid #10B981 !important;
+}
+/* ── Pick participation bar ──────────────────────── */
+.pick-bar {
+    margin:.45rem 0 .1rem;
+    font-size:.72rem;
+    font-weight:700;
+    text-align:center;
+}
 /* ── Section titles ──────────────────────────────── */
 .section-head { font-size:1.25rem; font-weight:800; margin:.7rem 0 .35rem; }
 /* ── Achievement strip ───────────────────────────── */
@@ -159,7 +178,8 @@ def _today_match_card(m):
         st.switch_page("pages/matchup.py")
 
 
-def _tomorrow_match_card(m):
+def _tomorrow_match_card(m, match_picks: dict = None, all_users: list = None):
+    """match_picks: {user_id: picked_team}. all_users: list of {id,name,avatar} dicts."""
     hf  = get_flag(m['home_team'])
     af  = get_flag(m['away_team'])
     mid = int(m['id'])
@@ -181,11 +201,43 @@ def _tomorrow_match_card(m):
         )
         btn_label, btn_icon = "Make Your Pick", "⚽"
 
+    # ── Pick participation block ──────────────────────────────────────────────
+    if match_picks is not None and all_users:
+        total      = len(all_users)
+        picked_ids = set(match_picks.keys())
+        n_picked   = len(picked_ids)
+        missing    = [u for u in all_users if int(u['id']) not in picked_ids]
+
+        if n_picked == total:
+            part_html = (
+                "<div class='pick-bar' style='color:#10B981'>"
+                "✅ All picks submitted!</div>"
+            )
+        elif n_picked == 0:
+            part_html = (
+                f"<div class='pick-bar' style='color:#64748B'>"
+                f"👨‍👩‍👧‍👦 No picks yet — {total} waiting</div>"
+            )
+        else:
+            missing_avs = " ".join(
+                f"<span title='{u['name']}' style='font-size:1.1rem'>{u['avatar']}</span>"
+                for u in missing
+            )
+            part_html = (
+                f"<div class='pick-bar' style='color:#F59E0B'>"
+                f"👨‍👩‍👧‍👦 {n_picked} / {total} picked</div>"
+                f"<div style='text-align:center;font-size:.72rem;color:#94A3B8;margin-bottom:.3rem'>"
+                f"⏳ Waiting: {missing_avs}</div>"
+            )
+    else:
+        part_html = ""
+
     st.markdown(f"""
 <div class="match-card-tomorrow">
     {flags_html}
     <div class="match-teams">{m['home_team']} <span style='opacity:.5;font-weight:300'>vs</span> {m['away_team']}</div>
     <div class="match-meta">🕒 {time_str} · Group {m['group_letter']} · 📍 {m['city']}</div>
+    {part_html}
 </div>""", unsafe_allow_html=True)
 
     if st.button(f"{btn_icon} {btn_label}", key=f"home_go_{mid}", use_container_width=True):
@@ -208,6 +260,21 @@ today_matches    = all_matches[all_matches['pt_date'] == today_str].sort_values(
 tomorrow_matches = all_matches[all_matches['pt_date'] == tomorrow.isoformat()].sort_values('kickoff_time_et')
 
 board = get_leaderboard()
+
+# ── Pre-compute pick participation for tomorrow's matches ──────────────────────
+_conn_users = get_connection()
+_all_users_for_picks = pd.read_sql(
+    "SELECT id, name, avatar FROM users ORDER BY id", _conn_users
+).to_dict('records')
+_conn_users.close()
+
+_tomorrow_picks: dict[int, dict] = {}
+for _, _tm in tomorrow_matches.iterrows():
+    _mid = int(_tm['id'])
+    _pdf = get_picks_for_match(_mid)
+    _tomorrow_picks[_mid] = {
+        int(r['user_id']): r['picked_team'] for _, r in _pdf.iterrows()
+    }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -518,10 +585,9 @@ with lb_col:
             unsafe_allow_html=True
         )
 
-# ── Family Favorites — one card per country, shared avatars if tied ───────────
+# ── Family Favorites — sorted by most shared, with context line ───────────────
 with fav_col:
     st.markdown('<div class="section-head">⭐ Family Favorites</div>', unsafe_allow_html=True)
-    MEDAL_BORDER = ["#D97706", "#3B82F6", "#DC2626", "#94A3B8", "#94A3B8", "#94A3B8"]
 
     try:
         # Build country → [(board_rank, user_row), ...] mapping
@@ -531,28 +597,29 @@ with fav_col:
             uid  = int(row['id'])
             favs = get_top_favorites(uid, 1)
             if favs:
-                c = favs[0]
-                country_owners.setdefault(c, []).append((i, row))
+                country_owners.setdefault(favs[0], []).append((i, row))
             else:
                 no_fav_rows.append(row)
 
-        # Emit one card per unique country, in order of the top-ranked fan
-        seen_countries: set[str] = set()
-        for i, (_, row) in enumerate(board.iterrows()):
-            uid  = int(row['id'])
-            favs = get_top_favorites(uid, 1)
-            if not favs:
-                continue
-            country = favs[0]
-            if country in seen_countries:
-                continue
-            seen_countries.add(country)
+        # Sort: most shared first, then by best-ranking fan within ties
+        sorted_countries = sorted(
+            country_owners.items(),
+            key=lambda item: (-len(item[1]), min(rank for rank, _ in item[1])),
+        )
 
-            owners = country_owners[country]       # list of (rank_idx, user_row)
-            top_rank = owners[0][0]                # rank of the first (highest) fan
-            border = MEDAL_BORDER[top_rank] if top_rank < len(MEDAL_BORDER) else "#E2E8F0"
-            stamp  = get_stamp(country)
-            flag   = get_flag(country)
+        for country, owners in sorted_countries:
+            n_fans    = len(owners)
+            top_rank  = owners[0][0]
+            # Border color by share level
+            if n_fans >= 4:
+                border = "#9333EA"   # purple — very popular
+            elif n_fans >= 2:
+                border = "#3B82F6"   # blue — shared
+            else:
+                border = "#D97706"   # gold — individual #1 pick
+
+            stamp    = get_stamp(country)
+            flag     = get_flag(country)
             img_html = (
                 get_country_image_html(country, height='72px', border_radius='10px 10px 0 0')
                 or f"<div style='height:72px;background:linear-gradient(135deg,#1E293B,#334155);"
@@ -560,58 +627,78 @@ with fav_col:
                    f"font-size:2.5rem;border-radius:10px 10px 0 0'>{flag}</div>"
             )
 
-            # Avatar row — all fans of this country
+            # Context line — why this country appears
+            if n_fans == 1:
+                sole = owners[0][1]
+                context_line = f"❤️ {sole['name']}'s favorite"
+                context_color = "#94A3B8"
+            elif n_fans == 2:
+                context_line  = f"👨‍👩‍👧‍👦 Shared by 2 family members"
+                context_color = "#60A5FA"
+            else:
+                context_line  = f"👨‍👩‍👧‍👦 Shared by {n_fans} family members"
+                context_color = "#A78BFA"
+
+            # Avatar pills for all fans
             av_parts = []
             for _, r in owners:
-                nm, av = r['name'], r['avatar']
-                av_parts.append(f"<span style='font-size:1.4rem' title='{nm}'>{av}</span>")
-            avatar_html = " ".join(av_parts)
-            fans_label = (
-                f"{owners[0][1]['name']}'s Favorite"
-                if len(owners) == 1
-                else "Shared Favorite"
+                av_parts.append(
+                    f"<span style='font-size:1.45rem;line-height:1' title='{r['name']}'>"
+                    f"{r['avatar']}</span>"
+                )
+            avatar_row = (
+                f"<div style='display:flex;gap:.25rem;flex-wrap:wrap;"
+                f"margin-top:.25rem;align-items:center'>"
+                + " ".join(av_parts)
+                + "</div>"
             )
 
             st.markdown(
-                f"<div style='background:white;border:2px solid {border};border-radius:12px;"
-                f"overflow:hidden;margin:.25rem 0;box-shadow:0 1px 4px rgba(0,0,0,.06)'>"
+                f"<div style='background:var(--secondary-background-color);"
+                f"border:2px solid {border};border-radius:12px;"
+                f"overflow:hidden;margin:.25rem 0;box-shadow:0 1px 4px rgba(0,0,0,.08)'>"
                 f"{img_html}"
                 f"<div style='padding:.4rem .65rem'>"
                 f"<div style='display:flex;align-items:center;gap:.3rem'>"
                 f"<span style='font-size:1.3rem;line-height:1'>{flag}</span>"
-                f"<span style='font-size:.95rem;font-weight:900;color:#0F172A'>{country}</span>"
+                f"<span style='font-size:.95rem;font-weight:900'>{country}</span>"
                 f"</div>"
                 f"<div style='font-size:.7rem;color:#64748B;margin:.1rem 0'>"
                 f"{stamp['stamp_emoji']} {stamp['stamp_label']}</div>"
-                f"<div style='font-size:.7rem;color:#94A3B8;font-weight:700;text-transform:uppercase;"
-                f"letter-spacing:.04em'>{fans_label}</div>"
-                f"<div style='margin-top:.2rem'>{avatar_html}</div>"
+                f"<div style='font-size:.72rem;font-weight:700;color:{context_color}'>"
+                f"{context_line}</div>"
+                f"{avatar_row}"
                 f"</div></div>",
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
         # Users with no favorite yet
         for row in no_fav_rows:
             st.markdown(
-                f"<div style='background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;"
-                f"padding:.55rem .7rem;margin:.25rem 0;opacity:.45;"
+                f"<div style='background:rgba(248,250,252,.04);border:1px solid rgba(255,255,255,.07);"
+                f"border-radius:12px;padding:.55rem .7rem;margin:.25rem 0;opacity:.45;"
                 f"display:flex;align-items:center;gap:.5rem'>"
                 f"<span style='font-size:1.6rem'>{row['avatar']}</span>"
                 f"<span style='font-size:.8rem;color:#94A3B8;font-style:italic'>"
                 f"{row['name']}'s favorite — keep exploring!</span></div>",
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
     except Exception:
         st.info("Favorites loading...")
 
-# ── Family Story — one card per person, leaderboard order ─────────────────────
+# ── Family Story — tiered (milestones first, then exploration, then routine) ───
 with feed_col:
     st.markdown('<div class="section-head">📖 Family Story</div>', unsafe_allow_html=True)
 
-    best_per_user = get_best_activity_per_user(lb_order)
-    any_activity  = any(v is not None for v in best_per_user.values())
+    _TIER_CLASS  = {1: "story-t1", 2: "story-t2", 3: ""}
+    _TIER_BADGE  = {1: "<span style='font-size:.65rem;font-weight:800;color:#D97706;"
+                       "background:rgba(251,191,36,.15);border-radius:4px;"
+                       "padding:.08rem .35rem;margin-left:.4rem'>✨ MILESTONE</span>",
+                    2: "", 3: ""}
 
-    if not any_activity:
+    story_items = get_tiered_family_activity(limit=8)
+
+    if story_items.empty:
         st.markdown("""
 <div style='background:rgba(248,250,252,.05);border:1px solid rgba(255,255,255,.08);
      border-radius:12px;padding:1.5rem;text-align:center;color:#64748B'>
@@ -620,59 +707,25 @@ with feed_col:
     <div style='font-size:.88rem'>Explore Country Profiles and make picks to write the family story.</div>
 </div>""", unsafe_allow_html=True)
     else:
-        for lb_user_id in lb_order:
-            user_row = board[board['id'] == lb_user_id]
-            if user_row.empty:
-                continue
-            u        = user_row.iloc[0]
-            activity = best_per_user.get(lb_user_id)
-
-            if activity is None:
-                st.markdown(f"""
-<div class="story-card" style="opacity:.45">
-    <span style='font-size:2.2rem;flex-shrink:0;line-height:1'>{u['avatar']}</span>
-    <div style='min-width:0;flex:1'>
-        <div style='font-weight:800;font-size:.9rem'>{u['name']}</div>
-        <div style='font-size:.85rem;color:#94A3B8;font-style:italic'>Adventure hasn't started yet…</div>
-    </div>
-</div>""", unsafe_allow_html=True)
-            else:
-                icon, narrative = format_activity_message(activity)
-                ts     = str(activity.get('timestamp', ''))[:10]
-                avatar = activity.get('avatar', u['avatar'])
-                name   = activity.get('user_name', u['name'])
-                st.markdown(f"""
-<div class="story-card">
-    <span style='font-size:2.2rem;flex-shrink:0;line-height:1'>{avatar}</span>
-    <div style='min-width:0;flex:1'>
-        <div style='font-weight:800;font-size:.9rem;line-height:1.2'>{name}</div>
-        <div style='font-size:.9rem;margin:.1rem 0'>{icon} {narrative}</div>
-        <div style='font-size:.75rem;color:#94A3B8'>{ts}</div>
-    </div>
-</div>""", unsafe_allow_html=True)
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Family Celebrations (was: Recent Unlocks)
-# ─────────────────────────────────────────────────────────────────────────────
-try:
-    recent_ach = get_recent_achievement_unlocks(3)
-    if not recent_ach.empty:
-        st.divider()
-        st.markdown(
-            '<div class="section-head">🏆 Family Celebrations</div>',
-            unsafe_allow_html=True
-        )
-        chips = " ".join(
-            f"<span class='ach-chip'>"
-            f"<span style='font-size:1.1rem'>{r['avatar']}</span> "
-            f"<strong>{r['name']}</strong> unlocked "
-            f"{r['ach_emoji']} <strong>{r['ach_name']}</strong>"
-            f"</span>"
-            for _, r in recent_ach.iterrows()
-        )
-        st.markdown(chips, unsafe_allow_html=True)
-except Exception:
-    pass
+        for _, activity in story_items.iterrows():
+            icon, narrative = format_activity_message(activity)
+            tier   = int(activity.get('_tier', 3))
+            ts     = str(activity.get('timestamp', ''))[:10]
+            avatar = activity.get('avatar', '⚽')
+            name   = activity.get('user_name', '')
+            t_cls  = _TIER_CLASS.get(tier, "")
+            badge  = _TIER_BADGE.get(tier, "")
+            st.markdown(
+                f'<div class="story-card {t_cls}">'
+                f"<span style='font-size:2.2rem;flex-shrink:0;line-height:1'>{avatar}</span>"
+                f"<div style='min-width:0;flex:1'>"
+                f"<div style='font-weight:800;font-size:.9rem;line-height:1.2'>"
+                f"{name}{badge}</div>"
+                f"<div style='font-size:.9rem;margin:.1rem 0'>{icon} {narrative}</div>"
+                f"<div style='font-size:.75rem;color:#94A3B8'>{ts}</div>"
+                f"</div></div>",
+                unsafe_allow_html=True,
+            )
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Tomorrow's Matches — full width, unchanged
@@ -683,4 +736,8 @@ if not tomorrow_matches.empty:
     cols = st.columns(min(len(tomorrow_matches), 4))
     for col, (_, m) in zip(cols, tomorrow_matches.iterrows()):
         with col:
-            _tomorrow_match_card(m)
+            _tomorrow_match_card(
+                m,
+                match_picks=_tomorrow_picks.get(int(m['id']), {}),
+                all_users=_all_users_for_picks,
+            )

@@ -73,6 +73,15 @@ _PRIORITY_ORDER = {
     'country_discovered': 4,
 }
 
+# Tier 1 = major milestones, Tier 2 = exploration, Tier 3 = routine
+STORY_TIERS: dict[str, int] = {
+    'achievement_unlocked': 1,
+    'continent_completed':  1,
+    'first_pick':           1,
+    'country_discovered':   2,
+    'points_earned':        3,
+}
+
 
 def get_best_activity_per_user(user_ids_ordered: list[int]) -> dict:
     """
@@ -102,6 +111,34 @@ def get_best_activity_per_user(user_ids_ordered: list[int]) -> dict:
         best = u2.sort_values(['_prio', 'timestamp'], ascending=[True, False]).iloc[0]
         result[uid] = best.to_dict()
     return result
+
+
+def get_tiered_family_activity(limit: int = 8) -> pd.DataFrame:
+    """
+    Recent family activity sorted by story tier (major milestones first),
+    then by recency within each tier.
+    """
+    event_types = list(STORY_TIERS.keys())
+    placeholders = ','.join('?' * len(event_types))
+    conn = get_connection()
+    # Fetch a generous pool so tier-based reordering surfaces the best events
+    df = pd.read_sql(f"""
+        SELECT a.*, u.name AS user_name, u.avatar, u.theme_color
+        FROM activity_log a
+        JOIN users u ON a.user_id = u.id
+        WHERE a.event_type IN ({placeholders})
+        ORDER BY a.timestamp DESC
+        LIMIT ?
+    """, conn, params=(*event_types, limit * 4))
+    conn.close()
+    if df.empty:
+        return df
+    df['_tier'] = df['event_type'].map(STORY_TIERS).fillna(3).astype(int)
+    return (
+        df.sort_values(['_tier', 'timestamp'], ascending=[True, False])
+        .head(limit)
+        .reset_index(drop=True)
+    )
 
 
 def get_recent_family_discoveries(limit: int = 4) -> pd.DataFrame:

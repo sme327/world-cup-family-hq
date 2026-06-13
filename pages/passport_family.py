@@ -119,6 +119,21 @@ family_won   = sum(1 for s in stamp_statuses.values() if s['won'])
 
 # Merge board with summary for combined ranking
 ranking = board.merge(summary[['id','discovered_count','fav1']], on='id', how='left')
+ranking['discovered_count'] = ranking['discovered_count'].fillna(0).astype(int)
+
+
+def _safe_int(val, default: int = 0) -> int:
+    """int(val) with fallback for NaN/None — guards against left-merge NaN."""
+    try:
+        if pd.isna(val):
+            return default
+    except (TypeError, ValueError):
+        pass
+    try:
+        return int(val)
+    except (TypeError, ValueError):
+        return default
+
 
 # ── PAGE HEADER ───────────────────────────────────────────────────────────────
 st.markdown("""
@@ -142,7 +157,7 @@ rank_medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"]
 rank_cols = st.columns(len(ranking))
 for col, (_, row), medal, bg in zip(rank_cols, ranking.iterrows(), rank_medals, rank_bgs):
     uid   = int(row['id'])
-    disc  = int(row.get('discovered_count', 0))
+    disc  = _safe_int(row.get('discovered_count'))
     pts   = float(row['total_points'])
     color = row.get('theme_color', '#2563EB')
     re, rl = _explorer_rank(disc)
@@ -166,9 +181,9 @@ st.markdown("### 🛂 Member Passports")
 prof_cols = st.columns(len(summary))
 for col, (_, row) in zip(prof_cols, summary.iterrows()):
     uid   = int(row['id'])
-    disc  = int(row.get('discovered_count', 0))
-    cheer = int(row.get('cheered_count', 0))
-    won_c = int(row.get('won_count', 0))
+    disc  = _safe_int(row.get('discovered_count'))
+    cheer = _safe_int(row.get('cheered_count'))
+    won_c = _safe_int(row.get('won_count'))
     fav1  = row.get('fav1')
     color = row.get('theme_color', '#2563EB')
     re, rl = _explorer_rank(disc)

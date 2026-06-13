@@ -6,6 +6,7 @@ from services.picks import get_picks_for_match, save_pick, get_all_users
 from services.time_utils import fmt_match_time
 from services.images import get_country_image_html
 from services.roster import get_featured_players, get_team_summary, get_mls_players
+from services.espn import get_match_recap
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -216,6 +217,52 @@ if is_completed:
     st.caption(f"Final result — {result_msg}")
 else:
     st.caption("Tap your team to register your pick. No locking — you can change it any time.")
+
+# ── 2b. Match Recap (completed matches only) ──────────────────────────────────
+if is_completed:
+    st.divider()
+    st.markdown('<div class="mu-section">📋 Match Recap</div>', unsafe_allow_html=True)
+
+    recap = get_match_recap(home_team, away_team, match['match_date'])
+
+    if recap["found"] and recap["key_events"]:
+        # Timeline of goals and red cards
+        events_html = ""
+        for ev in recap["key_events"]:
+            clock_str  = f"{ev['clock']}" if ev['clock'] else ""
+            player_str = f"<span style='font-weight:700;color:white'>{ev['player']}</span>" if ev['player'] else ""
+            team_str   = f"<span style='color:#94A3B8;font-size:.78rem'>· {ev['team']}</span>" if ev['team'] else ""
+            events_html += (
+                f"<div style='display:flex;align-items:center;gap:.75rem;padding:.4rem 0;"
+                f"border-bottom:1px solid rgba(148,163,184,.1)'>"
+                f"<span style='font-size:.82rem;color:#64748B;min-width:2.8rem;text-align:right'>{clock_str}</span>"
+                f"<span style='font-size:1.3rem'>{ev['icon']}</span>"
+                f"{player_str} {team_str}"
+                f"</div>"
+            )
+
+        st.markdown(
+            "<div style='background:linear-gradient(160deg,#0F172A,#1E293B);border-radius:14px;"
+            "padding:1rem 1.2rem;border:1px solid rgba(148,163,184,.12);margin-bottom:.8rem'>"
+            f"<div style='font-size:.72rem;color:#64748B;font-weight:700;text-transform:uppercase;"
+            f"letter-spacing:.07em;margin-bottom:.5rem'>Scoring Events</div>"
+            f"{events_html}"
+            "</div>",
+            unsafe_allow_html=True,
+        )
+    elif recap["found"]:
+        st.caption("Match confirmed — scoring details not yet available from ESPN.")
+    else:
+        st.caption("Match data not yet available. Check back in a few minutes.")
+
+    # Highlight & coverage links
+    lnk1, lnk2, lnk3 = st.columns(3)
+    with lnk1:
+        st.link_button("🎥 Watch Highlights", recap["youtube_url"], use_container_width=True)
+    with lnk2:
+        st.link_button("📰 Match Coverage", recap["news_url"], use_container_width=True)
+    with lnk3:
+        st.link_button("⚽ FIFA Match Centre", recap["fifa_url"], use_container_width=True)
 
 # ── 3. Who Should I Cheer For? ────────────────────────────────────────────────
 st.divider()

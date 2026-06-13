@@ -338,6 +338,12 @@ def _family_story_insights() -> list[str]:
     return stories[:3]
 
 
+# ── Tab header: title left, achievement shortcut right ────────────────────────
+_tab_hdr_l, _tab_hdr_r = st.columns([5, 2])
+with _tab_hdr_r:
+    if st.button("🏅 Achievement Progress", key="ach_header_btn", use_container_width=True):
+        st.switch_page("pages/achievements.py")
+
 # ── TABS ───────────────────────────────────────────────────────────────────────
 tab_match, tab_person = st.tabs(["📋 By Match", "👤 By Person"])
 
@@ -353,8 +359,8 @@ with tab_match:
         for insight in insights:
             st.markdown(f"> {insight}")
 
-    # ── Family Country Heatmap ────────────────────────────────────────────────
-    st.markdown("##### 🌎 Family Country Heatmap")
+    # ── Family Favorite Countries ─────────────────────────────────────────────
+    st.markdown("##### 🌎 Family Favorite Countries")
     if all_picks.empty:
         st.caption("No family picks yet.")
     else:
@@ -363,25 +369,34 @@ with tab_match:
             .sort_values(ascending=False)
             .head(10)
         )
-        _max_cnt = int(_ctry_counts.max())
-        _heatmap_rows = ""
-        for _team, _cnt in _ctry_counts.items():
-            _cnt  = int(_cnt)
-            _flag = get_flag(_team)
-            _fires = "🔥" * max(1, round(_cnt / _max_cnt * 7))
-            _heatmap_rows += (
-                f"<div style='display:flex;align-items:center;gap:.5rem;"
-                f"padding:.13rem 0;border-bottom:1px solid rgba(128,128,128,.07)'>"
+        _max_cnt    = int(_ctry_counts.max())
+        _MEDALS     = ["🥇", "🥈", "🥉"]
+        _fav_rows   = ""
+        for _i, (_team, _cnt) in enumerate(_ctry_counts.items()):
+            _cnt        = int(_cnt)
+            _flag       = get_flag(_team)
+            _rank_label = _MEDALS[_i] if _i < 3 else f"{_i + 1}."
+            _bar_w      = max(4, round(_cnt / _max_cnt * 100))
+            _fav_rows  += (
+                f"<div style='display:flex;align-items:center;gap:.55rem;"
+                f"padding:.3rem 0;border-bottom:1px solid rgba(128,128,128,.07)'>"
+                f"<span style='font-size:1.05rem;min-width:1.7rem;text-align:center;"
+                f"line-height:1'>{_rank_label}</span>"
                 f"<span style='font-size:1.15rem;min-width:1.6rem;line-height:1'>{_flag}</span>"
-                f"<span style='font-size:.88rem;font-weight:700;flex:1;min-width:0'>{_team}</span>"
-                f"<span style='font-size:.7rem;color:#64748B;min-width:4.5rem;text-align:right'>"
+                f"<span style='font-size:.9rem;font-weight:700;flex:1;min-width:0'>{_team}</span>"
+                f"<div style='min-width:110px;display:flex;align-items:center;gap:.45rem'>"
+                f"<div style='flex:1;background:rgba(148,163,184,.15);border-radius:4px;height:6px'>"
+                f"<div style='width:{_bar_w}%;background:#3B82F6;border-radius:4px;height:6px'></div>"
+                f"</div>"
+                f"<span style='font-size:.8rem;color:#94A3B8;white-space:nowrap;"
+                f"min-width:4rem;text-align:right'>"
                 f"{_cnt} pick{'s' if _cnt != 1 else ''}</span>"
-                f"<span style='font-size:.75rem;min-width:7rem'>{_fires}</span>"
+                f"</div>"
                 f"</div>"
             )
         st.markdown(
-            f"<div style='border-radius:12px;padding:.4rem .85rem;"
-            f"border:1px solid rgba(128,128,128,.12)'>{_heatmap_rows}</div>",
+            f"<div style='border-radius:12px;padding:.3rem .85rem;"
+            f"border:1px solid rgba(128,128,128,.12)'>{_fav_rows}</div>",
             unsafe_allow_html=True,
         )
 
@@ -508,11 +523,6 @@ with tab_person:
         f"</div></div>",
         unsafe_allow_html=True,
     )
-    _ach_c1, _ach_c2 = st.columns([4, 1])
-    with _ach_c2:
-        if st.button(f"🏅 Achievements", key="view_ach_btn", use_container_width=True):
-            st.switch_page("pages/achievements.py")
-
     # ── Streak + Best/Worst ───────────────────────────────────────────────────
     if streak >= 2 or best_pk is not None or worst_pk is not None:
         c1, c2, c3 = st.columns(3)

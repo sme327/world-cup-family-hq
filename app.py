@@ -224,8 +224,25 @@ elif not _has_session:
     # (pg.run() intentionally not called; nav links visible but inactive until selected)
 
 else:
-    # ── Sidebar: Playing As selector ──────────────────────────────────────────
+    # ── Callback: fires at start of rerun so pg.run() sees the updated user ──
+    def _apply_user_selection():
+        _sel = st.session_state.get("global_user_selector", _names[0])
+        if _sel != st.session_state.get("active_user_name"):
+            st.session_state["ls_pending_uid"] = str(int(_ids[_sel]))
+        st.session_state.update({
+            "active_user_name":       _sel,
+            "active_user_id":         int(_ids[_sel]),
+            "active_user_avatar":     _avs[_sel],
+            "active_user_color":      _clrs[_sel],
+            "active_user_picks_only": bool(_po.get(_sel, 0)),
+        })
+
+    # Page renders first so page-specific sidebar filters appear above Playing As.
+    pg.run()
+
+    # ── Sidebar: Playing As + Admin (below page filters) ──────────────────────
     with st.sidebar:
+        st.divider()
         _current = st.session_state.get("active_user_name", _names[0])
         _idx     = _names.index(_current) if _current in _names else 0
         _chosen  = st.selectbox(
@@ -234,12 +251,11 @@ else:
             index=_idx,
             format_func=lambda n: f"{_avs[n]} {n}",
             key="global_user_selector",
+            on_change=_apply_user_selection,
         )
-
-        # Manual switch → queue localStorage update for next render
+        # Sync every render (handles first load and edge cases)
         if _chosen != st.session_state.get("active_user_name"):
             st.session_state["ls_pending_uid"] = str(int(_ids[_chosen]))
-
         st.session_state.update({
             "active_user_name":       _chosen,
             "active_user_id":         int(_ids[_chosen]),
@@ -247,8 +263,5 @@ else:
             "active_user_color":      _clrs[_chosen],
             "active_user_picks_only": bool(_po.get(_chosen, 0)),
         })
-
         st.divider()
         st.page_link("pages/admin.py", label="Admin", icon="🔧")
-
-    pg.run()

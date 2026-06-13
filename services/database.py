@@ -124,9 +124,14 @@ def init_db():
         df = pd.read_csv(os.path.join(DATA_DIR, 'world_cup_2026_matches.csv'))
         df.to_sql('matches', conn, if_exists='append', index=False)
 
-    if cursor.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0:
-        df = pd.read_csv(os.path.join(DATA_DIR, 'users.csv'))
-        df.to_sql('users', conn, if_exists='append', index=False)
+    # Always upsert users from CSV so new family members appear without a DB reset
+    df = pd.read_csv(os.path.join(DATA_DIR, 'users.csv'))
+    for _, row in df.iterrows():
+        cursor.execute("""
+            INSERT OR REPLACE INTO users (id, name, avatar, theme_color, picks_only)
+            VALUES (?, ?, ?, ?, ?)
+        """, (int(row['id']), str(row['name']), str(row['avatar']),
+              str(row['theme_color']), int(row.get('picks_only', 0))))
 
     conn.commit()
     conn.close()

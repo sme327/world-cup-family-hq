@@ -61,8 +61,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Navigation ────────────────────────────────────────────────────────────────
-# Zero-width chars (​, ‌) used as invisible section headers so that
-# Leaderboard and Admin appear as standalone items without a visible header.
 pg = st.navigation(
     {
         "": [
@@ -79,11 +77,11 @@ pg = st.navigation(
             st.Page("pages/passport_individual.py",  title="My Passport",     icon="🛂"),
             st.Page("pages/passport_family.py",      title="Family Passport", icon="👨‍👩‍👧‍👦"),
             st.Page("pages/achievements.py",         title="Achievements",    icon="🏅"),
+            st.Page("pages/leaderboard.py",          title="Leaderboard",     icon="🏆"),
         ],
-        "​": [
-            st.Page("pages/leaderboard.py", title="Leaderboard", icon="🏆"),
-        ],
-        "‌": [
+        # ⚙️ keeps Admin in the router (required for page access in Streamlit 1.36+)
+        # while giving it a non-blank, non-duplicating section header.
+        "⚙️": [
             st.Page("pages/admin.py", title="Admin", icon="🔧"),
         ],
     },
@@ -114,5 +112,8 @@ with st.sidebar:
     st.session_state["active_user_avatar"]    = _avs[_chosen]
     st.session_state["active_user_color"]     = _clrs[_chosen]
     st.session_state["active_user_picks_only"] = bool(_po.get(_chosen, 0))
+
+    st.divider()
+    st.page_link("pages/admin.py", label="Admin", icon="🔧")
 
 pg.run()

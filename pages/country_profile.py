@@ -116,6 +116,58 @@ _LANDMARK_INFO: dict[str, tuple[str, str]] = {
 }
 
 
+_GOVT_TYPE: dict[str, str] = {
+    "Algeria":                "Republic",
+    "Argentina":              "Federal Republic",
+    "Australia":              "Constitutional Monarchy",
+    "Austria":                "Federal Republic",
+    "Belgium":                "Constitutional Monarchy",
+    "Bosnia and Herzegovina": "Republic",
+    "Brazil":                 "Federal Republic",
+    "Canada":                 "Constitutional Monarchy",
+    "Cape Verde":             "Republic",
+    "Colombia":               "Republic",
+    "Croatia":                "Republic",
+    "Curaçao":                "Autonomous Territory",
+    "Czechia":                "Republic",
+    "DR Congo":               "Republic",
+    "Ecuador":                "Republic",
+    "Egypt":                  "Republic",
+    "England":                "Constitutional Monarchy",
+    "France":                 "Republic",
+    "Germany":                "Federal Republic",
+    "Ghana":                  "Republic",
+    "Haiti":                  "Republic",
+    "Iran":                   "Islamic Republic",
+    "Iraq":                   "Federal Republic",
+    "Ivory Coast":            "Republic",
+    "Japan":                  "Constitutional Monarchy",
+    "Jordan":                 "Kingdom",
+    "Mexico":                 "Federal Republic",
+    "Morocco":                "Kingdom",
+    "Netherlands":            "Constitutional Monarchy",
+    "New Zealand":            "Constitutional Monarchy",
+    "Norway":                 "Constitutional Monarchy",
+    "Panama":                 "Republic",
+    "Paraguay":               "Republic",
+    "Portugal":               "Republic",
+    "Qatar":                  "Emirate",
+    "Saudi Arabia":           "Kingdom",
+    "Scotland":               "Constitutional Monarchy",
+    "Senegal":                "Republic",
+    "South Africa":           "Republic",
+    "South Korea":            "Republic",
+    "Spain":                  "Constitutional Monarchy",
+    "Sweden":                 "Constitutional Monarchy",
+    "Switzerland":            "Federal Republic",
+    "Tunisia":                "Republic",
+    "Türkiye":                "Republic",
+    "USA":                    "Federal Republic",
+    "Uruguay":                "Republic",
+    "Uzbekistan":             "Republic",
+}
+
+
 def _card_info(item_type: str, label: str, country: str) -> tuple[str, str]:
     clean = _strip_emoji(label).strip()
     if item_type == "animal":
@@ -381,10 +433,17 @@ def _formation_svg(roster_df: pd.DataFrame, captain_name: str = "") -> str:
         f"FORMATION {form}</text>"
     )
 
-    # Jersey silhouette path (centered at origin, torso ~32px tall x 34px wide)
-    JERSEY = "M -14,-16 L -22,-8 L -17,-6 L -17,16 L 17,16 L 17,-6 L 22,-8 L 14,-16 C 8,-20 -8,-20 -14,-16 Z"
+    # Jersey silhouette: smooth armpits + round neckhole cutout via evenodd
+    JERSEY = (
+        "M -15,-15 "
+        "L -22,-8 Q -20,-6 -17,-5 "           # left sleeve, smooth armpit curve
+        "L -17,17 L 17,17 "                    # body bottom
+        "L 17,-5 Q 20,-6 22,-8 "              # right side, smooth armpit curve
+        "L 15,-15 C 8,-21 -8,-21 -15,-15 Z "  # right shoulder + collar arch
+        "M -5,-17 A 5,3 0 0 1 5,-17 A 5,3 0 0 1 -5,-17 Z"  # neckhole (evenodd)
+    )
 
-    def _draw_row(players, y, tag):
+    def _draw_row(players, y, _tag_unused):
         xs = _xs(len(players))
         for i, pl in enumerate(players):
             px = xs[i]
@@ -394,14 +453,18 @@ def _formation_svg(roster_df: pd.DataFrame, captain_name: str = "") -> str:
             stroke = "#FCD34D" if is_cap else "rgba(255,255,255,0.55)"
             sw = "2.5" if is_cap else "1.5"
             p.append(f"<g transform='translate({px},{y})'>")
-            p.append(f"<path d='{JERSEY}' fill='#1D4ED8' stroke='{stroke}' stroke-width='{sw}' stroke-linejoin='round' opacity='0.93'/>")
+            p.append(
+                f"<path d='{JERSEY}' fill='#1D4ED8' stroke='{stroke}' stroke-width='{sw}' "
+                f"stroke-linejoin='round' fill-rule='evenodd' opacity='0.93'/>"
+            )
+            # Visible collar ring
+            p.append("<ellipse cx='0' cy='-17' rx='5' ry='3' fill='none' stroke='rgba(255,255,255,0.35)' stroke-width='1'/>")
             p.append(f"<text y='5' text-anchor='middle' font-size='12' font-weight='900' fill='white' font-family='system-ui,sans-serif'>{snum}</text>")
             if is_cap:
                 p.append("<circle cx='15' cy='-14' r='8' fill='#FCD34D'/>")
                 p.append("<text x='15' y='-10' text-anchor='middle' font-size='8.5' font-weight='900' fill='#1E293B' font-family='system-ui,sans-serif'>C</text>")
             p.append("</g>")
-            p.append(f"<text x='{px}' y='{y+27}' text-anchor='middle' font-size='9.5' font-weight='700' fill='rgba(255,255,255,0.83)' font-family='system-ui,sans-serif'>{lname}</text>")
-        p.append(f"<text x='{W-16}' y='{y+5}' text-anchor='end' font-size='9' font-weight='800' fill='rgba(255,255,255,0.32)' font-family='system-ui,sans-serif' letter-spacing='0.5'>{tag}</text>")
+            p.append(f"<text x='{px}' y='{y+28}' text-anchor='middle' font-size='9.5' font-weight='700' fill='rgba(255,255,255,0.83)' font-family='system-ui,sans-serif'>{lname}</text>")
 
     _draw_row(fwd_xi, ROW_Y["fwd"], "FWD")
     _draw_row(mid_xi, ROW_Y["mid"], "MID")
@@ -579,15 +642,15 @@ if has_hero:
     st.markdown(hero_html, unsafe_allow_html=True)
 
 # ── Section 2: Country Banner ─────────────────────────────────────────────────
-flag_size     = "3.25rem" if has_hero else "5.2rem"   # 30% larger than before
-header_pad    = "0.75rem 1.2rem 0.9rem" if has_hero else "1.6rem"  # ~20% smaller box
+flag_size     = "4rem" if has_hero else "6.5rem"       # ~60% larger than original
+header_pad    = "0.65rem 1.2rem 0.8rem" if has_hero else "1.4rem"
 border_radius = "0 0 16px 16px" if has_hero else "16px"
 
 st.markdown(
     f"<div style='background:linear-gradient(135deg,#1E3A5F,#2563EB);"
     f"padding:{header_pad};border-radius:{border_radius};text-align:center;color:white;margin-bottom:.6rem'>"
-    f"<div style='font-size:{flag_size};margin-bottom:.2rem'>{flag}</div>"
-    f"<div style='font-size:2rem;font-weight:900'>{selected_country}</div>"
+    f"<div style='font-size:{flag_size};line-height:1;margin-bottom:.1rem'>{flag}</div>"
+    f"<div style='font-size:1.9rem;font-weight:900;line-height:1.1'>{selected_country}</div>"
     f"<div style='font-size:1.1rem;color:#FCD34D;margin:.2rem 0'>"
     f"{stamp['stamp_emoji']} {stamp['stamp_label']}</div>"
     f"<div style='color:#CBD5E1;font-size:.88rem'>"
@@ -667,7 +730,7 @@ facts = [
     ("🗣️", "Languages",     _safe(team.get("languages"))),
     ("💰", "Currency",      _safe(team.get("currency"))),
     ("🌍", "Continent",     stamp["continent"]),
-    ("🎽", "Team Nickname", _safe(details.get("nickname")) or "—"),
+    ("🏛️", "Government",   _GOVT_TYPE.get(selected_country, "—")),
 ]
 for col, (icon, label, val) in zip(list(row1) + list(row2), facts):
     col.markdown(_stat_card(icon, label, val), unsafe_allow_html=True)
@@ -859,7 +922,13 @@ if reasons:
 st.divider()
 st.markdown("## ⚽ Soccer Team")
 
-nickname      = details.get("nickname", "—")
+nickname = details.get("nickname", "")
+if nickname and nickname not in ("—", ""):
+    st.markdown(
+        f"<div style='color:#94A3B8;font-size:.88rem;margin:-.4rem 0 .8rem'>"
+        f"Also known as: <b style='color:#FCD34D'>{nickname}</b></div>",
+        unsafe_allow_html=True
+    )
 famous_player = details.get("famous_player", _safe(team.get("captain"), "—"))
 home_stadium  = details.get("home_stadium", "—")
 
@@ -887,8 +956,8 @@ for col, (icon, label, val) in zip(ss2_cols, [
 # ── Formation View ────────────────────────────────────────────────────────────
 if not roster.empty:
     st.markdown("#### 🟩 Predicted Starting XI")
-    _sv_col, _ = st.columns([2, 1])
-    with _sv_col:
+    _, _fc, _ = st.columns([1, 2, 1])
+    with _fc:
         st.markdown(_formation_svg(roster, captain_name), unsafe_allow_html=True)
 
 # ── Players To Know ───────────────────────────────────────────────────────────

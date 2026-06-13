@@ -119,6 +119,7 @@ family_won   = sum(1 for s in stamp_statuses.values() if s['won'])
 
 # Merge board with summary for combined ranking
 ranking = board.merge(summary[['id','discovered_count','fav1']], on='id', how='left')
+ranking = ranking[ranking['picks_only'] != 1].reset_index(drop=True)
 ranking['discovered_count'] = ranking['discovered_count'].fillna(0).astype(int)
 
 

@@ -134,22 +134,6 @@ avatar         = st.session_state.get("active_user_avatar",    "🐘")
 theme_color    = st.session_state.get("active_user_color",     "#F97316")
 picks_only     = st.session_state.get("active_user_picks_only", False)
 
-if picks_only:
-    st.markdown(
-        f"<div style='background:linear-gradient(135deg,#064E3B,#065F46);"
-        f"border-radius:18px;padding:2.5rem;text-align:center;color:white;margin-top:1rem'>"
-        f"<div style='font-size:5rem;line-height:1;margin-bottom:.6rem'>{avatar}</div>"
-        f"<div style='font-size:2rem;font-weight:900;margin-bottom:.4rem'>{active_user}</div>"
-        f"<div style='font-size:1.1rem;color:#6EE7B7;margin-bottom:.8rem'>Picks Only — No Passport Needed</div>"
-        f"<div style='font-size:.92rem;color:#A7F3D0;line-height:1.6;max-width:340px;margin:0 auto'>"
-        f"Just here for the picks! Head to the Schedule or a Matchup page to make your picks."
-        f"</div></div>",
-        unsafe_allow_html=True
-    )
-    if st.button("📅 Go to Schedule", use_container_width=True):
-        st.switch_page("pages/schedule.py")
-    st.stop()
-
 # ── Load all data ─────────────────────────────────────────────────────────────
 meta       = get_country_metadata()
 total      = len(meta)

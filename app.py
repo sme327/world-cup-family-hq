@@ -60,29 +60,31 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ── Grouped navigation ────────────────────────────────────────────────────────
+# ── Navigation ────────────────────────────────────────────────────────────────
+# Zero-width chars (​, ‌) used as invisible section headers so that
+# Leaderboard and Admin appear as standalone items without a visible header.
 pg = st.navigation(
     {
         "": [
             st.Page("pages/home.py", title="Home", icon="🏠", default=True),
         ],
-        "Tournament": [
-            st.Page("pages/schedule.py",    title="Schedule",     icon="📅"),
-            st.Page("pages/matchup.py",     title="Matchup",      icon="🏟️"),
-            st.Page("pages/pick_tracker.py", title="Pick Tracker", icon="🎯"),
+        "⚽ Play": [
+            st.Page("pages/schedule.py",     title="Schedule",      icon="📅"),
+            st.Page("pages/matchup.py",      title="Matchups",      icon="🏟️"),
+            st.Page("pages/pick_tracker.py", title="Family Picks",  icon="📊"),
         ],
-        "Explore": [
-            st.Page("pages/country_profile.py", title="Countries",   icon="🌍"),
-            st.Page("pages/host_cities.py",      title="Host Cities", icon="🏙️"),
+        "🌎 Explore": [
+            st.Page("pages/country_profile.py",     title="Countries",       icon="🗺️"),
+            st.Page("pages/host_cities.py",          title="Host Cities",     icon="🏙️"),
+            st.Page("pages/passport_individual.py",  title="My Passport",     icon="🛂"),
+            st.Page("pages/passport_family.py",      title="Family Passport", icon="👨‍👩‍👧‍👦"),
+            st.Page("pages/achievements.py",         title="Achievements",    icon="🏅"),
         ],
-        "Passports": [
-            st.Page("pages/passport_individual.py", title="My Passport",     icon="🛂"),
-            st.Page("pages/passport_family.py",     title="Family Passport", icon="👨‍👩‍👧‍👦"),
+        "​": [
+            st.Page("pages/leaderboard.py", title="Leaderboard", icon="🏆"),
         ],
-        "Progress": [
-            st.Page("pages/leaderboard.py",  title="Leaderboard",  icon="🏆"),
-            st.Page("pages/achievements.py", title="Achievements",  icon="🏅"),
-            st.Page("pages/admin.py",        title="Admin",         icon="🔧"),
+        "‌": [
+            st.Page("pages/admin.py", title="Admin", icon="🔧"),
         ],
     },
     position="sidebar",
@@ -101,7 +103,7 @@ with st.sidebar:
     _current = st.session_state.get("active_user_name", _names[0])
     _idx     = _names.index(_current) if _current in _names else 0
     _chosen  = st.selectbox(
-        "👤 Playing as",
+        "⚽ Playing As",
         _names,
         index=_idx,
         format_func=lambda n: f"{_avs[n]} {n}",

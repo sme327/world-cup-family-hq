@@ -256,8 +256,20 @@ all_matches      = get_all_matches()
 all_matches['pt_date'] = all_matches.apply(
     lambda r: pt_date_str(r['match_date'], r['kickoff_time_et']), axis=1
 )
-today_matches    = all_matches[all_matches['pt_date'] == today_str].sort_values('kickoff_time_et')
-tomorrow_matches = all_matches[all_matches['pt_date'] == tomorrow.isoformat()].sort_values('kickoff_time_et')
+def _time_sort_key(t: str) -> int:
+    try:
+        h, m = str(t).split(":")
+        return int(h) * 60 + int(m)
+    except Exception:
+        return 9999
+
+today_matches    = all_matches[all_matches['pt_date'] == today_str].copy()
+today_matches['_sort_key'] = today_matches['kickoff_time_et'].apply(_time_sort_key)
+today_matches    = today_matches.sort_values('_sort_key').drop(columns=['_sort_key'])
+
+tomorrow_matches = all_matches[all_matches['pt_date'] == tomorrow.isoformat()].copy()
+tomorrow_matches['_sort_key'] = tomorrow_matches['kickoff_time_et'].apply(_time_sort_key)
+tomorrow_matches = tomorrow_matches.sort_values('_sort_key').drop(columns=['_sort_key'])
 
 board = get_leaderboard()
 

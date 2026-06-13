@@ -120,19 +120,21 @@ with _tabs[0]:
                 )
 
     # Future trophy boxes
-    st.markdown("<div style='height:.5rem'></div>", unsafe_allow_html=True)
-    fut_cols = st.columns(4)
-    for col, (yr, msg) in zip(fut_cols[1:3], [
-        (2026, "Who will write the next chapter?"),
-        (2030, "The future is unwritten."),
+    st.markdown("#### 🔮 What's Next?")
+    fut_cols = st.columns(2)
+    for col, (yr, host, msg) in zip(fut_cols, [
+        (2026, "🇺🇸🇨🇦🇲🇽  USA · Canada · Mexico", "Who will write the next chapter?"),
+        (2030, "🌍  100th Anniversary — Multi-Continent", "The future is unwritten."),
     ]):
         col.markdown(
-            f"<div style='background:rgba(251,191,36,.05);border:1px dashed rgba(251,191,36,.35);"
-            f"border-radius:12px;padding:.7rem;text-align:center;margin:.2rem 0'>"
-            f"<div style='font-size:.72rem;font-weight:700;color:#F59E0B;margin-bottom:.1rem'>{yr}</div>"
-            f"<div style='font-size:1.6rem;line-height:1.2'>🏆</div>"
-            f"<div style='font-size:.75rem;font-weight:700;margin-top:.2rem;color:#FCD34D'>TBD</div>"
-            f"<div style='font-size:.65rem;color:#64748B;margin-top:.15rem;font-style:italic'>{msg}</div>"
+            f"<div style='background:rgba(251,191,36,.08);border:2px dashed rgba(251,191,36,.45);"
+            f"border-radius:16px;padding:1rem 1.1rem;text-align:center;margin:.2rem 0'>"
+            f"<div style='font-size:.7rem;font-weight:800;color:#F59E0B;letter-spacing:.06em;"
+            f"text-transform:uppercase;margin-bottom:.3rem'>{yr} World Cup</div>"
+            f"<div style='font-size:2.2rem;line-height:1.2'>🏆</div>"
+            f"<div style='font-size:.9rem;font-weight:900;margin-top:.35rem;color:#FCD34D'>TBD</div>"
+            f"<div style='font-size:.75rem;color:#94A3B8;margin:.2rem 0;line-height:1.3'>{host}</div>"
+            f"<div style='font-size:.7rem;color:#64748B;font-style:italic;margin-top:.15rem'>{msg}</div>"
             f"</div>",
             unsafe_allow_html=True,
         )
@@ -579,8 +581,7 @@ with _tabs[4]:
         colorscale=[[0,"#1D4ED8"],[0.5,"#3B82F6"],[1,"#93C5FD"]],
         showscale=True,
         colorbar=dict(title="Times Hosted", tickvals=[1,2,3], ticktext=["1×","2×","3×"],
-                      len=0.6, thickness=12, bgcolor="rgba(0,0,0,0)",
-                      titlefont=dict(color="#94A3B8"), tickfont=dict(color="#94A3B8")),
+                      len=0.6, thickness=12),
         marker_line_color="white", marker_line_width=0.8,
         hovertemplate="%{text}<extra></extra>",
     ))

@@ -489,6 +489,32 @@ def _country_map(iso3: str):
     return fig
 
 
+def _country_zoom_map(iso3: str):
+    """Zoomed-in map of the country with rivers, lakes, and country borders."""
+    fig = go.Figure(go.Choropleth(
+        locations=[iso3], z=[1], locationmode='ISO-3',
+        colorscale=[[0,'#3B82F6'],[1,'#60A5FA']],
+        showscale=False,
+        marker_line_color='white', marker_line_width=1.5,
+    ))
+    fig.update_layout(
+        geo=dict(
+            showframe=False,
+            showcoastlines=True,  coastlinecolor='#475569',
+            showland=True,        landcolor='#D1FAE5',
+            showocean=True,       oceancolor='#BFDBFE',
+            showcountries=True,   countrycolor='rgba(148,163,184,.5)',
+            showlakes=True,       lakecolor='#93C5FD',
+            showrivers=True,      rivercolor='#93C5FD',
+            fitbounds='locations',
+            resolution=50,
+        ),
+        margin=dict(l=0,r=0,t=0,b=0), height=320,
+        paper_bgcolor='rgba(0,0,0,0)',
+    )
+    return fig
+
+
 def _stat_card(icon: str, label: str, value: str) -> str:
     return (
         "<div style='background:linear-gradient(160deg,#1E293B,#0F172A);border-radius:12px;"
@@ -871,57 +897,7 @@ st.markdown(
 )
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SECTION 4: WHERE IS THIS COUNTRY?
-# ══════════════════════════════════════════════════════════════════════════════
-st.markdown("### 🗺️ Where Is This Country?")
-
-if iso3:
-    try:
-        st.plotly_chart(_country_map(iso3), use_container_width=True, config={"staticPlot": True})
-    except Exception:
-        st.info(f"📍 {selected_country} is located in {stamp['continent']}.")
-else:
-    st.info(f"📍 {selected_country} is located in {stamp['continent']}.")
-
-# Continent + distance + timezone inline
-dist_miles = details.get("distance_miles", 0)
-tz_offset  = details.get("timezone_offset", 0)
-_loc_parts = [f"🌍 **{stamp['continent']}**"]
-if dist_miles and dist_miles > 50:
-    _loc_parts.append(f"✈️ **{dist_miles:,} miles** from Seattle")
-elif dist_miles and dist_miles <= 50:
-    _loc_parts.append("🏠 **Right next door** to Seattle")
-if tz_offset == 0:
-    _loc_parts.append("🕐 **Same time zone** as Seattle")
-elif tz_offset > 0:
-    _loc_parts.append(f"🕐 **+{tz_offset}h ahead** of Seattle")
-else:
-    _loc_parts.append(f"🕐 **{tz_offset}h behind** Seattle")
-st.markdown("  ·  ".join(_loc_parts))
-
-if neighbors:
-    neighbor_pills = "".join(
-        f"<span style='background:rgba(37,99,235,.18);color:#93C5FD;"
-        f"border:1px solid rgba(37,99,235,.35);border-radius:20px;"
-        f"padding:.2rem .65rem;font-size:.8rem;margin:.15rem;display:inline-block'>"
-        f"{get_flag(n)} {n}</span>"
-        for n in neighbors
-    )
-    st.markdown(
-        f"<div style='margin-top:.4rem'>"
-        f"<div style='font-size:.76rem;color:#64748B;font-weight:700;margin-bottom:.3rem'>🌎 Neighboring Countries</div>"
-        f"<div>{neighbor_pills}</div></div>",
-        unsafe_allow_html=True
-    )
-else:
-    st.markdown(
-        "<div style='font-size:.82rem;color:#64748B;margin-top:.3rem'>"
-        "🌊 Island nation — surrounded by ocean on all sides</div>",
-        unsafe_allow_html=True
-    )
-
-# ══════════════════════════════════════════════════════════════════════════════
-# SECTION 5: MEET THIS COUNTRY IN 60 SECONDS
+# SECTION 4: MEET THIS COUNTRY IN 60 SECONDS
 # ══════════════════════════════════════════════════════════════════════════════
 tiles: list[dict] = []
 if fun:
@@ -959,6 +935,56 @@ if tiles:
                 "</div>",
                 unsafe_allow_html=True
             )
+
+# Continent + distance + timezone inline (shown right below 60 Seconds)
+dist_miles = details.get("distance_miles", 0)
+tz_offset  = details.get("timezone_offset", 0)
+_loc_parts = [f"🌍 **{stamp['continent']}**"]
+if dist_miles and dist_miles > 50:
+    _loc_parts.append(f"✈️ **{dist_miles:,} miles** from Seattle")
+elif dist_miles and dist_miles <= 50:
+    _loc_parts.append("🏠 **Right next door** to Seattle")
+if tz_offset == 0:
+    _loc_parts.append("🕐 **Same time zone** as Seattle")
+elif tz_offset > 0:
+    _loc_parts.append(f"🕐 **+{tz_offset}h ahead** of Seattle")
+else:
+    _loc_parts.append(f"🕐 **{tz_offset}h behind** Seattle")
+st.markdown("  ·  ".join(_loc_parts))
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SECTION 5: WHERE IS THIS COUNTRY?
+# ══════════════════════════════════════════════════════════════════════════════
+st.markdown("### 🗺️ Where Is This Country?")
+
+if iso3:
+    try:
+        st.plotly_chart(_country_map(iso3), use_container_width=True, config={"staticPlot": True})
+    except Exception:
+        st.info(f"📍 {selected_country} is located in {stamp['continent']}.")
+else:
+    st.info(f"📍 {selected_country} is located in {stamp['continent']}.")
+
+if neighbors:
+    neighbor_pills = "".join(
+        f"<span style='background:rgba(37,99,235,.18);color:#93C5FD;"
+        f"border:1px solid rgba(37,99,235,.35);border-radius:20px;"
+        f"padding:.2rem .65rem;font-size:.8rem;margin:.15rem;display:inline-block'>"
+        f"{get_flag(n)} {n}</span>"
+        for n in neighbors
+    )
+    st.markdown(
+        f"<div style='margin-top:.4rem'>"
+        f"<div style='font-size:.76rem;color:#64748B;font-weight:700;margin-bottom:.3rem'>🌎 Neighboring Countries</div>"
+        f"<div>{neighbor_pills}</div></div>",
+        unsafe_allow_html=True
+    )
+else:
+    st.markdown(
+        "<div style='font-size:.82rem;color:#64748B;margin-top:.3rem'>"
+        "🌊 Island nation — surrounded by ocean on all sides</div>",
+        unsafe_allow_html=True
+    )
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SECTION 6: WHY KIDS MIGHT CHEER FOR THIS COUNTRY
@@ -1007,6 +1033,11 @@ st.markdown(
     f"</div>",
     unsafe_allow_html=True
 )
+if iso3:
+    try:
+        st.plotly_chart(_country_zoom_map(iso3), use_container_width=True, config={"staticPlot": True})
+    except Exception:
+        pass
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SECTION 8: COUNTRY FACTS
@@ -1218,6 +1249,53 @@ for col, (icon, label, val) in zip(ss2_cols, [
 ]):
     col.markdown(_stat_card(icon, label, val), unsafe_allow_html=True)
 
+# Group Stage Matches — pills in a row, above the formation
+matches = get_matches_by_team(selected_country)
+if not matches.empty:
+    st.markdown("### 📅 Group Stage Matches")
+    _m_cols = st.columns(len(matches))
+    for col, (_, m) in zip(_m_cols, matches.iterrows()):
+        opp      = m["away_team"] if m["home_team"] == selected_country else m["home_team"]
+        opp_flag = get_flag(opp)
+        mid      = int(m["id"])
+        _mdate   = fmt_date(m["match_date"]) if hasattr(m, 'match_date') else str(m.get("match_date",""))
+        _mkick   = str(m.get("kickoff_time_et",""))[:5]
+        if m["status"] == "completed":
+            hs, as_ = int(m["home_score"]), int(m["away_score"])
+            _is_home = m["home_team"] == selected_country
+            _my_score  = hs if _is_home else as_
+            _opp_score = as_ if _is_home else hs
+            if _my_score > _opp_score:
+                _pill_bg, _score_color, _result_label = "#052e16", "#4ADE80", "W"
+            elif _my_score == _opp_score:
+                _pill_bg, _score_color, _result_label = "#1c1917", "#FCD34D", "D"
+            else:
+                _pill_bg, _score_color, _result_label = "#450a0a", "#F87171", "L"
+            _score_html = (
+                f"<div style='font-size:1.3rem;font-weight:900;color:{_score_color};line-height:1'>"
+                f"{_my_score}–{_opp_score}</div>"
+                f"<div style='font-size:.65rem;font-weight:800;color:{_score_color}'>{_result_label}</div>"
+            )
+            _time_html = f"<div style='font-size:.65rem;color:#64748B;margin-top:.1rem'>Final</div>"
+        else:
+            _pill_bg    = "#0f172a"
+            _score_html = f"<div style='font-size:.78rem;font-weight:800;color:#FCD34D'>{_mkick} ET</div>"
+            _time_html  = f"<div style='font-size:.65rem;color:#64748B;margin-top:.1rem'>{_mdate}</div>"
+        with col:
+            st.markdown(
+                f"<div style='background:{_pill_bg};border:1px solid rgba(148,163,184,.15);"
+                f"border-radius:14px;padding:.75rem .5rem;text-align:center'>"
+                f"<div style='font-size:1.6rem;line-height:1;margin-bottom:.15rem'>{opp_flag}</div>"
+                f"<div style='font-size:.72rem;font-weight:800;color:#F1F5F9;line-height:1.2;margin-bottom:.25rem'>"
+                f"vs {opp}</div>"
+                f"{_score_html}{_time_html}"
+                f"</div>",
+                unsafe_allow_html=True
+            )
+            if st.button("🏟️ Matchup", key=f"match_link_{mid}", use_container_width=True):
+                st.session_state["_nav_match_id"] = mid
+                st.switch_page("pages/matchup.py")
+
 # Formation
 if not roster.empty:
     st.markdown("### 🟩 Predicted Starting XI")
@@ -1265,27 +1343,6 @@ if not mls_players.empty:
             unsafe_allow_html=True
         )
 
-# Group Stage Matches
-matches = get_matches_by_team(selected_country)
-if not matches.empty:
-    st.markdown("#### 📅 Group Stage Matches")
-    for _, m in matches.iterrows():
-        opp      = m["away_team"] if m["home_team"] == selected_country else m["home_team"]
-        opp_flag = get_flag(opp)
-        mid      = int(m["id"])
-        time_str = fmt_match_time(m["match_date"], m["kickoff_time_et"])
-        if m["status"] == "completed":
-            hs, as_ = int(m["home_score"]), int(m["away_score"])
-            score   = f"**{hs}–{as_}**"
-            label   = f"{flag} {selected_country} vs {opp_flag} {opp} · {score}"
-        else:
-            label = f"{flag} {selected_country} vs {opp_flag} **{opp}** · {time_str}"
-        col_info, col_btn = st.columns([5, 2])
-        col_info.markdown(label)
-        if col_btn.button("🏟️ Matchup", key=f"match_link_{mid}"):
-            st.session_state["_nav_match_id"] = mid
-            st.switch_page("pages/matchup.py")
-
 # Full Squad
 if not roster.empty:
     st.markdown("#### 📋 Full Squad")
@@ -1298,124 +1355,60 @@ if not roster.empty:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SECTION 15: WORLD CUP HISTORY
+# SECTION 15: THIS COUNTRY'S WORLD CUP STORY
 # ══════════════════════════════════════════════════════════════════════════════
 st.divider()
-st.markdown("## 🏆 World Cup History")
-st.caption("The greatest tournament in sports — 92 years of drama, glory, and unforgettable moments.")
+st.markdown(f"## 🏆 {selected_country} at the World Cup")
 
-_wc_tabs = st.tabs(["🏆 World Champions", "⭐ Greatest Players", f"📖 {selected_country}'s Story", "⚽ Great Moments"])
-
-# Tab 1: Champions timeline
-with _wc_tabs[0]:
-    st.markdown("**Every World Cup champion — 1930 to 2022**")
-    for row_start in range(0, len(_WC_ALL_CHAMPIONS), 6):
-        row = _WC_ALL_CHAMPIONS[row_start:row_start + 6]
-        cols = st.columns(len(row))
-        for col, (yr, flg, name) in zip(cols, row):
-            with col:
-                st.markdown(
-                    f"<div style='background:rgba(30,41,59,.8);border:1px solid rgba(255,255,255,.1);"
-                    f"border-radius:10px;padding:.5rem .3rem;text-align:center;margin:.15rem 0'>"
-                    f"<div style='font-size:.65rem;font-weight:700;color:#94A3B8'>{yr}</div>"
-                    f"<div style='font-size:1.6rem;line-height:1.2'>{flg}</div>"
-                    f"<div style='font-size:.7rem;font-weight:800;color:#F1F5F9'>{name}</div>"
-                    f"</div>",
-                    unsafe_allow_html=True
-                )
-    st.caption("🇧🇷 Brazil leads with 5 titles · 🇩🇪 Germany & 🇮🇹 Italy have 4 · 🇦🇷 Argentina has 3")
-
-# Tab 2: Greatest Players
-with _wc_tabs[1]:
-    st.markdown("**The players who made the whole world stop and watch.**")
-    for em, name, flg, country, story in _WC_LEGENDS_COMPACT:
+_country_moments = _WC_COUNTRY_STORY.get(selected_country, [])
+if _country_moments:
+    st.caption(f"{selected_country}'s journey through the World Cup — the key moments.")
+    for yr, headline, story in _country_moments:
         st.markdown(
-            f"<div style='background:rgba(30,41,59,.7);border:1px solid rgba(255,255,255,.1);"
-            f"border-radius:12px;padding:.75rem 1rem;margin:.4rem 0;"
-            f"display:flex;align-items:flex-start;gap:.9rem'>"
-            f"<div style='text-align:center;min-width:52px'>"
-            f"<div style='font-size:2rem;line-height:1'>{em}</div>"
-            f"<div style='font-size:1.3rem'>{flg}</div>"
+            f"<div style='border-left:3px solid #2563EB;padding:.6rem .9rem;margin:.5rem 0;"
+            f"background:rgba(37,99,235,.08);border-radius:0 10px 10px 0'>"
+            f"<div style='display:flex;align-items:center;gap:.6rem;margin-bottom:.2rem'>"
+            f"<span style='background:#2563EB;color:white;border-radius:6px;"
+            f"padding:.08rem .45rem;font-size:.76rem;font-weight:800'>{yr}</span>"
+            f"<span style='font-weight:800;color:#F1F5F9;font-size:.95rem'>{headline}</span>"
             f"</div>"
-            f"<div>"
-            f"<div style='font-weight:900;font-size:1rem;color:#F1F5F9'>{name}"
-            f"<span style='font-weight:400;font-size:.78rem;color:#64748B;margin-left:.5rem'>{country}</span></div>"
-            f"<div style='font-size:.88rem;color:#CBD5E1;margin-top:.2rem;line-height:1.5'>{story}</div>"
+            f"<div style='font-size:.88rem;color:#CBD5E1;line-height:1.55'>{story}</div>"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+else:
+    _apps = _safe(team.get("wc_appearances"), "")
+    _best = _safe(team.get("best_finish"), "")
+    if _apps and _apps != "—":
+        st.markdown(
+            f"<div style='background:rgba(30,41,59,.8);border:1px solid rgba(255,255,255,.1);"
+            f"border-radius:12px;padding:1rem 1.1rem;margin:.3rem 0'>"
+            f"<div style='font-size:2rem;margin-bottom:.4rem'>{flag}</div>"
+            f"<div style='font-weight:800;font-size:1rem;color:#F1F5F9;margin-bottom:.3rem'>"
+            f"{selected_country} at the World Cup</div>"
+            f"<div style='font-size:.9rem;color:#CBD5E1;line-height:1.6'>"
+            f"{selected_country} has appeared at the World Cup <b>{_apps}</b> time{'s' if _apps not in ('1','one') else ''}."
+            f" Their best finish has been <b>{_best}</b>."
+            f" In 2026, they arrive ready to write new chapters in their World Cup story."
             f"</div></div>",
             unsafe_allow_html=True
         )
-    if st.button("📖 See full Legends page", key="btn_wch_legends"):
-        st.switch_page("pages/world_cup_history.py")
-
-# Tab 3: This Country's Story
-with _wc_tabs[2]:
-    _country_moments = _WC_COUNTRY_STORY.get(selected_country, [])
-    if _country_moments:
-        st.markdown(f"**{selected_country}'s journey through the World Cup — the key moments.**")
-        for yr, headline, story in _country_moments:
-            st.markdown(
-                f"<div style='border-left:3px solid #2563EB;padding:.6rem .9rem;margin:.5rem 0;"
-                f"background:rgba(37,99,235,.08);border-radius:0 10px 10px 0'>"
-                f"<div style='display:flex;align-items:center;gap:.6rem;margin-bottom:.2rem'>"
-                f"<span style='background:#2563EB;color:white;border-radius:6px;"
-                f"padding:.08rem .45rem;font-size:.76rem;font-weight:800'>{yr}</span>"
-                f"<span style='font-weight:800;color:#F1F5F9;font-size:.95rem'>{headline}</span>"
-                f"</div>"
-                f"<div style='font-size:.88rem;color:#CBD5E1;line-height:1.55'>{story}</div>"
-                f"</div>",
-                unsafe_allow_html=True
-            )
     else:
-        _apps = _safe(team.get("wc_appearances"), "")
-        _best = _safe(team.get("best_finish"), "")
-        if _apps and _apps != "—":
-            st.markdown(
-                f"<div style='background:rgba(30,41,59,.8);border:1px solid rgba(255,255,255,.1);"
-                f"border-radius:12px;padding:1rem 1.1rem;margin:.3rem 0'>"
-                f"<div style='font-size:2rem;margin-bottom:.4rem'>{flag}</div>"
-                f"<div style='font-weight:800;font-size:1rem;color:#F1F5F9;margin-bottom:.3rem'>"
-                f"{selected_country} at the World Cup</div>"
-                f"<div style='font-size:.9rem;color:#CBD5E1;line-height:1.6'>"
-                f"{selected_country} has appeared at the World Cup <b>{_apps}</b> time{'s' if _apps not in ('1','one') else ''}."
-                f" Their best finish has been <b>{_best}</b>."
-                f" In 2026, they arrive ready to write new chapters in their World Cup story."
-                f"</div></div>",
-                unsafe_allow_html=True
-            )
-        else:
-            st.markdown(
-                f"<div style='background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);"
-                f"border-radius:12px;padding:1rem 1.1rem;margin:.3rem 0'>"
-                f"<div style='font-size:2rem;margin-bottom:.4rem'>✨</div>"
-                f"<div style='font-weight:800;font-size:1rem;color:#FCD34D;margin-bottom:.3rem'>"
-                f"Making History in 2026</div>"
-                f"<div style='font-size:.9rem;color:#CBD5E1;line-height:1.6'>"
-                f"{selected_country} is competing at the World Cup in 2026. "
-                f"Every great World Cup story had to start somewhere — this could be the beginning of something special."
-                f"</div></div>",
-                unsafe_allow_html=True
-            )
-
-# Tab 4: Great Moments
-with _wc_tabs[3]:
-    st.markdown("**Moments that stopped the world.**")
-    for yr, em, headline, story in _WC_MOMENTS_COMPACT:
         st.markdown(
-            f"<div style='background:rgba(30,41,59,.7);border-left:3px solid rgba(251,191,36,.5);"
-            f"border-radius:0 12px 12px 0;padding:.7rem 1rem;margin:.45rem 0;"
-            f"display:flex;align-items:flex-start;gap:.8rem'>"
-            f"<div style='text-align:center;min-width:42px'>"
-            f"<div style='font-size:1.7rem;line-height:1'>{em}</div>"
-            f"<div style='font-size:.65rem;font-weight:800;color:#FCD34D;margin-top:.1rem'>{yr}</div>"
-            f"</div>"
-            f"<div>"
-            f"<div style='font-weight:800;color:#F1F5F9;font-size:.95rem;margin-bottom:.18rem'>{headline}</div>"
-            f"<div style='font-size:.86rem;color:#CBD5E1;line-height:1.55'>{story}</div>"
+            f"<div style='background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);"
+            f"border-radius:12px;padding:1rem 1.1rem;margin:.3rem 0'>"
+            f"<div style='font-size:2rem;margin-bottom:.4rem'>✨</div>"
+            f"<div style='font-weight:800;font-size:1rem;color:#FCD34D;margin-bottom:.3rem'>"
+            f"Making History in 2026</div>"
+            f"<div style='font-size:.9rem;color:#CBD5E1;line-height:1.6'>"
+            f"{selected_country} is competing at the World Cup in 2026. "
+            f"Every great World Cup story had to start somewhere — this could be the beginning of something special."
             f"</div></div>",
             unsafe_allow_html=True
         )
-    if st.button("📖 See full World Cup History", key="btn_wch_moments"):
-        st.switch_page("pages/world_cup_history.py")
+
+if st.button("📖 See full World Cup History", key="btn_wch_moments"):
+    st.switch_page("pages/world_cup_history.py")
 
 
 # ══════════════════════════════════════════════════════════════════════════════

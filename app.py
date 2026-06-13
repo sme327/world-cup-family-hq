@@ -22,7 +22,12 @@ st.markdown("""
 <style>
     /* ── Sidebar ─────────────────────────────────── */
     [data-testid="stSidebar"] { background-color: #1E3A5F; }
-    [data-testid="stSidebar"] * { color: white !important; }
+    /* Target sidebar nav + labels without leaking into dropdown popups */
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] span:not([data-baseweb]),
+    [data-testid="stSidebar"] [data-testid="stSidebarNav"] *,
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] * { color: white !important; }
 
     /* ── Global emoji / text size ────────────────── */
     .stMarkdown p, .stMarkdown li { font-size: 1.08rem; line-height: 1.65; }
@@ -41,13 +46,13 @@ st.markdown("""
     .emoji-lg { font-size: 2.5rem; display: inline-block; }
     .emoji-md { font-size: 1.8rem; display: inline-block; }
 
-    /* ── Dark bordered containers (schedule cards) ─ */
+    /* ── Bordered containers — theme-adaptive ──────── */
     [data-testid="stVerticalBlockBorderWrapper"] {
-        background: linear-gradient(160deg, #1E293B 0%, #0F172A 100%) !important;
-        border: 1px solid rgba(148,163,184,.18) !important;
+        background: var(--secondary-background-color) !important;
+        border: 1px solid rgba(128,128,128,.2) !important;
         border-radius: 14px !important;
         padding: 0.4rem !important;
-        box-shadow: 0 2px 10px rgba(0,0,0,.35) !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,.18) !important;
     }
 
     /* ── Typography ──────────────────────────────── */

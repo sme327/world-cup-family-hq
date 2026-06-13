@@ -77,9 +77,7 @@ pg = st.navigation(
         "Progress": [
             st.Page("pages/leaderboard.py",  title="Leaderboard",  icon="🏆"),
             st.Page("pages/achievements.py", title="Achievements",  icon="🏅"),
-        ],
-        "Admin": [
-            st.Page("pages/admin.py", title="Admin", icon="🔧"),
+            st.Page("pages/admin.py",        title="Admin",         icon="🔧"),
         ],
     },
     position="sidebar",

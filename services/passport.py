@@ -7,7 +7,7 @@ import json as _json
 import urllib.request as _urllib
 import urllib.parse as _urlparse
 import pandas as pd
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from services.database import get_connection, DATA_DIR
 
 _META_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'country_metadata.csv')
@@ -410,7 +410,7 @@ def get_country_of_the_day() -> dict:
     from services.teams import get_team_by_name
     from services.teams import get_flag
 
-    today = date.today()
+    today = (datetime.utcnow() - timedelta(hours=7)).date()  # PDT = UTC-7
     seed = today.toordinal()
 
     # Check for matches today

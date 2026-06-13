@@ -1,5 +1,5 @@
 import pandas as pd
-from datetime import date
+from datetime import date, datetime, timedelta
 from services.database import get_connection
 
 
@@ -15,7 +15,7 @@ def get_all_matches() -> pd.DataFrame:
 
 def get_upcoming_matches(n: int = 5) -> pd.DataFrame:
     conn = get_connection()
-    today = date.today().isoformat()
+    today = (datetime.utcnow() - timedelta(hours=7)).date().isoformat()  # PDT = UTC-7
     df = pd.read_sql(
         "SELECT * FROM matches WHERE status='scheduled' AND match_date >= ? "
         "ORDER BY match_date, kickoff_time_et LIMIT ?",

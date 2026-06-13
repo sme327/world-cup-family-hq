@@ -16,6 +16,11 @@ __pycache__/
 # PDF (large, not needed for deployment)
 data/SquadLists-English.pdf
 
+# Downloaded images — too large for git; cloud uses emoji fallback
+data/country_images/
+data/city_images/
+data/country_card_images/
+
 # Virtual envs
 .venv/
 venv/

@@ -196,7 +196,7 @@ def _tomorrow_match_card(m):
 # ─────────────────────────────────────────────────────────────────────────────
 # Pre-compute dates + matches
 # ─────────────────────────────────────────────────────────────────────────────
-today     = date.today()
+today     = (_dt.utcnow() - timedelta(hours=7)).date()  # UTC-7 = PDT; keeps correct date on cloud servers
 tomorrow  = today + timedelta(days=1)
 today_str = today.isoformat()
 

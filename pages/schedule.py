@@ -30,7 +30,7 @@ _GRP_COLORS = {
 }
 
 now_pt   = datetime.utcnow() - timedelta(hours=7)
-today_pt = date.today().isoformat()
+today_pt = now_pt.date().isoformat()  # derive from PT, not server UTC
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────────

@@ -243,7 +243,6 @@ else:
 
     # ── Sidebar: Playing As + Admin (below page filters) ──────────────────────
     with st.sidebar:
-        st.divider()
         _current = st.session_state.get("active_user_name", _names[0])
         _idx     = _names.index(_current) if _current in _names else 0
         _chosen  = st.selectbox(

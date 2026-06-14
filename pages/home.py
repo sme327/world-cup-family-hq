@@ -256,19 +256,24 @@ all_matches      = get_all_matches()
 all_matches['pt_date'] = all_matches.apply(
     lambda r: pt_date_str(r['match_date'], r['kickoff_time_et']), axis=1
 )
-def _time_sort_key(t: str) -> int:
+def _pt_sort_key(et_time: str) -> int:
+    """Convert ET kickoff time to PT minutes. Midnight ET (00:00) = 21:00 PT = 1260, sorts last."""
     try:
-        h, m = str(t).split(":")
-        return int(h) * 60 + int(m)
+        h, m = str(et_time).split(":")
+        et_min = int(h) * 60 + int(m)
+        pt_min = et_min - 180  # PDT = ET - 3h
+        if pt_min < 0:
+            pt_min += 1440  # wrap midnight: 00:00 ET → 1260 min (21:00 PT)
+        return pt_min
     except Exception:
         return 9999
 
 today_matches    = all_matches[all_matches['pt_date'] == today_str].copy()
-today_matches['_sort_key'] = today_matches['kickoff_time_et'].apply(_time_sort_key)
+today_matches['_sort_key'] = today_matches['kickoff_time_et'].apply(_pt_sort_key)
 today_matches    = today_matches.sort_values('_sort_key').drop(columns=['_sort_key'])
 
 tomorrow_matches = all_matches[all_matches['pt_date'] == tomorrow.isoformat()].copy()
-tomorrow_matches['_sort_key'] = tomorrow_matches['kickoff_time_et'].apply(_time_sort_key)
+tomorrow_matches['_sort_key'] = tomorrow_matches['kickoff_time_et'].apply(_pt_sort_key)
 tomorrow_matches = tomorrow_matches.sort_values('_sort_key').drop(columns=['_sort_key'])
 
 board = get_leaderboard()

@@ -186,9 +186,22 @@ all_matches['pt_date'] = all_matches.apply(
 )
 
 # ── Next Kickoff Banner (unfiltered — always the global next match) ────────────
+def _et_to_sort_key(row) -> int:
+    """Sort key: convert ET kickoff to PT minutes so midnight ET (00:00) sorts as 21:00 PT."""
+    try:
+        h, m = str(row['kickoff_time_et']).split(":")
+        et_min = int(h) * 60 + int(m)
+        pt_min = et_min - 180
+        if pt_min < 0:
+            pt_min += 1440
+        return int(row.get('match_date','').replace('-','') or 0) * 10000 + pt_min
+    except Exception:
+        return 99999999
+
 _sched = all_matches[all_matches['status'] == 'scheduled'].copy()
 _sched = _sched[~_sched.apply(_is_live, axis=1)]
-_sched = _sched.sort_values(['match_date', 'kickoff_time_et'])
+_sched['_sk'] = _sched.apply(_et_to_sort_key, axis=1)
+_sched = _sched.sort_values('_sk').drop(columns=['_sk'])
 
 if not _sched.empty:
     nm     = _sched.iloc[0]

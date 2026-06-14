@@ -68,7 +68,7 @@ if not _adm_upcoming.empty:
             unsafe_allow_html=True,
         )
 
-tabs = st.tabs(["📥 Enter Scores", "📋 Matches", "🌍 Teams", "👤 Users", "🏷️ Stamps", "🖼️ Card Images", "🛠️ Database"])
+tabs = st.tabs(["📥 Enter Scores", "📋 Matches", "🌍 Teams", "👤 Users", "🏷️ Stamps", "🖼️ Card Images", "🛠️ Database", "💾 Backup"])
 
 # ── Enter Scores ──────────────────────────────────────────────────────────────
 with tabs[0]:
@@ -244,4 +244,83 @@ with tabs[6]:
         "in your terminal from the `world-cup-family-hq/` folder:"
     )
     st.code("python scripts/reset_db.py", language="bash")
-    st.caption("⚠️ This will delete ALL picks, discoveries, and activity. Cannot be undone.")
+    st.caption("⚠️ reset_db.py now auto-backs up picks before wiping. Use --wipe to skip.")
+
+# ── Backup & Restore ──────────────────────────────────────────────────────────
+with tabs[7]:
+    st.markdown("### 💾 Backup Picks")
+    st.markdown(
+        "Download the current picks and scores so they survive code deployments. "
+        "**Do this before pushing any code changes to GitHub.**"
+    )
+
+    _bconn = get_connection()
+
+    # Picks CSV
+    _picks_rows = _bconn.execute(
+        """SELECT u.name AS player, m.home_team, m.away_team, m.match_date,
+                  p.picked_team
+           FROM picks p
+           JOIN users u ON p.user_id = u.id
+           JOIN matches m ON p.match_id = m.id
+           ORDER BY m.match_date, m.id, u.id"""
+    ).fetchall()
+
+    # Scores CSV
+    _scores_rows = _bconn.execute(
+        """SELECT home_team, away_team, match_date, home_score, away_score, status
+           FROM matches WHERE status='completed' ORDER BY match_date"""
+    ).fetchall()
+
+    _bconn.close()
+
+    import csv, io
+    from datetime import datetime as _dtnow
+
+    def _to_csv(rows, headers):
+        buf = io.StringIO()
+        w = csv.writer(buf)
+        w.writerow(headers)
+        w.writerows(rows)
+        return buf.getvalue().encode()
+
+    _ts = _dtnow.now().strftime("%Y%m%d_%H%M")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Picks to backup", len(_picks_rows))
+        st.download_button(
+            "⬇️ Download picks_backup.csv",
+            data=_to_csv(_picks_rows, ["player","home_team","away_team","match_date","picked_team"]),
+            file_name=f"picks_backup_{_ts}.csv",
+            mime="text/csv",
+            use_container_width=True,
+        )
+    with col2:
+        st.metric("Completed matches", len(_scores_rows))
+        st.download_button(
+            "⬇️ Download scores_backup.csv",
+            data=_to_csv(_scores_rows, ["home_team","away_team","match_date","home_score","away_score","status"]),
+            file_name=f"scores_backup_{_ts}.csv",
+            mime="text/csv",
+            use_container_width=True,
+        )
+
+    st.divider()
+    st.markdown("### 🔄 How to preserve picks across deployments")
+    st.markdown(
+        "**Option A (fastest):** Download both CSVs above, save to `data/` in your local repo, "
+        "rename them to `picks_backup.csv` and `scores_backup.csv`, then commit and push.\n\n"
+        "**Option B (automatic):** From your terminal:\n"
+    )
+    st.code(
+        "python scripts/backup_picks.py    # exports CSVs to data/\n"
+        "git add data/picks_backup.csv data/scores_backup.csv\n"
+        "git commit -m 'backup picks'\n"
+        "git push",
+        language="bash"
+    )
+    st.info(
+        "💡 `reset_db.py` now automatically backs up and restores picks. "
+        "Run `python scripts/reset_db.py` instead of deleting the database directly."
+    )

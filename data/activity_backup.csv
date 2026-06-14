@@ -1,0 +1,22 @@
+id,timestamp,user_name,user_id,event_type,country_name,match_id,achievement_id,message
+1,2026-06-11T12:27:07.988153,Daphne,3,first_pick,South Africa,1,,made their very first pick: South Africa!
+2,2026-06-11T12:29:06.171482,Shawn,1,first_pick,Mexico,1,,made their very first pick: Mexico!
+3,2026-06-11T12:29:11.882837,Jennie,2,first_pick,South Africa,1,,made their very first pick: South Africa!
+4,2026-06-11T12:29:17.784679,Elliot,4,first_pick,Mexico,1,,made their very first pick: Mexico!
+5,2026-06-11T12:29:20.393751,Grandpa By,6,first_pick,Mexico,1,,made their very first pick: Mexico!
+6,2026-06-11T12:29:23.993872,Wyatt,5,first_pick,Mexico,1,,made their very first pick: Mexico!
+7,2026-06-11T12:35:27.912983,Daphne,3,country_discovered,South Africa,,,discovered South Africa
+8,2026-06-11T13:31:23.888063,Shawn,1,achievement_unlocked,,,first_pick,First Pick
+9,2026-06-11T22:24:00.822181,Shawn,1,points_earned,Mexico,1,,earned 1.0pts with Mexico
+10,2026-06-11T22:24:00.823958,Elliot,4,points_earned,Mexico,1,,earned 1.0pts with Mexico
+11,2026-06-11T22:24:00.824954,Grandpa By,6,points_earned,Mexico,1,,earned 1.0pts with Mexico
+12,2026-06-11T22:24:00.825676,Wyatt,5,points_earned,Mexico,1,,earned 1.0pts with Mexico
+13,2026-06-11T22:24:06.271646,Grandpa By,6,points_earned,South Korea,2,,earned 1.0pts with South Korea
+14,2026-06-11T22:24:06.272478,Wyatt,5,points_earned,South Korea,2,,earned 1.0pts with South Korea
+15,2026-06-11T22:24:06.273197,Elliot,4,points_earned,South Korea,2,,earned 1.0pts with South Korea
+16,2026-06-11T22:24:06.273763,Shawn,1,points_earned,South Korea,2,,earned 1.0pts with South Korea
+17,2026-06-11T23:13:12.063656,Shawn,1,achievement_unlocked,,,fan_club,Fan Club
+18,2026-06-11T23:13:12.065680,Shawn,1,achievement_unlocked,,,cheer_for_10,Cheer for 10
+19,2026-06-11T23:13:12.067642,Shawn,1,achievement_unlocked,,,first_point,First Point
+20,2026-06-11T23:28:45.006642,Shawn,1,country_discovered,Algeria,,,discovered Algeria
+21,2026-06-12T08:39:51.217152,Shawn,1,country_discovered,Mexico,,,discovered Mexico

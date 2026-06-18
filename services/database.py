@@ -123,6 +123,18 @@ def init_db():
     if cursor.execute("SELECT COUNT(*) FROM matches").fetchone()[0] == 0:
         df = pd.read_csv(os.path.join(DATA_DIR, 'world_cup_2026_matches.csv'))
         df.to_sql('matches', conn, if_exists='append', index=False)
+    else:
+        # Always sync schedule fields from CSV so time/venue corrections take effect
+        # without a full DB reset. Preserves scores and status.
+        df = pd.read_csv(os.path.join(DATA_DIR, 'world_cup_2026_matches.csv'))
+        for _, row in df.iterrows():
+            cursor.execute("""
+                UPDATE matches
+                SET match_date=?, kickoff_time_et=?, venue=?, city=?, host_country=?
+                WHERE id=?
+            """, (str(row['match_date']), str(row['kickoff_time_et']),
+                  str(row['venue']), str(row['city']), str(row['host_country']),
+                  int(row['id'])))
 
     # Always upsert users from CSV so new family members appear without a DB reset
     df = pd.read_csv(os.path.join(DATA_DIR, 'users.csv'))

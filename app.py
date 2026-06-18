@@ -191,8 +191,9 @@ pg = st.navigation(
         ],
         "⚽ Play": [
             st.Page("pages/schedule.py",     title="Schedule",     icon="📅"),
+            st.Page("pages/standings.py",    title="Standings",    icon="📊"),
             st.Page("pages/matchup.py",      title="Matchups",     icon="🏟️"),
-            st.Page("pages/pick_tracker.py", title="Family Picks", icon="📊"),
+            st.Page("pages/pick_tracker.py", title="Family Picks", icon="🎯"),
         ],
         "🌎 Explore": [
             st.Page("pages/country_profile.py",     title="Countries",         icon="🗺️"),

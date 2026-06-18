@@ -184,26 +184,27 @@ def _render_group_card(group: str, df: pd.DataFrame, played: int):
 
 
 def _render_r32_card(num: int, f1: str, n1: str, f2: str, n2: str, tbd: bool):
-    alpha = ".55" if tbd else "1"
-    border = "rgba(148,163,184,.12)" if tbd else "rgba(99,102,241,.25)"
+    alpha = ".5" if tbd else "1"
+    border = "rgba(148,163,184,.12)" if tbd else "rgba(99,102,241,.28)"
     st.markdown(
         f"<div style='background:rgba(15,23,42,.6);border:1px solid {border};"
-        f"border-radius:12px;padding:.65rem .9rem;opacity:{alpha};margin:.2rem 0'>"
+        f"border-radius:12px;padding:.7rem 1rem;opacity:{alpha};margin:.2rem 0'>"
         f"<div style='font-size:.6rem;color:#475569;font-weight:700;"
-        f"letter-spacing:.06em;margin-bottom:.35rem'>MATCH {num}</div>"
-        f"<div style='display:flex;align-items:center;gap:.6rem'>"
-        f"<span style='font-size:1.9rem;line-height:1'>{f1}</span>"
-        f"<div style='flex:1;min-width:0'>"
-        f"<div style='font-weight:700;font-size:.88rem;color:#F1F5F9;"
-        f"white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>{n1}</div>"
+        f"letter-spacing:.06em;margin-bottom:.5rem'>MATCH {num}</div>"
+        # Team 1
+        f"<div style='display:flex;align-items:center;gap:.55rem;margin-bottom:.3rem'>"
+        f"<span style='font-size:2rem;line-height:1;flex-shrink:0'>{f1}</span>"
+        f"<span style='font-weight:700;font-size:.95rem;color:#F1F5F9'>{n1}</span>"
         f"</div>"
-        f"<span style='color:#475569;font-weight:900;font-size:.75rem;flex-shrink:0'>VS</span>"
-        f"<div style='flex:1;min-width:0;text-align:right'>"
-        f"<div style='font-weight:700;font-size:.88rem;color:#F1F5F9;"
-        f"white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>{n2}</div>"
+        # VS divider
+        f"<div style='font-size:.7rem;font-weight:900;color:#475569;"
+        f"letter-spacing:.1em;padding:.1rem 0 .3rem .1rem'>VS</div>"
+        # Team 2
+        f"<div style='display:flex;align-items:center;gap:.55rem'>"
+        f"<span style='font-size:2rem;line-height:1;flex-shrink:0'>{f2}</span>"
+        f"<span style='font-weight:700;font-size:.95rem;color:#F1F5F9'>{n2}</span>"
         f"</div>"
-        f"<span style='font-size:1.9rem;line-height:1'>{f2}</span>"
-        f"</div></div>",
+        f"</div>",
         unsafe_allow_html=True,
     )
 

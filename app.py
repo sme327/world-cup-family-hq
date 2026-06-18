@@ -191,13 +191,13 @@ pg = st.navigation(
         ],
         "⚽ Play": [
             st.Page("pages/schedule.py",     title="Schedule",     icon="📅"),
-            st.Page("pages/standings.py",    title="Standings",    icon="📊"),
             st.Page("pages/matchup.py",      title="Matchups",     icon="🏟️"),
             st.Page("pages/pick_tracker.py", title="Family Picks", icon="🎯"),
         ],
         "🌎 Explore": [
             st.Page("pages/country_profile.py",     title="Countries",         icon="🗺️"),
             st.Page("pages/host_cities.py",          title="Host Cities",       icon="🏙️"),
+            st.Page("pages/standings.py",            title="Tournament Standings", icon="📊"),
             st.Page("pages/world_cup_history.py",    title="World Cup History", icon="📖"),
             st.Page("pages/passport_individual.py",  title="My Passport",       icon="🛂"),
             st.Page("pages/passport_family.py",      title="Family Passport",   icon="👨‍👩‍👧‍👦"),

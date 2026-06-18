@@ -4,7 +4,7 @@ from services.picks import get_all_picks, get_picks_for_user, get_all_users
 from services.matches import get_all_matches
 from services.teams import get_flag, get_all_group_letters
 from services.time_utils import fmt_date, fmt_match_time, pt_date_str
-from services.scoring import pick_result
+from services.scoring import pick_result, get_leaderboard
 
 active_user    = st.session_state.get("active_user_name", "Shawn")
 active_user_id = st.session_state.get("active_user_id", 1)
@@ -338,8 +338,153 @@ def _family_story_insights() -> list[str]:
     return stories[:3]
 
 
+# ── Today tab helpers ─────────────────────────────────────────────────────────
+
+def _today_picker_rows(rows: pd.DataFrame, home_team: str, away_team: str,
+                       status: str, hs, as_) -> str:
+    """Render big avatar + name rows for the Today screenshot card."""
+    if rows.empty:
+        return "<div style='font-size:.78rem;color:#475569;padding:.15rem 0'>—</div>"
+    is_done = status == 'completed' and hs is not None and not pd.isna(hs)
+    parts = []
+    for _, r in rows.iterrows():
+        av   = r.get('avatar', '⚽')
+        name = r.get('user_name', '?')
+        tc   = r.get('theme_color', '#94A3B8')
+        if is_done:
+            pts = pick_result(r['picked_team'], home_team, away_team, hs, as_)
+            badge = " ✅" if pts == 1.0 else (" 🟡" if pts == 0.5 else " ❌")
+        else:
+            badge = ""
+        parts.append(
+            f"<div style='display:flex;align-items:center;gap:.32rem;padding:.12rem 0'>"
+            f"<span style='font-size:1.55rem;line-height:1'>{av}</span>"
+            f"<span style='font-size:.9rem;font-weight:700;color:{tc}'>{name}{badge}</span>"
+            f"</div>"
+        )
+    return "".join(parts)
+
+
+def _today_match_card(m: pd.Series, mpicks: pd.DataFrame) -> None:
+    """Render a compact, screenshot-ready match card for the Today tab."""
+    hf = get_flag(m['home_team'])
+    af = get_flag(m['away_team'])
+    time_str = fmt_match_time(m['match_date'], m['kickoff_time_et'])
+
+    is_done = m['status'] == 'completed' and pd.notna(m.get('home_score'))
+    if is_done:
+        hs, as_ = int(m['home_score']), int(m['away_score'])
+        score_str = f"{hs}–{as_}"
+        if hs > as_:   hc, ac = "#4ADE80", "#F87171"
+        elif as_ > hs: hc, ac = "#F87171", "#4ADE80"
+        else:          hc = ac = "#FCD34D"
+    else:
+        hs = as_ = None
+        score_str, hc, ac = "vs", "#F1F5F9", "#F1F5F9"
+
+    h_picks = mpicks[mpicks['picked_team'] == m['home_team']] if not mpicks.empty else pd.DataFrame()
+    a_picks = mpicks[mpicks['picked_team'] == m['away_team']] if not mpicks.empty else pd.DataFrame()
+
+    with st.container(border=True):
+        st.markdown(
+            f"<div style='text-align:center;padding:.15rem 0 .1rem'>"
+            f"<div style='display:flex;align-items:center;justify-content:center;gap:.4rem'>"
+            f"<span style='font-size:2.2rem;line-height:1'>{hf}</span>"
+            f"<span style='font-size:.92rem;font-weight:900;color:{hc}'>{m['home_team']}</span>"
+            f"<span style='font-size:1.15rem;font-weight:900;color:#FCD34D;padding:0 .2rem'>{score_str}</span>"
+            f"<span style='font-size:.92rem;font-weight:900;color:{ac}'>{m['away_team']}</span>"
+            f"<span style='font-size:2.2rem;line-height:1'>{af}</span>"
+            f"</div>"
+            f"<div style='font-size:.67rem;color:#64748B;margin-top:.08rem'>"
+            f"Group {m['group_letter']} · {time_str} · {m['city']}</div></div>"
+            f"<hr style='border:none;border-top:1px solid rgba(128,128,128,.12);margin:.25rem 0'>",
+            unsafe_allow_html=True,
+        )
+        pc1, pc2 = st.columns(2, gap="small")
+        with pc1:
+            st.markdown(
+                f"<div style='font-size:.72rem;font-weight:800;color:{hc};margin-bottom:.05rem'>"
+                f"{hf} {m['home_team']} ({len(h_picks)})</div>"
+                + _today_picker_rows(h_picks, m['home_team'], m['away_team'],
+                                     m['status'], hs, as_),
+                unsafe_allow_html=True,
+            )
+        with pc2:
+            st.markdown(
+                f"<div style='font-size:.72rem;font-weight:800;color:{ac};margin-bottom:.05rem'>"
+                f"{af} {m['away_team']} ({len(a_picks)})</div>"
+                + _today_picker_rows(a_picks, m['home_team'], m['away_team'],
+                                     m['status'], hs, as_),
+                unsafe_allow_html=True,
+            )
+
+
 # ── TABS ───────────────────────────────────────────────────────────────────────
-tab_match, tab_person = st.tabs(["📋 By Match", "👤 By Person"])
+tab_today, tab_match, tab_person = st.tabs(["📸 Today", "📋 By Match", "👤 By Person"])
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# TAB 0: TODAY
+# ══════════════════════════════════════════════════════════════════════════════
+with tab_today:
+    from datetime import datetime as _dt2, timezone as _tz2, timedelta as _td2
+
+    _today_str2 = (_dt2.now(_tz2.utc) - _td2(hours=7)).date().isoformat()
+    _t_matches  = all_matches[all_matches['pt_date'] == _today_str2].copy()
+    _t_matches  = _t_matches.sort_values('kickoff_time_et').reset_index(drop=True)
+
+    st.markdown(
+        f"<div style='font-size:1.3rem;font-weight:900;color:#F8FAFC;margin:.1rem 0 .55rem'>"
+        f"📸 Today's Picks — {fmt_date(_today_str2)}</div>",
+        unsafe_allow_html=True,
+    )
+
+    if _t_matches.empty:
+        st.info("No matches today — check tomorrow's lineup!")
+    else:
+        _n = len(_t_matches)
+        # 2-column layout when ≥ 2 matches so everything fits on one screen
+        if _n >= 2:
+            _tcols = st.columns(2, gap="medium")
+            for _ci, (_, _m) in enumerate(_t_matches.iterrows()):
+                _mid = int(_m['id'])
+                _mp  = all_picks[all_picks['match_id'] == _mid] if not all_picks.empty else pd.DataFrame()
+                with _tcols[_ci % 2]:
+                    _today_match_card(_m, _mp)
+        else:
+            _, _m = next(_t_matches.iterrows())
+            _mid  = int(_m['id'])
+            _mp   = all_picks[all_picks['match_id'] == _mid] if not all_picks.empty else pd.DataFrame()
+            _today_match_card(_m, _mp)
+
+    # ── Compact leaderboard ───────────────────────────────────────────────────
+    _board = get_leaderboard()
+    if not _board.empty:
+        st.markdown(
+            "<div style='font-size:.95rem;font-weight:800;color:#F8FAFC;"
+            "margin:.65rem 0 .25rem'>🏆 Standings</div>",
+            unsafe_allow_html=True,
+        )
+        _medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣", "6️⃣", "7️⃣"]
+        _b_rows = list(_board.iterrows())
+        _half   = (_len_b := len(_b_rows) + 1) // 2
+        _lb1, _lb2 = st.columns(2, gap="small")
+        for _i, (_, _r) in enumerate(_b_rows):
+            _pts_s = f"{float(_r['total_points']):.1f}"
+            _tc    = _r.get('theme_color', '#888888')
+            _row_h = (
+                f"<div style='display:flex;align-items:center;gap:.3rem;"
+                f"padding:.12rem .4rem;border-radius:8px;background:{_tc}18;margin:.05rem 0'>"
+                f"<span style='font-size:.82rem;width:1.3rem'>{_medals[_i] if _i < 7 else _i+1}</span>"
+                f"<span style='font-size:1.25rem;line-height:1'>{_r['avatar']}</span>"
+                f"<span style='font-size:.88rem;font-weight:700;flex:1'>{_r['name']}</span>"
+                f"<span style='font-size:.88rem;color:#FCD34D;font-weight:800'>{_pts_s}</span>"
+                f"</div>"
+            )
+            if _i < (_len_b - 1) // 2:
+                _lb1.markdown(_row_h, unsafe_allow_html=True)
+            else:
+                _lb2.markdown(_row_h, unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -347,50 +492,27 @@ tab_match, tab_person = st.tabs(["📋 By Match", "👤 By Person"])
 # ══════════════════════════════════════════════════════════════════════════════
 with tab_match:
 
-    # ── Family Pick Story ─────────────────────────────────────────────────────
-    insights = _family_story_insights()
-    if insights:
-        for insight in insights:
-            st.markdown(f"> {insight}")
-
-    # ── Family Favorite Countries ─────────────────────────────────────────────
-    st.markdown("##### 🌎 Family Favorite Countries")
-    if all_picks.empty:
-        st.caption("No family picks yet.")
-    else:
-        _ctry_counts = (
+    # ── Family Favorite Countries (compact) ───────────────────────────────────
+    if not all_picks.empty:
+        _ctry_top5 = (
             all_picks.groupby('picked_team').size()
             .sort_values(ascending=False)
-            .head(10)
+            .head(5)
         )
-        _max_cnt    = int(_ctry_counts.max())
-        _MEDALS     = ["🥇", "🥈", "🥉"]
-        _fav_rows   = ""
-        for _i, (_team, _cnt) in enumerate(_ctry_counts.items()):
-            _cnt        = int(_cnt)
-            _flag       = get_flag(_team)
-            _rank_label = _MEDALS[_i] if _i < 3 else f"{_i + 1}."
-            _bar_w      = max(4, round(_cnt / _max_cnt * 100))
-            _fav_rows  += (
-                f"<div style='display:flex;align-items:center;gap:.55rem;"
-                f"padding:.3rem 0;border-bottom:1px solid rgba(128,128,128,.07)'>"
-                f"<span style='font-size:1.05rem;min-width:1.7rem;text-align:center;"
-                f"line-height:1'>{_rank_label}</span>"
-                f"<span style='font-size:1.15rem;min-width:1.6rem;line-height:1'>{_flag}</span>"
-                f"<span style='font-size:.9rem;font-weight:700;flex:1;min-width:0'>{_team}</span>"
-                f"<div style='min-width:110px;display:flex;align-items:center;gap:.45rem'>"
-                f"<div style='flex:1;background:rgba(148,163,184,.15);border-radius:4px;height:6px'>"
-                f"<div style='width:{_bar_w}%;background:#3B82F6;border-radius:4px;height:6px'></div>"
-                f"</div>"
-                f"<span style='font-size:.8rem;color:#94A3B8;white-space:nowrap;"
-                f"min-width:4rem;text-align:right'>"
-                f"{_cnt} pick{'s' if _cnt != 1 else ''}</span>"
-                f"</div>"
-                f"</div>"
-            )
+        _medals5 = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"]
+        _chips = "".join(
+            f"<span style='display:inline-flex;align-items:center;gap:.28rem;"
+            f"background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);"
+            f"border-radius:20px;padding:.18rem .65rem;font-size:.84rem;font-weight:700;"
+            f"margin:.1rem .15rem'>{_medals5[_k]} {get_flag(_t)} {_t}"
+            f"<span style='color:#64748B;font-size:.72rem;margin-left:.2rem'>{int(_c)}</span></span>"
+            for _k, (_t, _c) in enumerate(_ctry_top5.items())
+        )
         st.markdown(
-            f"<div style='border-radius:12px;padding:.3rem .85rem;"
-            f"border:1px solid rgba(128,128,128,.12)'>{_fav_rows}</div>",
+            "<div style='margin:.2rem 0 .5rem'>"
+            "<span style='font-size:.72rem;font-weight:700;color:#64748B;"
+            "text-transform:uppercase;letter-spacing:.05em;margin-right:.4rem'>🌎 Family favs:</span>"
+            + _chips + "</div>",
             unsafe_allow_html=True,
         )
 

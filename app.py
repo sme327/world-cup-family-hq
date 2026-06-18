@@ -195,6 +195,7 @@ pg = st.navigation(
             st.Page("pages/pick_tracker.py", title="Family Picks", icon="🎯"),
         ],
         "🌎 Explore": [
+            st.Page("pages/map.py",                  title="World Atlas",       icon="🌎"),
             st.Page("pages/country_profile.py",     title="Countries",         icon="🗺️"),
             st.Page("pages/host_cities.py",          title="Host Cities",       icon="🏙️"),
             st.Page("pages/standings.py",            title="Tournament Standings", icon="📊"),

@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import date, timedelta, datetime as _dt
 from services.matches import get_all_matches
 from services.scoring import get_leaderboard
-from services.teams import get_flag
+from services.teams import get_flag, get_all_teams
 from services.activity import (
     format_activity_message,
     get_recent_family_discoveries,
@@ -14,10 +14,12 @@ from services.picks import get_picks_for_match
 from services.passport import (
     get_country_of_the_day, get_family_stamp_statuses,
     get_stamp, get_top_favorites,
+    get_discoveries, get_cheered_for, get_won_with, get_family_top_favorites,
 )
 from services.images import get_country_image_html, get_country_image_data_uri
 from services.time_utils import fmt_match_time, pt_date_str
 from services.database import get_connection
+from services.map_utils import build_atlas_figure, get_iso3_maps
 
 st.markdown("""
 <style>
@@ -444,6 +446,67 @@ else:
     for col, (_, m) in zip(cols, today_matches.iterrows()):
         with col:
             _today_match_card(m)
+
+st.divider()
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 3b. Mini World Atlas
+# ─────────────────────────────────────────────────────────────────────────────
+_home_map_head, _home_map_btn = st.columns([5, 1])
+with _home_map_head:
+    st.markdown('<div class="section-head">🌎 World Atlas</div>', unsafe_allow_html=True)
+with _home_map_btn:
+    st.markdown("&nbsp;", unsafe_allow_html=True)
+    if st.button("Open Full Atlas →", use_container_width=True, key="home_open_atlas"):
+        st.switch_page("pages/map.py")
+
+try:
+    _map_teams     = get_all_teams()
+    _map_iso3, _   = get_iso3_maps(_map_teams)
+    _active_uid    = st.session_state.get("active_user_id", 1)
+    _map_disc_df   = get_discoveries(_active_uid)
+    _map_disc      = set(_map_disc_df["country_name"].tolist()) if not _map_disc_df.empty else set()
+    _map_cheered   = set(get_cheered_for(_active_uid))
+    _map_won       = set(get_won_with(_active_uid))
+    _map_favs      = get_family_top_favorites(n=5)
+    _map_today     = set(today_matches["home_team"].tolist() + today_matches["away_team"].tolist())
+
+    _mini_fig = build_atlas_figure(
+        layer="today",
+        teams_df=_map_teams,
+        discoveries=_map_disc,
+        cheered=_map_cheered,
+        won=_map_won,
+        family_favs=_map_favs,
+        today_countries=_map_today,
+        height=300,
+    )
+    _mini_event = st.plotly_chart(
+        _mini_fig,
+        on_select="rerun",
+        use_container_width=True,
+        key="home_mini_atlas",
+    )
+    # Click on mini-map country → open country profile
+    if _mini_event and _mini_event.selection and _mini_event.selection.points:
+        _pt = _mini_event.selection.points[0]
+        _iso3 = _pt.get("location")
+        if _iso3 and _iso3 in _map_iso3:
+            st.session_state["_nav_country"] = _map_iso3[_iso3]
+            st.switch_page("pages/country_profile.py")
+
+    # Caption with today's countries
+    if _map_today:
+        _today_flags = " ".join(
+            str(_map_teams.loc[_map_teams["name"] == n, "flag_emoji"].values[0])
+            for n in sorted(_map_today)
+            if not _map_teams.loc[_map_teams["name"] == n, "flag_emoji"].empty
+        )
+        st.caption(f"⚡ Playing today: {_today_flags}  ·  📍 Blue = USA · Red = Canada · Green = Mexico")
+    else:
+        st.caption("📍 Blue = USA · Red = Canada · Green = Mexico")
+except Exception:
+    st.info("🌎 Map loading...")
 
 st.divider()
 

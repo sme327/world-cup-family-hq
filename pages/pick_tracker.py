@@ -562,25 +562,38 @@ with tab_match:
                   if not all_picks.empty else set()
         matches = matches[matches['id'].isin(my_mids)]
 
+    def _render_pt_card(m):
+        mid    = int(m['id'])
+        mpicks = all_picks[all_picks['match_id'] == mid] if not all_picks.empty else pd.DataFrame()
+        _mu_status = m['status']
+        if _mu_status == 'live':        _mu_label = "📖 Match Center"
+        elif _mu_status == 'completed': _mu_label = "📊 Summary"
+        else:                           _mu_label = "📖 Preview"
+        with st.container(border=True):
+            st.markdown(_match_card_html(m, mpicks), unsafe_allow_html=True)
+            if st.button(_mu_label, key=f"mu_link_{mid}", use_container_width=True):
+                st.session_state["_nav_match_id"] = mid
+                st.switch_page("pages/matchup.py")
+
     if matches.empty:
         st.info("No matches match that filter.")
     else:
         for pt_date_val, day_matches in matches.groupby('pt_date'):
-            st.markdown(f"### 📅 {fmt_date(pt_date_val)}")
-            for _, m in day_matches.iterrows():
-                mid    = int(m['id'])
-                mpicks = all_picks[all_picks['match_id'] == mid] if not all_picks.empty else pd.DataFrame()
-                with st.container(border=True):
-                    st.markdown(_match_card_html(m, mpicks), unsafe_allow_html=True)
-                    _mu_status = m['status']
-                    if _mu_status == 'live':        _mu_label = "📖 Match Center"
-                    elif _mu_status == 'completed': _mu_label = "📊 Match Summary"
-                    else:                           _mu_label = "📖 Match Preview"
-                    _btn_c1, _btn_c2 = st.columns([5, 2])
-                    with _btn_c2:
-                        if st.button(_mu_label, key=f"mu_link_{mid}", use_container_width=True):
-                            st.session_state["_nav_match_id"] = mid
-                            st.switch_page("pages/matchup.py")
+            st.markdown(
+                f"<div style='font-size:.85rem;font-weight:800;color:#94A3B8;"
+                f"margin:.5rem 0 .1rem'>📅 {fmt_date(pt_date_val)}</div>",
+                unsafe_allow_html=True,
+            )
+            _pt_rows = list(day_matches.iterrows())
+            for _i in range(0, len(_pt_rows), 2):
+                if _i + 1 < len(_pt_rows):
+                    _ca, _cb = st.columns(2, gap="medium")
+                    with _ca:
+                        _render_pt_card(_pt_rows[_i][1])
+                    with _cb:
+                        _render_pt_card(_pt_rows[_i + 1][1])
+                else:
+                    _render_pt_card(_pt_rows[_i][1])
 
 
 # ══════════════════════════════════════════════════════════════════════════════

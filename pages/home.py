@@ -29,9 +29,9 @@ st.markdown("""
     border-radius: 16px; padding: 1.1rem 1rem .7rem; color: white; margin-bottom: .5rem;
     border: 1px solid rgba(148,163,184,.25);
 }
-.match-flags   { text-align:center; font-size:5.5rem; line-height:1; margin-bottom:.2rem; }
-.match-teams   { text-align:center; font-size:1.3rem; font-weight:900; margin-bottom:.3rem; letter-spacing:-.01em; }
-.match-meta    { text-align:center; font-size:.73rem; color:#94A3B8; margin:.08rem 0; }
+.match-flags   { text-align:center; font-size:4.6rem; line-height:1; margin-bottom:.15rem; }
+.match-teams   { text-align:center; font-size:1.2rem; font-weight:900; margin-bottom:.2rem; letter-spacing:-.01em; }
+.match-meta    { text-align:center; font-size:.73rem; color:#94A3B8; margin:.05rem 0; }
 
 /* ── COTD card ───────────────────────────────────── */
 .cotd-card {

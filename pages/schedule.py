@@ -364,6 +364,59 @@ if not live_df.empty:
 # ⏰ UPCOMING
 # ══════════════════════════════════════════════════════════════════════════════
 
+def _render_upcoming_card(m):
+    mid      = int(m['id'])
+    hf       = get_flag(m['home_team'])
+    af       = get_flag(m['away_team'])
+    time_str = fmt_match_time(m['match_date'], m['kickoff_time_et'])
+    mp       = _picks_for(mid, picks_df)
+    user_pick_row = mp[mp['user_name'] == active_user] if not mp.empty else pd.DataFrame()
+    user_pick     = user_pick_row['picked_team'].iloc[0] if not user_pick_row.empty else None
+
+    sticker = (
+        f"<div style='display:flex;justify-content:center;gap:1.5rem;margin:.2rem 0'>"
+        f"{_sticker_block(m['home_team'], mp, hf)}"
+        f"{_sticker_block(m['away_team'], mp, af)}"
+        f"</div>"
+        if not mp.empty else
+        f"<div style='text-align:center;margin:.2rem 0;"
+        f"font-size:.72rem;color:#374151'>🗳️ Picks Open</div>"
+    )
+    consensus = _consensus_html(m, mp)
+
+    with st.container(border=True):
+        st.markdown(
+            f"<div style='text-align:center;padding:.1rem 0'>"
+            f"<div style='margin-bottom:.15rem'>{_grp_badge(m['group_letter'])}"
+            f"<span style='font-size:.65rem;color:#64748B'>⏰ Upcoming</span></div>"
+            f"<div style='font-size:2.8rem;line-height:1.05'>{hf}&nbsp;&nbsp;{af}</div>"
+            f"<div style='font-size:1rem;font-weight:900;color:#F1F5F9;margin:.15rem 0'>"
+            f"{m['home_team']} &nbsp;<span style='opacity:.4;font-weight:300'>vs</span>&nbsp; {m['away_team']}"
+            f"</div>"
+            f"<div style='font-size:.73rem;color:#94A3B8'>🕒 {time_str} &nbsp;·&nbsp; 🏟️ {m['venue']}</div>"
+            f"<div style='font-size:.68rem;color:#64748B'>📍 {m['city']}, {m['host_country']}</div>"
+            f"</div>"
+            f"{sticker}{consensus}"
+            f"<hr style='border:none;border-top:1px solid rgba(148,163,184,.15);margin:.35rem 0'>",
+            unsafe_allow_html=True,
+        )
+        b1, b2, b3 = st.columns([2, 2, 3])
+        with b1:
+            lbl = f"✅ {m['home_team']}" if user_pick == m['home_team'] else m['home_team']
+            if st.button(lbl, key=f"up_{mid}_h", use_container_width=True):
+                save_pick(active_user_id, mid, m['home_team'])
+                st.rerun()
+        with b2:
+            lbl = f"✅ {m['away_team']}" if user_pick == m['away_team'] else m['away_team']
+            if st.button(lbl, key=f"up_{mid}_a", use_container_width=True):
+                save_pick(active_user_id, mid, m['away_team'])
+                st.rerun()
+        with b3:
+            if st.button("📖 Match Preview", key=f"up_mc_{mid}", use_container_width=True):
+                st.session_state["_nav_match_id"] = mid
+                st.switch_page("pages/matchup.py")
+
+
 if not upcoming_df.empty:
     st.markdown("<div id='sched-upcoming' class='sect-hdr sect-upcoming'>⏰ Upcoming</div>", unsafe_allow_html=True)
 
@@ -381,61 +434,20 @@ if not upcoming_df.empty:
             _date_anchor = ""
         st.markdown(
             f"<div{_date_anchor} style='font-size:.82rem;color:#64748B;font-weight:700;"
-            f"letter-spacing:.03em;margin:.6rem 0 .2rem'>📆 {date_label}</div>",
+            f"letter-spacing:.03em;margin:.5rem 0 .15rem'>📆 {date_label}</div>",
             unsafe_allow_html=True,
         )
 
-        for _, m in day_grp.iterrows():
-            mid      = int(m['id'])
-            hf       = get_flag(m['home_team'])
-            af       = get_flag(m['away_team'])
-            time_str = fmt_match_time(m['match_date'], m['kickoff_time_et'])
-            mp       = _picks_for(mid, picks_df)
-            user_pick_row = mp[mp['user_name'] == active_user] if not mp.empty else pd.DataFrame()
-            user_pick     = user_pick_row['picked_team'].iloc[0] if not user_pick_row.empty else None
-
-            sticker = (
-                f"<div style='display:flex;justify-content:center;gap:2rem;margin:.3rem 0'>"
-                f"{_sticker_block(m['home_team'], mp, hf)}"
-                f"{_sticker_block(m['away_team'], mp, af)}"
-                f"</div>"
-                if not mp.empty else
-                f"<div style='text-align:center;margin:.3rem 0;"
-                f"font-size:.75rem;color:#374151'>🗳️ Picks Open</div>"
-            )
-            consensus = _consensus_html(m, mp)
-
-            with st.container(border=True):
-                st.markdown(
-                    f"<div style='text-align:center;padding:.15rem 0'>"
-                    f"<div style='margin-bottom:.2rem'>{_grp_badge(m['group_letter'])}"
-                    f"<span style='font-size:.68rem;color:#64748B'>⏰ Upcoming</span></div>"
-                    f"<div style='font-size:3.5rem;line-height:1.05'>{hf}&nbsp;&nbsp;{af}</div>"
-                    f"<div style='font-size:1.1rem;font-weight:900;color:#F1F5F9;margin:.2rem 0'>"
-                    f"{m['home_team']} &nbsp;<span style='opacity:.4;font-weight:300'>vs</span>&nbsp; {m['away_team']}"
-                    f"</div>"
-                    f"<div style='font-size:.78rem;color:#94A3B8'>🕒 {time_str} &nbsp;·&nbsp; 🏟️ {m['venue']}</div>"
-                    f"<div style='font-size:.72rem;color:#64748B'>📍 {m['city']}, {m['host_country']}</div>"
-                    f"</div>"
-                    f"{sticker}{consensus}"
-                    f"<hr style='border:none;border-top:1px solid rgba(148,163,184,.15);margin:.45rem 0'>",
-                    unsafe_allow_html=True,
-                )
-                b1, b2, b3 = st.columns([2, 2, 3])
-                with b1:
-                    lbl = f"✅ {m['home_team']}" if user_pick == m['home_team'] else m['home_team']
-                    if st.button(lbl, key=f"up_{mid}_h", use_container_width=True):
-                        save_pick(active_user_id, mid, m['home_team'])
-                        st.rerun()
-                with b2:
-                    lbl = f"✅ {m['away_team']}" if user_pick == m['away_team'] else m['away_team']
-                    if st.button(lbl, key=f"up_{mid}_a", use_container_width=True):
-                        save_pick(active_user_id, mid, m['away_team'])
-                        st.rerun()
-                with b3:
-                    if st.button("📖 Match Preview", key=f"up_mc_{mid}", use_container_width=True):
-                        st.session_state["_nav_match_id"] = mid
-                        st.switch_page("pages/matchup.py")
+        _day_rows = list(day_grp.iterrows())
+        for _i in range(0, len(_day_rows), 2):
+            if _i + 1 < len(_day_rows):
+                _ca, _cb = st.columns(2, gap="medium")
+                with _ca:
+                    _render_upcoming_card(_day_rows[_i][1])
+                with _cb:
+                    _render_upcoming_card(_day_rows[_i + 1][1])
+            else:
+                _render_upcoming_card(_day_rows[_i][1])
 
 
 # ══════════════════════════════════════════════════════════════════════════════

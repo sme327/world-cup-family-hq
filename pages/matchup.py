@@ -38,15 +38,58 @@ def _role_color(role: str) -> str:
     return "#475569"
 
 
+# ── Smart default: live → next upcoming → most recent completed ───────────────
+def _smart_default_match_id() -> int:
+    from datetime import datetime, timedelta
+    now_pt = datetime.utcnow() - timedelta(hours=7)
+    all_m  = get_all_matches()
+    if all_m.empty:
+        return 1
+    # 1. Live match (within 115 min of kickoff)
+    for _, m in all_m.iterrows():
+        if str(m['status']) != 'scheduled':
+            continue
+        try:
+            ko = datetime.strptime(
+                f"{m['match_date']} {m['kickoff_time_et']}", "%Y-%m-%d %H:%M"
+            ) - timedelta(hours=3)
+            if 0 < (now_pt - ko).total_seconds() / 60 < 115:
+                return int(m['id'])
+        except Exception:
+            pass
+    # 2. Next upcoming kickoff
+    upcoming = []
+    for _, m in all_m.iterrows():
+        if str(m['status']) != 'scheduled':
+            continue
+        try:
+            ko = datetime.strptime(
+                f"{m['match_date']} {m['kickoff_time_et']}", "%Y-%m-%d %H:%M"
+            ) - timedelta(hours=3)
+            if ko > now_pt:
+                upcoming.append((ko, int(m['id'])))
+        except Exception:
+            pass
+    if upcoming:
+        upcoming.sort(key=lambda x: x[0])
+        return upcoming[0][1]
+    # 3. Most recent completed
+    done = all_m[all_m['status'] == 'completed']
+    if not done.empty:
+        return int(done.iloc[-1]['id'])
+    return int(all_m.iloc[0]['id'])
+
+
 # ── Resolve active match ──────────────────────────────────────────────────────
 if "_nav_match_id" in st.session_state:
     match_id = int(st.session_state.pop("_nav_match_id"))
     st.query_params["match_id"] = str(match_id)
 else:
     try:
-        match_id = int(st.query_params.get("match_id", 1))
+        _qp = st.query_params.get("match_id")
+        match_id = int(_qp) if _qp else _smart_default_match_id()
     except (ValueError, TypeError):
-        match_id = 1
+        match_id = _smart_default_match_id()
 
 match = get_match_by_id(match_id)
 if match is None:
@@ -85,11 +128,18 @@ with st.sidebar:
 # ── Global CSS ────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-.mu-section { font-size:1.25rem; font-weight:800; margin:1.2rem 0 .5rem; }
+.mu-section { font-size:1.15rem; font-weight:800; margin:.9rem 0 .4rem; }
 .pick-card  {
-    border-radius:14px; padding:1.3rem 1rem; text-align:center; color:white;
+    border-radius:14px; padding:.75rem .8rem; text-align:center; color:white;
     transition:all .15s; cursor:pointer;
 }
+a.mu-chip {
+    display:inline-block; padding:.22rem .65rem; border-radius:20px;
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12);
+    color:#CBD5E1; font-size:.78rem; font-weight:700; text-decoration:none;
+    white-space:nowrap;
+}
+a.mu-chip:hover { background:rgba(255,255,255,.15); color:white; }
 .cheer-card {
     background:#F8FAFC; border-radius:12px; padding:.7rem .5rem;
     text-align:center; border:1px solid #E2E8F0; margin:.2rem;
@@ -119,11 +169,11 @@ else:
 
 st.markdown(
     '<div style="background:linear-gradient(135deg,#1E3A5F,#2563EB,#1E3A5F);'
-    'padding:1.8rem;border-radius:16px;text-align:center;color:white;margin-bottom:1rem">'
-    f'<div style="font-size:4rem;line-height:1">{home_flag} {score_html} {away_flag}</div>'
-    f'<div style="font-size:1.7rem;font-weight:900;margin:.4rem 0">{home_team} &nbsp;vs&nbsp; {away_team}</div>'
-    f'<div style="font-size:.9rem;color:#CBD5E1">{status_badge}</div>'
-    f'<div style="font-size:.85rem;color:#94A3B8;margin-top:.2rem">📍 {match["venue"]}, {match["city"]}</div>'
+    'padding:1.1rem 1.4rem;border-radius:16px;text-align:center;color:white;margin-bottom:.6rem">'
+    f'<div style="font-size:3.2rem;line-height:1">{home_flag} {score_html} {away_flag}</div>'
+    f'<div style="font-size:1.5rem;font-weight:900;margin:.25rem 0">{home_team} &nbsp;vs&nbsp; {away_team}</div>'
+    f'<div style="font-size:.88rem;color:#CBD5E1">{status_badge}</div>'
+    f'<div style="font-size:.8rem;color:#94A3B8;margin-top:.1rem">📍 {match["venue"]}, {match["city"]}</div>'
     '</div>',
     unsafe_allow_html=True
 )
@@ -271,39 +321,50 @@ def _pick_card(team: str, flag: str, is_home: bool):
         r = _pick_result(team, home_team, away_team, match['home_score'], match['away_score'])
         if r == 1.0:
             border       = "#FCD34D"
-            result_badge = "<div style='font-size:1.3rem;margin:.2rem 0'>🏆</div><div style='color:#FCD34D;font-weight:800;font-size:.95rem'>Winner!</div>"
-            if pickers: pts_badge = "<div style='color:#4ADE80;font-weight:700;font-size:.88rem;margin-top:.3rem'>🟢 +1 pt each</div>"
+            result_badge = "<div style='font-size:1.1rem;margin:.1rem 0'>🏆 <span style='color:#FCD34D;font-weight:800;font-size:.9rem'>Winner!</span></div>"
+            if pickers: pts_badge = "<div style='color:#4ADE80;font-weight:700;font-size:.8rem'>🟢 +1 pt each</div>"
         elif r == 0.5:
             border       = "#FCD34D"
-            result_badge = "<div style='color:#FCD34D;font-weight:700;font-size:.9rem;margin:.2rem 0'>🤝 Draw</div>"
-            if pickers: pts_badge = "<div style='color:#FCD34D;font-weight:700;font-size:.88rem;margin-top:.3rem'>🟡 +0.5 pts each</div>"
+            result_badge = "<div style='color:#FCD34D;font-weight:700;font-size:.82rem;margin:.1rem 0'>🤝 Draw</div>"
+            if pickers: pts_badge = "<div style='color:#FCD34D;font-weight:700;font-size:.8rem'>🟡 +0.5 pts each</div>"
         else:
             border, opacity = "rgba(148,163,184,.25)", 0.6
-            if pickers: pts_badge = "<div style='color:#F87171;font-weight:700;font-size:.88rem;margin-top:.3rem'>🔴 +0 pts</div>"
+            if pickers: pts_badge = "<div style='color:#F87171;font-weight:700;font-size:.8rem'>🔴 +0 pts</div>"
     else:
         border = "#FCD34D" if picked_by_me else default_border
 
-    avatars_html = " ".join(
-        f"<span title='{n}' style='font-size:2.8rem;display:inline-block;margin:.05rem'>{a}</span>"
-        for n, a in pickers
-    ) or "<span style='color:rgba(255,255,255,.4);font-size:.85rem'>No picks yet</span>"
+    # 2-column picker grid: avatar + name per cell
+    if pickers:
+        cells = "".join(
+            f"<div style='display:flex;align-items:center;gap:.25rem;padding:.1rem 0'>"
+            f"<span style='font-size:1.5rem;line-height:1'>{a}</span>"
+            f"<span style='font-size:.72rem;font-weight:700;color:rgba(255,255,255,.9)'>{n}</span>"
+            f"</div>"
+            for n, a in pickers
+        )
+        avatars_html = (
+            f"<div style='display:grid;grid-template-columns:1fr 1fr;gap:.05rem .3rem;"
+            f"margin:.35rem 0;text-align:left'>{cells}</div>"
+        )
+    else:
+        avatars_html = "<div style='color:rgba(255,255,255,.4);font-size:.8rem;margin:.35rem 0'>No picks yet</div>"
 
     if not is_completed:
         if picked_by_me:
-            status_label = f"<div style='color:#FCD34D;font-size:.82rem;font-weight:700;margin-top:.4rem'>✅ You picked this</div>"
+            status_label = "<div style='color:#FCD34D;font-size:.78rem;font-weight:700;margin-top:.25rem'>✅ You picked this</div>"
         elif user_pick:
-            status_label = "<div style='color:rgba(255,255,255,.4);font-size:.8rem;margin-top:.4rem'>You picked the other team</div>"
+            status_label = "<div style='color:rgba(255,255,255,.4);font-size:.75rem;margin-top:.25rem'>You picked the other team</div>"
         else:
-            status_label = "<div style='color:rgba(255,255,255,.6);font-size:.82rem;margin-top:.4rem'>👆 Tap to pick</div>"
+            status_label = "<div style='color:rgba(255,255,255,.6);font-size:.78rem;margin-top:.25rem'>👆 Tap to pick</div>"
     else:
         status_label = ""
 
     st.markdown(
         f"<div class='pick-card' style='background:{bg};border:3px solid {border};opacity:{opacity}'>"
-        f"<div style='font-size:4rem;line-height:1;margin-bottom:.25rem'>{flag}</div>"
-        f"<div style='font-size:1.4rem;font-weight:900;color:white'>{team}</div>"
+        f"<div style='font-size:2.8rem;line-height:1;margin-bottom:.15rem'>{flag}</div>"
+        f"<div style='font-size:1.2rem;font-weight:900;color:white'>{team}</div>"
         f"{result_badge}"
-        f"<div style='margin:.5rem 0'>{avatars_html}</div>"
+        f"{avatars_html}"
         f"{pts_badge}{status_label}"
         f"</div>",
         unsafe_allow_html=True,
@@ -405,7 +466,7 @@ def _sec_explore():
 
 def _sec_picks():
     st.divider()
-    st.markdown('<div class="mu-section">🏷️ Family Picks</div>', unsafe_allow_html=True)
+    st.markdown('<div id="mu-picks" class="mu-section">🏷️ Family Picks</div>', unsafe_allow_html=True)
     home_col, away_col = st.columns(2)
     with home_col:
         _pick_card(home_team, home_flag, is_home=True)
@@ -423,7 +484,7 @@ def _sec_picks():
 
 def _sec_recap():
     st.divider()
-    st.markdown('<div class="mu-section">📋 Match Recap</div>', unsafe_allow_html=True)
+    st.markdown('<div id="mu-recap" class="mu-section">📋 Match Recap</div>', unsafe_allow_html=True)
     recap = get_match_recap(home_team, away_team, match['match_date'])
     if recap["found"] and recap["key_events"]:
         events_html = ""
@@ -502,7 +563,7 @@ def _sec_split():
 
 def _sec_cheer(title: str, subtitle: str):
     st.divider()
-    st.markdown(f'<div class="mu-section">{title}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div id="mu-cheer" class="mu-section">{title}</div>', unsafe_allow_html=True)
     st.caption(subtitle)
 
     def _cheer_col(team, flag, data):
@@ -542,7 +603,7 @@ def _sec_cheer(title: str, subtitle: str):
 
 def _sec_comparison():
     st.divider()
-    st.markdown('<div class="mu-section">🌍 Country Comparison</div>', unsafe_allow_html=True)
+    st.markdown('<div id="mu-compare" class="mu-section">🌍 Country Comparison</div>', unsafe_allow_html=True)
     cc1, cc2 = st.columns(2)
     with cc1:
         _country_card(home_team, home_flag, home_data)
@@ -566,7 +627,7 @@ def _sec_roster():
 
 def _sec_key_players():
     st.divider()
-    st.markdown('<div class="mu-section">⭐ Key Players</div>', unsafe_allow_html=True)
+    st.markdown('<div id="mu-players" class="mu-section">⭐ Key Players</div>', unsafe_allow_html=True)
     kp_c1, kp_c2 = st.columns(2)
     for col, team, flag, featured in [
         (kp_c1, home_team, home_flag, h_featured),
@@ -623,7 +684,7 @@ def _sec_mls():
 
 def _sec_debate():
     st.divider()
-    st.markdown('<div class="mu-section">💬 Family Debate Corner</div>', unsafe_allow_html=True)
+    st.markdown('<div id="mu-debate" class="mu-section">💬 Family Debate Corner</div>', unsafe_allow_html=True)
     for card in debate_cards[:4]:
         c_color = card['color']
         st.markdown(
@@ -641,7 +702,7 @@ def _sec_debate():
 
 def _sec_host_city():
     st.divider()
-    st.markdown('<div class="mu-section">🏙️ Host City</div>', unsafe_allow_html=True)
+    st.markdown('<div id="mu-city" class="mu-section">🏙️ Host City</div>', unsafe_allow_html=True)
     city_left, city_right = st.columns([3, 2])
     with city_left:
         st.markdown(
@@ -664,6 +725,32 @@ def _sec_host_city():
 
 # ── Explore buttons (always first after hero) ─────────────────────────────────
 _sec_explore()
+
+# ── Quick navigation chips ────────────────────────────────────────────────────
+if is_completed:
+    _nav_chips = [
+        ("#mu-picks",   "🏷️ Picks"),
+        ("#mu-recap",   "📋 Recap"),
+        ("#mu-players", "⭐ Players"),
+        ("#mu-compare", "🌍 Compare"),
+        ("#mu-city",    "🏙️ City"),
+        ("#mu-cheer",   "🌎 Explore"),
+    ]
+else:
+    _nav_chips = [
+        ("#mu-picks",   "🏷️ Picks"),
+        ("#mu-cheer",   "🤔 Cheer For"),
+        ("#mu-players", "⭐ Players"),
+        ("#mu-compare", "🌍 Compare"),
+        ("#mu-debate",  "💬 Debate"),
+        ("#mu-city",    "🏙️ City"),
+    ]
+st.markdown(
+    "<div style='display:flex;flex-wrap:wrap;gap:.3rem;margin:.4rem 0 .2rem'>"
+    + "".join(f"<a href='{h}' class='mu-chip'>{l}</a>" for h, l in _nav_chips)
+    + "</div>",
+    unsafe_allow_html=True,
+)
 
 # ── Status-aware section order ────────────────────────────────────────────────
 if is_completed:

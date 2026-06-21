@@ -157,14 +157,14 @@ progress_bar  = "█" * bar_filled + "░" * bar_empty
 
 st.markdown(
     f"<div style='background:linear-gradient(135deg,{theme_color}33,{theme_color}11);"
-    f"border:2px solid {theme_color};border-radius:18px;padding:1.8rem;text-align:center;margin-bottom:1rem'>"
-    f"<div style='font-size:4rem;line-height:1;margin-bottom:.4rem'>{avatar}</div>"
-    f"<div style='font-size:1.8rem;font-weight:900;color:#F1F5F9'>{active_user}'s Passport</div>"
-    f"<div style='font-size:1rem;color:{theme_color};font-weight:700;margin:.3rem 0'>"
+    f"border:2px solid {theme_color};border-radius:16px;padding:1rem 1.4rem;text-align:center;margin-bottom:.6rem'>"
+    f"<div style='font-size:3rem;line-height:1;margin-bottom:.25rem'>{avatar}</div>"
+    f"<div style='font-size:1.4rem;font-weight:900;color:#F1F5F9'>{active_user}'s Passport</div>"
+    f"<div style='font-size:.9rem;color:{theme_color};font-weight:700;margin:.2rem 0'>"
     f"{rank_emoji} {rank_label}</div>"
-    f"<div style='font-size:.88rem;color:#94A3B8;margin:.5rem 0'>"
-    f"Countries Collected: <b style='color:#F1F5F9;font-size:1.1rem'>{disc_count}</b> / {total}</div>"
-    f"<div style='font-family:monospace;font-size:.75rem;color:{theme_color};letter-spacing:.05rem'>"
+    f"<div style='font-size:.85rem;color:#94A3B8;margin:.3rem 0'>"
+    f"Countries Collected: <b style='color:#F1F5F9;font-size:1rem'>{disc_count}</b> / {total}</div>"
+    f"<div style='font-family:monospace;font-size:.72rem;color:{theme_color};letter-spacing:.05rem'>"
     f"{progress_bar} {pct_collected:.0%}</div>"
     f"</div>",
     unsafe_allow_html=True

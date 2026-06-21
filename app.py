@@ -31,6 +31,11 @@ if "db_ready" not in st.session_state:
 # ── Global CSS ────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
+    /* ── Global spacing reduction ────────────────── */
+    section.main > div.block-container {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
     /* ── Sidebar ─────────────────────────────────── */
     [data-testid="stSidebar"] { background-color: #1E3A5F; }
     /* Target sidebar nav + labels without leaking into dropdown popups */

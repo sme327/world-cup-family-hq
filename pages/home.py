@@ -120,6 +120,16 @@ def _cheered_by(country: str) -> list[dict]:
     return df.to_dict('records')
 
 
+def _country_total_picks(country: str) -> int:
+    conn = get_connection()
+    df = pd.read_sql(
+        "SELECT count(*) as cnt FROM picks WHERE picked_team = ?",
+        conn, params=(country,)
+    )
+    conn.close()
+    return int(df['cnt'].iloc[0]) if not df.empty else 0
+
+
 def _today_match_card(m):
     """Match card with subtle country image background for Today's Matches."""
     hf  = get_flag(m['home_team'])
@@ -638,11 +648,11 @@ with passport_col:
 st.divider()
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 6–8. Leaderboard | Family Favorites | Family Story
+# 6–8. Family Story | Family Favorites | Leaderboard
 # ─────────────────────────────────────────────────────────────────────────────
 lb_order = board['id'].tolist()
 
-lb_col, fav_col, feed_col = st.columns([3, 5, 5])
+feed_col, fav_col, lb_col = st.columns([5, 5, 3])
 
 # ── Leaderboard ───────────────────────────────────────────────────────────────
 with lb_col:
@@ -698,9 +708,10 @@ with fav_col:
             else:
                 border = "#D97706"   # gold — individual #1 pick
 
-            stamp    = get_stamp(country)
-            flag     = get_flag(country)
-            img_html = (
+            stamp      = get_stamp(country)
+            flag       = get_flag(country)
+            pick_count = _country_total_picks(country)
+            img_html   = (
                 get_country_image_html(country, height='72px', border_radius='10px 10px 0 0')
                 or f"<div style='height:72px;background:linear-gradient(135deg,#1E293B,#334155);"
                    f"display:flex;align-items:center;justify-content:center;"
@@ -748,6 +759,8 @@ with fav_col:
                 f"<div style='font-size:.72rem;font-weight:700;color:{context_color}'>"
                 f"{context_line}</div>"
                 f"{avatar_row}"
+                f"<div style='font-size:.68rem;color:#475569;margin-top:.2rem'>"
+                f"⚽ {pick_count} total pick{'s' if pick_count != 1 else ''}</div>"
                 f"</div></div>",
                 unsafe_allow_html=True,
             )

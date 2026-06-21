@@ -211,41 +211,88 @@ for tab, (layer, _) in zip(tabs, _LAYERS):
             unsafe_allow_html=True,
         )
 
-        # ── Quick navigate ────────────────────────────────────────────────────
-        st.markdown("---")
-        _nc1, _nc2 = st.columns([4, 1])
-        with _nc1:
-            _chosen = st.selectbox(
-                "Or choose a country to explore:",
-                ["— select a country —"] + all_countries,
-                key=f"nav_sel_{layer}",
-                label_visibility="collapsed",
-            )
-        with _nc2:
-            if st.button("Explore →", key=f"nav_go_{layer}", use_container_width=True,
-                         disabled=_chosen == "— select a country —"):
-                st.session_state["_nav_country"] = _chosen
-                st.switch_page("pages/country_profile.py")
+        pass  # end of with tab block
 
-        if _chosen != "— select a country —":
-            _row = teams_df[teams_df["name"] == _chosen]
-            if not _row.empty:
-                _r = _row.iloc[0]
-                disc_status = (
-                    "🟢 Won with" if _chosen in won else
-                    "🔵 Cheered for" if _chosen in cheered else
-                    "🩵 Discovered" if _chosen in discoveries else
-                    "⚪ Not yet explored"
-                )
-                st.markdown(
-                    f"<div style='background:rgba(30,41,59,.6);border:1px solid rgba(99,102,241,.2);"
-                    f"border-radius:12px;padding:.7rem 1.1rem;margin:.3rem 0;display:flex;"
-                    f"align-items:center;gap:1rem'>"
-                    f"<span style='font-size:3rem;line-height:1'>{_r['flag_emoji']}</span>"
-                    f"<div>"
-                    f"<div style='font-weight:800;font-size:1.05rem;color:#F1F5F9'>{_chosen}</div>"
-                    f"<div style='font-size:.82rem;color:#94A3B8'>"
-                    f"Group {_r['group_letter']} · {_r.get('confederation','?')} · {disc_status}</div>"
-                    f"</div></div>",
-                    unsafe_allow_html=True,
-                )
+# ── Country Browser (outside tabs — runs once after map) ─────────────────────
+import os as _os, pandas as _pd
+
+_meta_path = _os.path.join(_os.path.dirname(__file__), '..', 'data', 'country_metadata.csv')
+try:
+    _meta_df = _pd.read_csv(_meta_path)
+except Exception:
+    _meta_df = _pd.DataFrame()
+
+_CONTINENT_ORDER = ['North America', 'South America', 'Europe', 'Africa', 'Asia', 'Oceania']
+_CONTINENT_EMOJI = {
+    'North America': '🗽', 'South America': '🌎', 'Europe': '🗼',
+    'Africa': '🦁', 'Asia': '🗻', 'Oceania': '🥝',
+}
+
+st.markdown("---")
+st.markdown(
+    "<div style='font-size:1.25rem;font-weight:900;color:#F1F5F9;margin-bottom:.3rem'>"
+    "🌍 Browse All 48 Countries</div>"
+    "<div style='font-size:.83rem;color:#64748B;margin-bottom:.8rem'>"
+    "Click any country to explore — tap a continent to expand</div>",
+    unsafe_allow_html=True,
+)
+
+for _cont in _CONTINENT_ORDER:
+    if _meta_df.empty:
+        _cont_countries = [n for n in all_countries if True]
+    else:
+        _cont_row = _meta_df[_meta_df['continent'] == _cont]
+        _cont_countries = [n for n in _cont_row['country'].tolist() if n in set(all_countries)]
+
+    if not _cont_countries:
+        continue
+
+    _disc_c  = sum(1 for c in _cont_countries if c in discoveries)
+    _em      = _CONTINENT_EMOJI.get(_cont, '🌍')
+    _total_c = len(_cont_countries)
+
+    with st.expander(
+        f"{_em} {_cont} — {_disc_c}/{_total_c} explored",
+        expanded=False,
+    ):
+        # 4-column grid of country cards
+        _cc_rows = [_cont_countries[i:i+4] for i in range(0, len(_cont_countries), 4)]
+        for _cc_row in _cc_rows:
+            _cc_cols = st.columns(4)
+            for _cc_col, _cc_name in zip(_cc_cols, _cc_row):
+                _cc_team = teams_df[teams_df['name'] == _cc_name]
+                if _cc_team.empty:
+                    continue
+                _cc_t   = _cc_team.iloc[0]
+                _cc_flag = str(_cc_t.get('flag_emoji', '🏳️'))
+
+                # Stamp emoji from metadata
+                _cc_stamp_row = _meta_df[_meta_df['country'] == _cc_name] if not _meta_df.empty else _pd.DataFrame()
+                _cc_stamp = str(_cc_stamp_row['stamp_emoji'].iloc[0]) if not _cc_stamp_row.empty else '🌍'
+
+                # Discovery status
+                if _cc_name in won:
+                    _cc_badge, _cc_bg = "🏆", "rgba(252,211,77,.12)"
+                elif _cc_name in cheered:
+                    _cc_badge, _cc_bg = "⚽", "rgba(74,222,128,.10)"
+                elif _cc_name in discoveries:
+                    _cc_badge, _cc_bg = "🌱", "rgba(96,165,250,.10)"
+                else:
+                    _cc_badge, _cc_bg = "", "rgba(30,41,59,.5)"
+
+                with _cc_col:
+                    st.markdown(
+                        f"<div style='background:{_cc_bg};"
+                        f"border:1px solid rgba(148,163,184,.15);border-radius:10px;"
+                        f"padding:.55rem .45rem;text-align:center;margin:.1rem 0'>"
+                        f"<div style='font-size:1.8rem;line-height:1'>{_cc_flag}</div>"
+                        f"<div style='font-size:.67rem;font-weight:800;color:#F1F5F9;"
+                        f"line-height:1.2;margin:.18rem 0'>{_cc_name}</div>"
+                        f"<div style='font-size:.85rem'>{_cc_stamp}</div>"
+                        f"<div style='font-size:.6rem;color:#94A3B8;margin-top:.1rem'>{_cc_badge}</div>"
+                        f"</div>",
+                        unsafe_allow_html=True,
+                    )
+                    if st.button("Explore", key=f"cb_{_cc_name}", use_container_width=True):
+                        st.session_state["_nav_country"] = _cc_name
+                        st.switch_page("pages/country_profile.py")

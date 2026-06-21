@@ -853,7 +853,7 @@ flag_fact = stamp.get("flag_fact", "")
 neighbors = details.get("neighbors", [])
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SECTION 1 & 2: HERO BANNER
+# SECTION 1 & 2: HERO BANNER  (outside tabs — always visible)
 # ══════════════════════════════════════════════════════════════════════════════
 hero_html = get_country_image_html(selected_country, height="250px")
 has_hero  = hero_html is not None
@@ -889,7 +889,7 @@ if not has_hero:
     )
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SECTION 3: PASSPORT STAMP WIDGET
+# SECTION 3: PASSPORT STAMP WIDGET  (outside tabs — always visible)
 # ══════════════════════════════════════════════════════════════════════════════
 st.markdown(
     _passport_widget_html(selected_country, stamp, disc_df, cheered, won, picks_per, points_per),
@@ -897,576 +897,587 @@ st.markdown(
 )
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SECTION 4: MEET THIS COUNTRY IN 60 SECONDS
+# TABS
 # ══════════════════════════════════════════════════════════════════════════════
-tiles: list[dict] = []
-if fun:
-    tiles.append({"emoji": "💡", "label": "Did You Know?", "text": fun[:110]})
-if animals:
-    al, ae = _split_label_emoji(animals[0], "🐾")
-    ad, _  = _card_info("animal", al, selected_country)
-    tiles.append({"emoji": ae, "label": al, "text": ad[:110]})
-if foods:
-    fl2, fe = _split_label_emoji(foods[0], "🍴")
-    fd, _   = _card_info("food", fl2, selected_country)
-    tiles.append({"emoji": fe, "label": fl2, "text": fd[:110]})
-if landmarks:
-    ll = _strip_emoji(landmarks[0]).strip()
-    ld, _ = _card_info("landmark", ll, selected_country)
-    tiles.append({"emoji": "🏛️", "label": ll[:22], "text": ld[:110]})
-if reasons:
-    rl, re2 = _split_label_emoji(reasons[0], "⭐")
-    tiles.append({"emoji": re2, "label": rl, "text": _cheer_blurb(rl, selected_country)[:110]})
-elif flag_fact:
-    tiles.append({"emoji": "🚩", "label": "Flag Story", "text": flag_fact[:110]})
+tab_ov, tab_ex, tab_team, tab_cheer = st.tabs([
+    "🗺️ Overview", "🌍 Explore", "⚽ Team", "🎉 Why Cheer"
+])
 
-if tiles:
-    st.markdown("### ⚡ Meet This Country in 60 Seconds")
-    n = min(len(tiles), 5)
-    t_cols = st.columns(n)
-    for col, tile in zip(t_cols, tiles[:n]):
-        with col:
-            st.markdown(
-                "<div style='background:linear-gradient(160deg,#1E293B,#0F172A);border-radius:12px;"
-                "padding:.75rem .6rem;text-align:center;border:1px solid rgba(148,163,184,.1);min-height:130px'>"
-                f"<div style='font-size:1.9rem;line-height:1;margin-bottom:.3rem'>{tile['emoji']}</div>"
-                f"<div style='font-size:.78rem;font-weight:800;color:#F1F5F9;margin-bottom:.25rem;line-height:1.2'>{tile['label']}</div>"
-                f"<div style='font-size:.69rem;color:#94A3B8;line-height:1.4'>{tile['text']}</div>"
-                "</div>",
-                unsafe_allow_html=True
-            )
+# ──────────────────────────────────────────────────────────────────────────────
+# TAB 1: OVERVIEW
+# ──────────────────────────────────────────────────────────────────────────────
+with tab_ov:
 
-# Continent + distance + timezone inline (shown right below 60 Seconds)
-dist_miles = details.get("distance_miles", 0)
-tz_offset  = details.get("timezone_offset", 0)
-_loc_parts = [f"🌍 **{stamp['continent']}**"]
-if dist_miles and dist_miles > 50:
-    _loc_parts.append(f"✈️ **{dist_miles:,} miles** from Seattle")
-elif dist_miles and dist_miles <= 50:
-    _loc_parts.append("🏠 **Right next door** to Seattle")
-if tz_offset == 0:
-    _loc_parts.append("🕐 **Same time zone** as Seattle")
-elif tz_offset > 0:
-    _loc_parts.append(f"🕐 **+{tz_offset}h ahead** of Seattle")
-else:
-    _loc_parts.append(f"🕐 **{tz_offset}h behind** Seattle")
-st.markdown("  ·  ".join(_loc_parts))
+    # ── SECTION 4: MEET THIS COUNTRY IN 60 SECONDS ──
+    tiles: list[dict] = []
+    if fun:
+        tiles.append({"emoji": "💡", "label": "Did You Know?", "text": fun[:110]})
+    if animals:
+        al, ae = _split_label_emoji(animals[0], "🐾")
+        ad, _  = _card_info("animal", al, selected_country)
+        tiles.append({"emoji": ae, "label": al, "text": ad[:110]})
+    if foods:
+        fl2, fe = _split_label_emoji(foods[0], "🍴")
+        fd, _   = _card_info("food", fl2, selected_country)
+        tiles.append({"emoji": fe, "label": fl2, "text": fd[:110]})
+    if landmarks:
+        ll = _strip_emoji(landmarks[0]).strip()
+        ld, _ = _card_info("landmark", ll, selected_country)
+        tiles.append({"emoji": "🏛️", "label": ll[:22], "text": ld[:110]})
+    if reasons:
+        rl, re2 = _split_label_emoji(reasons[0], "⭐")
+        tiles.append({"emoji": re2, "label": rl, "text": _cheer_blurb(rl, selected_country)[:110]})
+    elif flag_fact:
+        tiles.append({"emoji": "🚩", "label": "Flag Story", "text": flag_fact[:110]})
 
-# ══════════════════════════════════════════════════════════════════════════════
-# SECTION 5: WHERE IS THIS COUNTRY?
-# ══════════════════════════════════════════════════════════════════════════════
-st.markdown("### 🗺️ Where Is This Country?")
+    if tiles:
+        st.markdown("### ⚡ Meet This Country in 60 Seconds")
+        n = min(len(tiles), 5)
+        t_cols = st.columns(n)
+        for col, tile in zip(t_cols, tiles[:n]):
+            with col:
+                st.markdown(
+                    "<div style='background:linear-gradient(160deg,#1E293B,#0F172A);border-radius:12px;"
+                    "padding:.75rem .6rem;text-align:center;border:1px solid rgba(148,163,184,.1);min-height:130px'>"
+                    f"<div style='font-size:1.9rem;line-height:1;margin-bottom:.3rem'>{tile['emoji']}</div>"
+                    f"<div style='font-size:.78rem;font-weight:800;color:#F1F5F9;margin-bottom:.25rem;line-height:1.2'>{tile['label']}</div>"
+                    f"<div style='font-size:.69rem;color:#94A3B8;line-height:1.4'>{tile['text']}</div>"
+                    "</div>",
+                    unsafe_allow_html=True
+                )
 
-if iso3:
-    try:
-        st.plotly_chart(_country_map(iso3), use_container_width=True, config={"staticPlot": True})
-    except Exception:
-        st.info(f"📍 {selected_country} is located in {stamp['continent']}.")
-else:
-    st.info(f"📍 {selected_country} is located in {stamp['continent']}.")
-
-if neighbors:
-    neighbor_pills = "".join(
-        f"<span style='background:rgba(37,99,235,.18);color:#93C5FD;"
-        f"border:1px solid rgba(37,99,235,.35);border-radius:20px;"
-        f"padding:.2rem .65rem;font-size:.8rem;margin:.15rem;display:inline-block'>"
-        f"{get_flag(n)} {n}</span>"
-        for n in neighbors
-    )
-    st.markdown(
-        f"<div style='margin-top:.4rem'>"
-        f"<div style='font-size:.76rem;color:#64748B;font-weight:700;margin-bottom:.3rem'>🌎 Neighboring Countries</div>"
-        f"<div>{neighbor_pills}</div></div>",
-        unsafe_allow_html=True
-    )
-else:
-    st.markdown(
-        "<div style='font-size:.82rem;color:#64748B;margin-top:.3rem'>"
-        "🌊 Island nation — surrounded by ocean on all sides</div>",
-        unsafe_allow_html=True
-    )
-
-# ══════════════════════════════════════════════════════════════════════════════
-# SECTION 6: WHY KIDS MIGHT CHEER FOR THIS COUNTRY
-# ══════════════════════════════════════════════════════════════════════════════
-if reasons:
-    st.markdown("### 🎉 Why Kids Might Cheer For This Country")
-    r_cols = st.columns(min(len(reasons), 4))
-    for col, reason in zip(r_cols, reasons[:4]):
-        label, emoji = _split_label_emoji(reason, "⭐")
-        blurb = _cheer_blurb(label, selected_country)
-        islug = _item_slug(reason)
-        img   = get_country_card_image(cslug, islug)
-        desc, fact = _card_info("cheer", label, selected_country)
-        with col:
-            st.markdown(_cheer_card(emoji, label, blurb, img), unsafe_allow_html=True)
-            with st.popover(f"✨ {label}", use_container_width=True):
-                st.markdown(f"### {emoji} {label}")
-                st.markdown(blurb)
-                st.info(f"🎯 **Fun Fact:** {fact}")
-
-# ══════════════════════════════════════════════════════════════════════════════
-# SECTION 7: WHAT DOES THIS PLACE ACTUALLY LOOK LIKE?
-# ══════════════════════════════════════════════════════════════════════════════
-_land = _LANDSCAPE.get(selected_country)
-_land_emoji    = _land[0] if _land else "🌍"
-_land_headline = _land[1] if _land else f"The Landscapes of {selected_country}"
-_land_tags     = _land[2] if _land else []
-_land_desc     = _land[3] if _land else fun if fun else f"{selected_country} is a country in {stamp['continent']} with remarkable natural landscapes."
-
-st.markdown("### 🌄 What Does This Place Actually Look Like?")
-_tag_pills = "".join(
-    f"<span style='background:rgba(34,197,94,.12);color:#4ADE80;border:1px solid rgba(34,197,94,.3);"
-    f"border-radius:14px;padding:.18rem .6rem;font-size:.76rem;font-weight:700;margin:.12rem;display:inline-block'>{t}</span>"
-    for t in _land_tags
-)
-st.markdown(
-    f"<div style='background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(30,41,59,.9));"
-    f"border:1px solid rgba(148,163,184,.15);border-radius:16px;padding:1.1rem 1.3rem;margin:.2rem 0 .8rem'>"
-    f"<div style='display:flex;align-items:center;gap:.9rem;margin-bottom:.6rem'>"
-    f"<span style='font-size:2.8rem;line-height:1'>{_land_emoji}</span>"
-    f"<div>"
-    f"<div style='font-size:1.15rem;font-weight:900;color:#F1F5F9'>{_land_headline}</div>"
-    f"<div style='margin-top:.25rem'>{_tag_pills}</div>"
-    f"</div></div>"
-    f"<div style='font-size:.94rem;color:#CBD5E1;line-height:1.65'>{_land_desc}</div>"
-    f"</div>",
-    unsafe_allow_html=True
-)
-if iso3:
-    try:
-        st.plotly_chart(_country_zoom_map(iso3), use_container_width=True, config={"staticPlot": True})
-    except Exception:
-        pass
-
-# ══════════════════════════════════════════════════════════════════════════════
-# SECTION 8: COUNTRY FACTS
-# ══════════════════════════════════════════════════════════════════════════════
-st.markdown("### 🌍 Country Facts")
-row1 = st.columns(3)
-row2 = st.columns(3)
-facts = [
-    ("🏙️", "Capital",    _safe(team.get("capital"))),
-    ("👥", "Population", _safe(team.get("population"))),
-    ("🗣️", "Languages",  _safe(team.get("languages"))),
-    ("💰", "Currency",   _safe(team.get("currency"))),
-    ("🌍", "Continent",  stamp["continent"]),
-    ("🏛️", "Government", _GOVT_TYPE.get(selected_country, "—")),
-]
-for col, (icon, label, val) in zip(list(row1) + list(row2), facts):
-    col.markdown(_stat_card(icon, label, val), unsafe_allow_html=True)
-
-if flag_fact:
-    st.markdown(
-        f"<div style='background:linear-gradient(135deg,#1E293B,#0F172A);border-radius:12px;"
-        f"padding:.65rem 1rem;margin:.6rem 0;border-left:3px solid #FCD34D'>"
-        f"<div style='font-size:.85rem;color:#CBD5E1'><b>🚩 Flag Story:</b> {flag_fact}</div></div>",
-        unsafe_allow_html=True
-    )
-elif fun:
-    st.markdown(
-        f"<div style='background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:12px;"
-        f"padding:.65rem 1rem;margin:.6rem 0;border-left:4px solid #FCD34D'>"
-        f"<div style='font-size:.88rem;color:#78350F'><b>💡 Did you know?</b> {fun}</div></div>",
-        unsafe_allow_html=True
-    )
-
-# ══════════════════════════════════════════════════════════════════════════════
-# SECTION 9: ANIMALS & NATURE
-# ══════════════════════════════════════════════════════════════════════════════
-if animals:
-    st.markdown("### 🐾 Animals & Nature")
-    a_cols = st.columns(min(len(animals), 4))
-    for col, a in zip(a_cols, animals[:4]):
-        label, emoji = _split_label_emoji(a, "🐾")
-        islug = _item_slug(a)
-        img   = get_country_card_image(cslug, islug)
-        desc, fact = _card_info("animal", label, selected_country)
-        with col:
-            st.markdown(_explore_card(emoji, label, img), unsafe_allow_html=True)
-            with st.popover(f"✨ {label}", use_container_width=True):
-                st.markdown(f"### {emoji} {label}")
-                st.markdown(desc)
-                st.info(f"🎯 **Fun Fact:** {fact}")
-
-# ══════════════════════════════════════════════════════════════════════════════
-# SECTION 10: FAMOUS FOODS
-# ══════════════════════════════════════════════════════════════════════════════
-if foods:
-    st.markdown("### 🍽️ Famous Foods")
-    f_cols = st.columns(min(len(foods), 4))
-    for col, food in zip(f_cols, foods[:4]):
-        label, emoji = _split_label_emoji(food, "🍴")
-        islug = _item_slug(food)
-        img   = get_country_card_image(cslug, islug)
-        desc, fact = _card_info("food", label, selected_country)
-        with col:
-            st.markdown(_explore_card(emoji, label, img), unsafe_allow_html=True)
-            with st.popover(f"✨ {label}", use_container_width=True):
-                st.markdown(f"### {emoji} {label}")
-                st.markdown(desc)
-                st.info(f"🎯 **Fun Fact:** {fact}")
-
-# ══════════════════════════════════════════════════════════════════════════════
-# SECTION 11: FAMOUS LANDMARKS
-# ══════════════════════════════════════════════════════════════════════════════
-if landmarks:
-    st.markdown("### 🏛️ Famous Landmarks")
-    l_cols = st.columns(min(len(landmarks), 4))
-    for col, lm in zip(l_cols, landmarks[:4]):
-        islug = _item_slug(lm)
-        img   = get_country_card_image(cslug, islug)
-        desc, fact = _card_info("landmark", lm, selected_country)
-        with col:
-            st.markdown(_explore_card("📍", lm, img), unsafe_allow_html=True)
-            with st.popover(f"✨ {_strip_emoji(lm).strip()}", use_container_width=True):
-                st.markdown(f"### 📍 {lm}")
-                st.markdown(desc)
-                st.info(f"🎯 **Fun Fact:** {fact}")
-
-# ══════════════════════════════════════════════════════════════════════════════
-# SECTION 12: COMPARE TO SEATTLE
-# ══════════════════════════════════════════════════════════════════════════════
-st.markdown("### 🏡 Compare To Seattle")
-pop_m       = _parse_pop_m(team.get("population", ""))
-seattle_pop = 4.0
-
-compare_cards = []
-if dist_miles and dist_miles > 50:
-    compare_cards.append(("✈️", "Distance", f"{dist_miles:,} miles",
-                           f"About {dist_miles // 500} long road trips away!"))
-elif dist_miles and dist_miles <= 50:
-    compare_cards.append(("🏠", "Distance", "Right next door!", "You could almost drive there."))
-
-if tz_offset == 0:
-    tz_label, tz_note = "Same time!", "When it's 3 PM here, it's 3 PM there too."
-elif tz_offset > 0:
-    hour = 9 + int(tz_offset)
-    ampm = "AM" if hour < 12 else "PM"
-    tz_label = f"+{tz_offset}h ahead"
-    tz_note  = f"When it's 9 AM in Seattle, it's {hour}{ampm} there."
-else:
-    tz_label = f"{tz_offset}h behind"
-    tz_note  = f"When it's 9 AM here, it's {9 + int(tz_offset)} AM there."
-compare_cards.append(("🕐", "Time Zone", tz_label, tz_note))
-
-if pop_m:
-    sea_ratio = pop_m / seattle_pop
-    if pop_m >= 1000:     pop_display = f"{pop_m/1000:.1f} billion"
-    elif pop_m >= 1:      pop_display = f"{pop_m:.0f} million"
-    else:                 pop_display = f"{pop_m*1000:.0f} thousand"
-    if sea_ratio >= 10:   pop_note = f"{int(sea_ratio)}× more people than the Seattle metro area!"
-    elif sea_ratio >= 2:  pop_note = f"About {sea_ratio:.1f}× as many people as the Seattle area."
-    elif sea_ratio >= 0.5: pop_note = "Similar number of people to the Seattle area."
-    else:                 pop_note = "Smaller population than the Seattle metro area!"
-    compare_cards.append(("👥", "Population", pop_display, pop_note))
-
-lang = _safe(team.get("languages"), "")
-if lang and lang != "—":
-    if "English" in lang:
-        compare_cards.append(("🗣️", "Language", lang, "They speak English too — just like Seattle!"))
+    # Continent + distance + timezone inline (shown right below 60 Seconds)
+    dist_miles = details.get("distance_miles", 0)
+    tz_offset  = details.get("timezone_offset", 0)
+    _loc_parts = [f"🌍 **{stamp['continent']}**"]
+    if dist_miles and dist_miles > 50:
+        _loc_parts.append(f"✈️ **{dist_miles:,} miles** from Seattle")
+    elif dist_miles and dist_miles <= 50:
+        _loc_parts.append("🏠 **Right next door** to Seattle")
+    if tz_offset == 0:
+        _loc_parts.append("🕐 **Same time zone** as Seattle")
+    elif tz_offset > 0:
+        _loc_parts.append(f"🕐 **+{tz_offset}h ahead** of Seattle")
     else:
-        first_lang = lang.split(",")[0].strip()
-        compare_cards.append(("🗣️", "Language", first_lang, f"People say hello in {first_lang}!"))
+        _loc_parts.append(f"🕐 **{tz_offset}h behind** Seattle")
+    st.markdown("  ·  ".join(_loc_parts))
 
-n_cmp = min(len(compare_cards), 4)
-if n_cmp > 0:
-    cmp_cols = st.columns(n_cmp)
-    for col, (icon, label, val, note) in zip(cmp_cols, compare_cards[:n_cmp]):
-        col.markdown(
-            "<div style='background:linear-gradient(160deg,#0F172A,#1E293B);"
-            "border:1px solid rgba(148,163,184,.15);border-radius:12px;"
-            "padding:.75rem;text-align:center'>"
-            f"<div style='font-size:1.4rem'>{icon}</div>"
-            f"<div style='font-size:.72rem;color:#94A3B8;font-weight:700;text-transform:uppercase;"
-            f"letter-spacing:.04em;margin:.1rem 0'>{label}</div>"
-            f"<div style='font-size:.95rem;font-weight:900;color:#F1F5F9;line-height:1.2'>{val}</div>"
-            f"<div style='font-size:.7rem;color:#64748B;margin-top:.2rem;line-height:1.3'>{note}</div>"
-            "</div>",
-            unsafe_allow_html=True
-        )
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# SECTION 13: SOCCER IN [COUNTRY]
-# ══════════════════════════════════════════════════════════════════════════════
-st.divider()
-st.markdown(f"## ⚽ Soccer in {selected_country}")
-
-nickname = details.get("nickname", "")
-if nickname and nickname not in ("—", ""):
-    st.markdown(
-        f"<div style='color:#94A3B8;font-size:.88rem;margin:-.4rem 0 .8rem'>"
-        f"Also known as: <b style='color:#FCD34D'>{nickname}</b></div>",
-        unsafe_allow_html=True
-    )
-
-_intro_text = _SOCCER_INTRO.get(selected_country)
-if not _intro_text:
-    _appearances = _safe(team.get("wc_appearances"), "several")
-    _best        = _safe(team.get("best_finish"), "the group stage")
-    _confed      = _safe(team.get("confederation"), "")
-    _nick_part   = f"known as {nickname}, " if nickname and nickname not in ("—","") else ""
-    _intro_text  = (
-        f"Soccer is the heart of {selected_country}'s sporting culture. "
-        f"The national team — {_nick_part}competing in {_confed} — has appeared at the World Cup {_appearances} times. "
-        f"Their best finish has been {_best}. "
-        f"In 2026 they bring a passionate squad ready to make their mark on the world stage."
-    )
-
-st.markdown(
-    f"<div style='background:linear-gradient(135deg,rgba(29,78,216,.12),rgba(29,78,216,.05));"
-    f"border:1px solid rgba(29,78,216,.25);border-radius:14px;"
-    f"padding:.9rem 1.1rem;margin:.2rem 0 1rem;font-size:.97rem;color:#CBD5E1;line-height:1.7'>"
-    f"{_intro_text}</div>",
-    unsafe_allow_html=True
-)
-
-# ══════════════════════════════════════════════════════════════════════════════
-# SECTION 14: SOCCER TEAM
-# ══════════════════════════════════════════════════════════════════════════════
-famous_player = details.get("famous_player", _safe(team.get("captain"), "—"))
-home_stadium  = details.get("home_stadium", "—")
-
-st.markdown("### 📊 Team Snapshot")
-_avg_age = f"{float(summary.get('average_age', 0)):.1f}" if summary else "—"
-
-ss_cols = st.columns(4)
-for col, (icon, label, val) in zip(ss_cols, [
-    ("🏅", "FIFA Ranking",   f"#{_safe(team.get('fifa_ranking'))}"),
-    ("🔢", "WC Appearances", _safe(team.get("wc_appearances"), "—")),
-    ("🏆", "Best WC Finish", _safe(team.get("best_finish"))),
-    ("🌐", "Confederation",  _safe(team.get("confederation"))),
-]):
-    col.markdown(_stat_card(icon, label, val), unsafe_allow_html=True)
-
-ss2_cols = st.columns(4)
-for col, (icon, label, val) in zip(ss2_cols, [
-    ("🏟️", "Home Stadium", home_stadium),
-    ("👔", "Coach",         _safe(team.get("coach"))),
-    ("🎽", "Captain",       captain_name),
-    ("📅", "Avg Age",       _avg_age),
-]):
-    col.markdown(_stat_card(icon, label, val), unsafe_allow_html=True)
-
-# Group Stage Matches — pills in a row, above the formation
-matches = get_matches_by_team(selected_country)
-if not matches.empty:
-    st.markdown("### 📅 Group Stage Matches")
-    _m_cols = st.columns(len(matches))
-    for col, (_, m) in zip(_m_cols, matches.iterrows()):
-        opp      = m["away_team"] if m["home_team"] == selected_country else m["home_team"]
-        opp_flag = get_flag(opp)
-        mid      = int(m["id"])
-        _mdate   = fmt_date(m["match_date"]) if hasattr(m, 'match_date') else str(m.get("match_date",""))
-        _mkick   = str(m.get("kickoff_time_et",""))[:5]
-        if m["status"] == "completed":
-            hs, as_ = int(m["home_score"]), int(m["away_score"])
-            _is_home = m["home_team"] == selected_country
-            _my_score  = hs if _is_home else as_
-            _opp_score = as_ if _is_home else hs
-            if _my_score > _opp_score:
-                _pill_bg, _score_color, _result_label = "#052e16", "#4ADE80", "W"
-            elif _my_score == _opp_score:
-                _pill_bg, _score_color, _result_label = "#1c1917", "#FCD34D", "D"
-            else:
-                _pill_bg, _score_color, _result_label = "#450a0a", "#F87171", "L"
-            _score_html = (
-                f"<div style='font-size:1.3rem;font-weight:900;color:{_score_color};line-height:1'>"
-                f"{_my_score}–{_opp_score}</div>"
-                f"<div style='font-size:.65rem;font-weight:800;color:{_score_color}'>{_result_label}</div>"
-            )
-            _time_html = f"<div style='font-size:.65rem;color:#64748B;margin-top:.1rem'>Final</div>"
-        else:
-            _pill_bg    = "#0f172a"
-            _score_html = f"<div style='font-size:.78rem;font-weight:800;color:#FCD34D'>{_mkick} ET</div>"
-            _time_html  = f"<div style='font-size:.65rem;color:#64748B;margin-top:.1rem'>{_mdate}</div>"
-        with col:
-            st.markdown(
-                f"<div style='background:{_pill_bg};border:1px solid rgba(148,163,184,.15);"
-                f"border-radius:14px;padding:.75rem .5rem;text-align:center'>"
-                f"<div style='font-size:1.6rem;line-height:1;margin-bottom:.15rem'>{opp_flag}</div>"
-                f"<div style='font-size:.72rem;font-weight:800;color:#F1F5F9;line-height:1.2;margin-bottom:.25rem'>"
-                f"vs {opp}</div>"
-                f"{_score_html}{_time_html}"
-                f"</div>",
-                unsafe_allow_html=True
-            )
-            if st.button("🏟️ Matchup", key=f"match_link_{mid}", use_container_width=True):
-                st.session_state["_nav_match_id"] = mid
-                st.switch_page("pages/matchup.py")
-
-# Formation
-if not roster.empty:
-    st.markdown("### 🟩 Predicted Starting XI")
-    _, _fc, _ = st.columns([1, 2, 1])
-    with _fc:
-        st.markdown(_formation_svg(roster, captain_name), unsafe_allow_html=True)
-
-# Players To Know (story-driven)
-if featured:
-    st.markdown("### ⭐ Players To Know")
-    n_feat = min(len(featured), 5)
-    p_cols = st.columns(n_feat)
-    for col, pl in zip(p_cols, featured[:n_feat]):
-        role_emoji, role_label = _story_role(pl["role"], pl.get("position",""))
-        blurb = _player_story(role_label, pl["name"], pl.get("age", 0), pl.get("club_short",""))
-        with col:
-            st.markdown(
-                "<div style='background:linear-gradient(160deg,#1E293B,#0F172A);border-radius:12px;"
-                "padding:.85rem .7rem;text-align:center;color:white;border:1px solid rgba(148,163,184,.15)'>"
-                f"<div style='font-size:1.4rem;line-height:1'>{role_emoji}</div>"
-                f"<div style='font-size:.62rem;color:#94A3B8;font-weight:700;text-transform:uppercase;"
-                f"letter-spacing:.04em;margin:.1rem 0'>{role_label}</div>"
-                f"<div style='font-size:1.8rem;font-weight:900;color:#FCD34D;line-height:1.2'>#{pl['shirt_number']}</div>"
-                f"<div style='font-size:.86rem;font-weight:800;line-height:1.25;margin:.1rem 0'>{pl['name']}</div>"
-                f"<div style='font-size:.73rem;color:#94A3B8'>{pl['position']}</div>"
-                f"<div style='font-size:.69rem;color:#64748B;margin:.1rem 0'>{pl['club_short']} · Age {pl['age']}</div>"
-                f"<div style='font-size:.66rem;color:#475569;margin-top:.3rem;line-height:1.35;"
-                f"border-top:1px solid rgba(148,163,184,.1);padding-top:.25rem'>{blurb}</div>"
-                "</div>",
-                unsafe_allow_html=True
-            )
-
-# MLS & US Connections
-if not mls_players.empty:
-    st.markdown("### 🏟️ MLS & US Connections")
-    mls_cols = st.columns(min(len(mls_players), 3))
-    for col, (_, mp) in zip(mls_cols, mls_players.iterrows()):
-        col.markdown(
-            "<div style='background:linear-gradient(135deg,#064E3B,#065F46);border-radius:10px;"
-            "padding:.65rem .9rem;color:white'>"
-            f"<div style='font-size:.95rem;font-weight:800'>#{int(mp['shirt_number'])} {mp['player_name']}</div>"
-            f"<div style='font-size:.78rem;color:#6EE7B7'>{mp['position']}</div>"
-            f"<div style='font-size:.75rem;color:#A7F3D0'>🏟️ {mp['club_short']} · Age {int(mp['age'])}</div>"
-            "</div>",
-            unsafe_allow_html=True
-        )
-
-# Full Squad
-if not roster.empty:
-    st.markdown("#### 📋 Full Squad")
-    for _pos in ["Goalkeeper", "Defender", "Midfielder", "Forward"]:
-        _pos_df = by_pos.get(_pos)
-        if _pos_df is None or _pos_df.empty: continue
-        _icon    = pos_icon(_pos)
-        _players = _pos_df.to_dict("records")
-        st.markdown(_position_group_html(_players, _icon, _pos), unsafe_allow_html=True)
-
-
-# ══════════════════════════════════════════════════════════════════════════════
-# SECTION 15: THIS COUNTRY'S WORLD CUP STORY
-# ══════════════════════════════════════════════════════════════════════════════
-st.divider()
-st.markdown(f"## 🏆 {selected_country} at the World Cup")
-
-_country_moments = _WC_COUNTRY_STORY.get(selected_country, [])
-if _country_moments:
-    st.caption(f"{selected_country}'s journey through the World Cup — the key moments.")
-    for yr, headline, story in _country_moments:
+    # ── ONE THING TO REMEMBER ──
+    _remember = fun or _COUNTRY_TEASER.get(selected_country, "")
+    if _remember:
         st.markdown(
-            f"<div style='border-left:3px solid #2563EB;padding:.6rem .9rem;margin:.5rem 0;"
-            f"background:rgba(37,99,235,.08);border-radius:0 10px 10px 0'>"
-            f"<div style='display:flex;align-items:center;gap:.6rem;margin-bottom:.2rem'>"
-            f"<span style='background:#2563EB;color:white;border-radius:6px;"
-            f"padding:.08rem .45rem;font-size:.76rem;font-weight:800'>{yr}</span>"
-            f"<span style='font-weight:800;color:#F1F5F9;font-size:.95rem'>{headline}</span>"
-            f"</div>"
-            f"<div style='font-size:.88rem;color:#CBD5E1;line-height:1.55'>{story}</div>"
+            f"<div style='background:linear-gradient(135deg,#451A03,#92400E);"
+            f"border-radius:16px;padding:1.1rem 1.3rem;margin:.8rem 0;"
+            f"border:1px solid rgba(251,191,36,.35)'>"
+            f"<div style='font-size:.72rem;font-weight:800;color:#FCD34D;text-transform:uppercase;"
+            f"letter-spacing:.1em;margin-bottom:.4rem'>⭐ One Thing To Remember</div>"
+            f"<div style='font-size:1.05rem;font-weight:700;color:#FEF3C7;line-height:1.5'>{_remember}</div>"
             f"</div>",
             unsafe_allow_html=True
         )
-else:
-    _apps = _safe(team.get("wc_appearances"), "")
-    _best = _safe(team.get("best_finish"), "")
-    if _apps and _apps != "—":
+
+    # ── SECTION 8: COUNTRY FACTS ──
+    st.markdown("### 🌍 Country Facts")
+    row1 = st.columns(3)
+    row2 = st.columns(3)
+    facts = [
+        ("🏙️", "Capital",    _safe(team.get("capital"))),
+        ("👥", "Population", _safe(team.get("population"))),
+        ("🗣️", "Languages",  _safe(team.get("languages"))),
+        ("💰", "Currency",   _safe(team.get("currency"))),
+        ("🌍", "Continent",  stamp["continent"]),
+        ("🏛️", "Government", _GOVT_TYPE.get(selected_country, "—")),
+    ]
+    for col, (icon, label, val) in zip(list(row1) + list(row2), facts):
+        col.markdown(_stat_card(icon, label, val), unsafe_allow_html=True)
+
+    if flag_fact:
         st.markdown(
-            f"<div style='background:rgba(30,41,59,.8);border:1px solid rgba(255,255,255,.1);"
-            f"border-radius:12px;padding:1rem 1.1rem;margin:.3rem 0'>"
-            f"<div style='font-size:2rem;margin-bottom:.4rem'>{flag}</div>"
-            f"<div style='font-weight:800;font-size:1rem;color:#F1F5F9;margin-bottom:.3rem'>"
-            f"{selected_country} at the World Cup</div>"
-            f"<div style='font-size:.9rem;color:#CBD5E1;line-height:1.6'>"
-            f"{selected_country} has appeared at the World Cup <b>{_apps}</b> time{'s' if _apps not in ('1','one') else ''}."
-            f" Their best finish has been <b>{_best}</b>."
-            f" In 2026, they arrive ready to write new chapters in their World Cup story."
-            f"</div></div>",
+            f"<div style='background:linear-gradient(135deg,#1E293B,#0F172A);border-radius:12px;"
+            f"padding:.65rem 1rem;margin:.6rem 0;border-left:3px solid #FCD34D'>"
+            f"<div style='font-size:.85rem;color:#CBD5E1'><b>🚩 Flag Story:</b> {flag_fact}</div></div>",
+            unsafe_allow_html=True
+        )
+    elif fun:
+        st.markdown(
+            f"<div style='background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-radius:12px;"
+            f"padding:.65rem 1rem;margin:.6rem 0;border-left:4px solid #FCD34D'>"
+            f"<div style='font-size:.88rem;color:#78350F'><b>💡 Did you know?</b> {fun}</div></div>",
+            unsafe_allow_html=True
+        )
+
+    # ── SECTION 5: WHERE IS THIS COUNTRY? ──
+    st.markdown("### 🗺️ Where Is This Country?")
+
+    if iso3:
+        try:
+            st.plotly_chart(_country_map(iso3), use_container_width=True, config={"staticPlot": True})
+        except Exception:
+            st.info(f"📍 {selected_country} is located in {stamp['continent']}.")
+    else:
+        st.info(f"📍 {selected_country} is located in {stamp['continent']}.")
+
+    if neighbors:
+        neighbor_pills = "".join(
+            f"<span style='background:rgba(37,99,235,.18);color:#93C5FD;"
+            f"border:1px solid rgba(37,99,235,.35);border-radius:20px;"
+            f"padding:.2rem .65rem;font-size:.8rem;margin:.15rem;display:inline-block'>"
+            f"{get_flag(n)} {n}</span>"
+            for n in neighbors
+        )
+        st.markdown(
+            f"<div style='margin-top:.4rem'>"
+            f"<div style='font-size:.76rem;color:#64748B;font-weight:700;margin-bottom:.3rem'>🌎 Neighboring Countries</div>"
+            f"<div>{neighbor_pills}</div></div>",
             unsafe_allow_html=True
         )
     else:
         st.markdown(
-            f"<div style='background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);"
-            f"border-radius:12px;padding:1rem 1.1rem;margin:.3rem 0'>"
-            f"<div style='font-size:2rem;margin-bottom:.4rem'>✨</div>"
-            f"<div style='font-weight:800;font-size:1rem;color:#FCD34D;margin-bottom:.3rem'>"
-            f"Making History in 2026</div>"
-            f"<div style='font-size:.9rem;color:#CBD5E1;line-height:1.6'>"
-            f"{selected_country} is competing at the World Cup in 2026. "
-            f"Every great World Cup story had to start somewhere — this could be the beginning of something special."
-            f"</div></div>",
+            "<div style='font-size:.82rem;color:#64748B;margin-top:.3rem'>"
+            "🌊 Island nation — surrounded by ocean on all sides</div>",
             unsafe_allow_html=True
         )
 
-if st.button("📖 See full World Cup History", key="btn_wch_moments"):
-    st.switch_page("pages/world_cup_history.py")
+    # ── SECTION 12: COMPARE TO SEATTLE ──
+    st.markdown("### 🏡 Compare To Seattle")
+    pop_m       = _parse_pop_m(team.get("population", ""))
+    seattle_pop = 4.0
 
+    compare_cards = []
+    if dist_miles and dist_miles > 50:
+        compare_cards.append(("✈️", "Distance", f"{dist_miles:,} miles",
+                               f"About {dist_miles // 500} long road trips away!"))
+    elif dist_miles and dist_miles <= 50:
+        compare_cards.append(("🏠", "Distance", "Right next door!", "You could almost drive there."))
 
-# ══════════════════════════════════════════════════════════════════════════════
-# SECTION 16: EXPLORE NEARBY COUNTRIES
-# ══════════════════════════════════════════════════════════════════════════════
-_wc_set = set(all_countries)
-_disc_names = set(disc_df["country_name"].tolist()) if not disc_df.empty and "country_name" in disc_df.columns else set()
+    if tz_offset == 0:
+        tz_label, tz_note = "Same time!", "When it's 3 PM here, it's 3 PM there too."
+    elif tz_offset > 0:
+        hour = 9 + int(tz_offset)
+        ampm = "AM" if hour < 12 else "PM"
+        tz_label = f"+{tz_offset}h ahead"
+        tz_note  = f"When it's 9 AM in Seattle, it's {hour}{ampm} there."
+    else:
+        tz_label = f"{tz_offset}h behind"
+        tz_note  = f"When it's 9 AM here, it's {9 + int(tz_offset)} AM there."
+    compare_cards.append(("🕐", "Time Zone", tz_label, tz_note))
 
-# Show neighbors that are in this year's World Cup first, then others
-_nb_wc    = [n for n in neighbors if n in _wc_set]
-_nb_other = [n for n in neighbors if n not in _wc_set]
-_nb_show  = (_nb_wc + _nb_other)[:6]
+    if pop_m:
+        sea_ratio = pop_m / seattle_pop
+        if pop_m >= 1000:     pop_display = f"{pop_m/1000:.1f} billion"
+        elif pop_m >= 1:      pop_display = f"{pop_m:.0f} million"
+        else:                 pop_display = f"{pop_m*1000:.0f} thousand"
+        if sea_ratio >= 10:   pop_note = f"{int(sea_ratio)}× more people than the Seattle metro area!"
+        elif sea_ratio >= 2:  pop_note = f"About {sea_ratio:.1f}× as many people as the Seattle area."
+        elif sea_ratio >= 0.5: pop_note = "Similar number of people to the Seattle area."
+        else:                 pop_note = "Smaller population than the Seattle metro area!"
+        compare_cards.append(("👥", "Population", pop_display, pop_note))
 
-if _nb_show:
-    st.divider()
-    st.markdown("### 🧭 Explore Nearby Countries")
-    st.caption("One country always leads to another — tap any neighbor to keep exploring.")
-
-    nb_cols = st.columns(min(len(_nb_show), 3))
-    for col, nb in zip(nb_cols * 2, _nb_show):
-        nb_flag   = get_flag(nb)
-        nb_teaser = _COUNTRY_TEASER.get(nb, f"An interesting neighbor of {selected_country}.")
-        in_wc     = nb in _wc_set
-
-        if nb in won:
-            nb_state_badge = "🏆 Won With"
-            nb_state_color = "#FCD34D"
-        elif nb in cheered:
-            nb_state_badge = "⚽ Cheering"
-            nb_state_color = "#4ADE80"
-        elif nb in _disc_names:
-            nb_state_badge = "🌱 Discovered"
-            nb_state_color = "#60A5FA"
+    lang = _safe(team.get("languages"), "")
+    if lang and lang != "—":
+        if "English" in lang:
+            compare_cards.append(("🗣️", "Language", lang, "They speak English too — just like Seattle!"))
         else:
-            nb_state_badge = "🔍 Not Yet Visited"
-            nb_state_color = "#475569"
+            first_lang = lang.split(",")[0].strip()
+            compare_cards.append(("🗣️", "Language", first_lang, f"People say hello in {first_lang}!"))
 
-        wc_pill = (
-            f"<span style='background:rgba(29,78,216,.2);color:#93C5FD;"
-            f"border:1px solid rgba(29,78,216,.3);border-radius:8px;"
-            f"padding:.06rem .35rem;font-size:.67rem;font-weight:700'>2026 WC</span> "
-        ) if in_wc else ""
+    n_cmp = min(len(compare_cards), 4)
+    if n_cmp > 0:
+        cmp_cols = st.columns(n_cmp)
+        for col, (icon, label, val, note) in zip(cmp_cols, compare_cards[:n_cmp]):
+            col.markdown(
+                "<div style='background:linear-gradient(160deg,#0F172A,#1E293B);"
+                "border:1px solid rgba(148,163,184,.15);border-radius:12px;"
+                "padding:.75rem;text-align:center'>"
+                f"<div style='font-size:1.4rem'>{icon}</div>"
+                f"<div style='font-size:.72rem;color:#94A3B8;font-weight:700;text-transform:uppercase;"
+                f"letter-spacing:.04em;margin:.1rem 0'>{label}</div>"
+                f"<div style='font-size:.95rem;font-weight:900;color:#F1F5F9;line-height:1.2'>{val}</div>"
+                f"<div style='font-size:.7rem;color:#64748B;margin-top:.2rem;line-height:1.3'>{note}</div>"
+                "</div>",
+                unsafe_allow_html=True
+            )
 
-        with col:
+    # ── SECTION 16: EXPLORE NEARBY COUNTRIES ──
+    _wc_set = set(all_countries)
+    _disc_names = set(disc_df["country_name"].tolist()) if not disc_df.empty and "country_name" in disc_df.columns else set()
+
+    # Show neighbors that are in this year's World Cup first, then others
+    _nb_wc    = [n for n in neighbors if n in _wc_set]
+    _nb_other = [n for n in neighbors if n not in _wc_set]
+    _nb_show  = (_nb_wc + _nb_other)[:6]
+
+    if _nb_show:
+        st.divider()
+        st.markdown("### 🧭 Explore Nearby Countries")
+        st.caption("One country always leads to another — tap any neighbor to keep exploring.")
+
+        nb_cols = st.columns(min(len(_nb_show), 3))
+        for col, nb in zip(nb_cols * 2, _nb_show):
+            nb_flag   = get_flag(nb)
+            nb_teaser = _COUNTRY_TEASER.get(nb, f"An interesting neighbor of {selected_country}.")
+            in_wc     = nb in _wc_set
+
+            if nb in won:
+                nb_state_badge = "🏆 Won With"
+                nb_state_color = "#FCD34D"
+            elif nb in cheered:
+                nb_state_badge = "⚽ Cheering"
+                nb_state_color = "#4ADE80"
+            elif nb in _disc_names:
+                nb_state_badge = "🌱 Discovered"
+                nb_state_color = "#60A5FA"
+            else:
+                nb_state_badge = "🔍 Not Yet Visited"
+                nb_state_color = "#475569"
+
+            wc_pill = (
+                f"<span style='background:rgba(29,78,216,.2);color:#93C5FD;"
+                f"border:1px solid rgba(29,78,216,.3);border-radius:8px;"
+                f"padding:.06rem .35rem;font-size:.67rem;font-weight:700'>2026 WC</span> "
+            ) if in_wc else ""
+
+            with col:
+                st.markdown(
+                    f"<div style='background:linear-gradient(160deg,#1E293B,#0F172A);"
+                    f"border:1px solid rgba(148,163,184,.15);border-radius:14px;"
+                    f"padding:.8rem .9rem;margin:.3rem 0'>"
+                    f"<div style='display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem'>"
+                    f"<span style='font-size:2rem;line-height:1'>{nb_flag}</span>"
+                    f"<div>"
+                    f"<div style='font-weight:900;font-size:.96rem;color:#F1F5F9'>{nb}</div>"
+                    f"<div style='font-size:.68rem;color:{nb_state_color};margin-top:.06rem'>{wc_pill}{nb_state_badge}</div>"
+                    f"</div></div>"
+                    f"<div style='font-size:.8rem;color:#94A3B8;line-height:1.45;margin-bottom:.5rem'>{nb_teaser}</div>"
+                    f"</div>",
+                    unsafe_allow_html=True
+                )
+                if in_wc and st.button(f"Explore {nb} →", key=f"nb_{nb}", use_container_width=True):
+                    st.session_state["_nav_country"] = nb
+                    st.rerun()
+
+# ──────────────────────────────────────────────────────────────────────────────
+# TAB 2: EXPLORE
+# ──────────────────────────────────────────────────────────────────────────────
+with tab_ex:
+
+    # ── SECTION 7: WHAT DOES THIS PLACE ACTUALLY LOOK LIKE? ──
+    _land = _LANDSCAPE.get(selected_country)
+    _land_emoji    = _land[0] if _land else "🌍"
+    _land_headline = _land[1] if _land else f"The Landscapes of {selected_country}"
+    _land_tags     = _land[2] if _land else []
+    _land_desc     = _land[3] if _land else fun if fun else f"{selected_country} is a country in {stamp['continent']} with remarkable natural landscapes."
+
+    st.markdown("### 🌄 What Does This Place Actually Look Like?")
+    _tag_pills = "".join(
+        f"<span style='background:rgba(34,197,94,.12);color:#4ADE80;border:1px solid rgba(34,197,94,.3);"
+        f"border-radius:14px;padding:.18rem .6rem;font-size:.76rem;font-weight:700;margin:.12rem;display:inline-block'>{t}</span>"
+        for t in _land_tags
+    )
+    st.markdown(
+        f"<div style='background:linear-gradient(135deg,rgba(15,23,42,.95),rgba(30,41,59,.9));"
+        f"border:1px solid rgba(148,163,184,.15);border-radius:16px;padding:1.1rem 1.3rem;margin:.2rem 0 .8rem'>"
+        f"<div style='display:flex;align-items:center;gap:.9rem;margin-bottom:.6rem'>"
+        f"<span style='font-size:2.8rem;line-height:1'>{_land_emoji}</span>"
+        f"<div>"
+        f"<div style='font-size:1.15rem;font-weight:900;color:#F1F5F9'>{_land_headline}</div>"
+        f"<div style='margin-top:.25rem'>{_tag_pills}</div>"
+        f"</div></div>"
+        f"<div style='font-size:.94rem;color:#CBD5E1;line-height:1.65'>{_land_desc}</div>"
+        f"</div>",
+        unsafe_allow_html=True
+    )
+    if iso3:
+        try:
+            st.plotly_chart(_country_zoom_map(iso3), use_container_width=True, config={"staticPlot": True})
+        except Exception:
+            pass
+
+    # ── SECTION 9: ANIMALS & NATURE ──
+    if animals:
+        st.markdown("### 🐾 Animals & Nature")
+        a_cols = st.columns(min(len(animals), 4))
+        for col, a in zip(a_cols, animals[:4]):
+            label, emoji = _split_label_emoji(a, "🐾")
+            islug = _item_slug(a)
+            img   = get_country_card_image(cslug, islug)
+            desc, fact = _card_info("animal", label, selected_country)
+            with col:
+                st.markdown(_explore_card(emoji, label, img), unsafe_allow_html=True)
+                with st.popover(f"✨ {label}", use_container_width=True):
+                    st.markdown(f"### {emoji} {label}")
+                    st.markdown(desc)
+                    st.info(f"🎯 **Fun Fact:** {fact}")
+
+    # ── SECTION 10: FAMOUS FOODS ──
+    if foods:
+        st.markdown("### 🍽️ Famous Foods")
+        f_cols = st.columns(min(len(foods), 4))
+        for col, food in zip(f_cols, foods[:4]):
+            label, emoji = _split_label_emoji(food, "🍴")
+            islug = _item_slug(food)
+            img   = get_country_card_image(cslug, islug)
+            desc, fact = _card_info("food", label, selected_country)
+            with col:
+                st.markdown(_explore_card(emoji, label, img), unsafe_allow_html=True)
+                with st.popover(f"✨ {label}", use_container_width=True):
+                    st.markdown(f"### {emoji} {label}")
+                    st.markdown(desc)
+                    st.info(f"🎯 **Fun Fact:** {fact}")
+
+    # ── SECTION 11: FAMOUS LANDMARKS ──
+    if landmarks:
+        st.markdown("### 🏛️ Famous Landmarks")
+        l_cols = st.columns(min(len(landmarks), 4))
+        for col, lm in zip(l_cols, landmarks[:4]):
+            islug = _item_slug(lm)
+            img   = get_country_card_image(cslug, islug)
+            desc, fact = _card_info("landmark", lm, selected_country)
+            with col:
+                st.markdown(_explore_card("📍", lm, img), unsafe_allow_html=True)
+                with st.popover(f"✨ {_strip_emoji(lm).strip()}", use_container_width=True):
+                    st.markdown(f"### 📍 {lm}")
+                    st.markdown(desc)
+                    st.info(f"🎯 **Fun Fact:** {fact}")
+
+# ──────────────────────────────────────────────────────────────────────────────
+# TAB 3: TEAM
+# ──────────────────────────────────────────────────────────────────────────────
+with tab_team:
+
+    # ── SECTION 13: SOCCER IN [COUNTRY] ──
+    st.markdown(f"## ⚽ Soccer in {selected_country}")
+
+    nickname = details.get("nickname", "")
+    if nickname and nickname not in ("—", ""):
+        st.markdown(
+            f"<div style='color:#94A3B8;font-size:.88rem;margin:-.4rem 0 .8rem'>"
+            f"Also known as: <b style='color:#FCD34D'>{nickname}</b></div>",
+            unsafe_allow_html=True
+        )
+
+    _intro_text = _SOCCER_INTRO.get(selected_country)
+    if not _intro_text:
+        _appearances = _safe(team.get("wc_appearances"), "several")
+        _best        = _safe(team.get("best_finish"), "the group stage")
+        _confed      = _safe(team.get("confederation"), "")
+        _nick_part   = f"known as {nickname}, " if nickname and nickname not in ("—","") else ""
+        _intro_text  = (
+            f"Soccer is the heart of {selected_country}'s sporting culture. "
+            f"The national team — {_nick_part}competing in {_confed} — has appeared at the World Cup {_appearances} times. "
+            f"Their best finish has been {_best}. "
+            f"In 2026 they bring a passionate squad ready to make their mark on the world stage."
+        )
+
+    st.markdown(
+        f"<div style='background:linear-gradient(135deg,rgba(29,78,216,.12),rgba(29,78,216,.05));"
+        f"border:1px solid rgba(29,78,216,.25);border-radius:14px;"
+        f"padding:.9rem 1.1rem;margin:.2rem 0 1rem;font-size:.97rem;color:#CBD5E1;line-height:1.7'>"
+        f"{_intro_text}</div>",
+        unsafe_allow_html=True
+    )
+
+    # ── SECTION 14: SOCCER TEAM ──
+    famous_player = details.get("famous_player", _safe(team.get("captain"), "—"))
+    home_stadium  = details.get("home_stadium", "—")
+
+    st.markdown("### 📊 Team Snapshot")
+    _avg_age = f"{float(summary.get('average_age', 0)):.1f}" if summary else "—"
+
+    ss_cols = st.columns(4)
+    for col, (icon, label, val) in zip(ss_cols, [
+        ("🏅", "FIFA Ranking",   f"#{_safe(team.get('fifa_ranking'))}"),
+        ("🔢", "WC Appearances", _safe(team.get("wc_appearances"), "—")),
+        ("🏆", "Best WC Finish", _safe(team.get("best_finish"))),
+        ("🌐", "Confederation",  _safe(team.get("confederation"))),
+    ]):
+        col.markdown(_stat_card(icon, label, val), unsafe_allow_html=True)
+
+    ss2_cols = st.columns(4)
+    for col, (icon, label, val) in zip(ss2_cols, [
+        ("🏟️", "Home Stadium", home_stadium),
+        ("👔", "Coach",         _safe(team.get("coach"))),
+        ("🎽", "Captain",       captain_name),
+        ("📅", "Avg Age",       _avg_age),
+    ]):
+        col.markdown(_stat_card(icon, label, val), unsafe_allow_html=True)
+
+    # Group Stage Matches — pills in a row, above the formation
+    matches = get_matches_by_team(selected_country)
+    if not matches.empty:
+        st.markdown("### 📅 Group Stage Matches")
+        _m_cols = st.columns(len(matches))
+        for col, (_, m) in zip(_m_cols, matches.iterrows()):
+            opp      = m["away_team"] if m["home_team"] == selected_country else m["home_team"]
+            opp_flag = get_flag(opp)
+            mid      = int(m["id"])
+            _mdate   = fmt_date(m["match_date"]) if hasattr(m, 'match_date') else str(m.get("match_date",""))
+            _mkick   = str(m.get("kickoff_time_et",""))[:5]
+            if m["status"] == "completed":
+                hs, as_ = int(m["home_score"]), int(m["away_score"])
+                _is_home = m["home_team"] == selected_country
+                _my_score  = hs if _is_home else as_
+                _opp_score = as_ if _is_home else hs
+                if _my_score > _opp_score:
+                    _pill_bg, _score_color, _result_label = "#052e16", "#4ADE80", "W"
+                elif _my_score == _opp_score:
+                    _pill_bg, _score_color, _result_label = "#1c1917", "#FCD34D", "D"
+                else:
+                    _pill_bg, _score_color, _result_label = "#450a0a", "#F87171", "L"
+                _score_html = (
+                    f"<div style='font-size:1.3rem;font-weight:900;color:{_score_color};line-height:1'>"
+                    f"{_my_score}–{_opp_score}</div>"
+                    f"<div style='font-size:.65rem;font-weight:800;color:{_score_color}'>{_result_label}</div>"
+                )
+                _time_html = f"<div style='font-size:.65rem;color:#64748B;margin-top:.1rem'>Final</div>"
+            else:
+                _pill_bg    = "#0f172a"
+                _score_html = f"<div style='font-size:.78rem;font-weight:800;color:#FCD34D'>{_mkick} ET</div>"
+                _time_html  = f"<div style='font-size:.65rem;color:#64748B;margin-top:.1rem'>{_mdate}</div>"
+            with col:
+                st.markdown(
+                    f"<div style='background:{_pill_bg};border:1px solid rgba(148,163,184,.15);"
+                    f"border-radius:14px;padding:.75rem .5rem;text-align:center'>"
+                    f"<div style='font-size:1.6rem;line-height:1;margin-bottom:.15rem'>{opp_flag}</div>"
+                    f"<div style='font-size:.72rem;font-weight:800;color:#F1F5F9;line-height:1.2;margin-bottom:.25rem'>"
+                    f"vs {opp}</div>"
+                    f"{_score_html}{_time_html}"
+                    f"</div>",
+                    unsafe_allow_html=True
+                )
+                if st.button("🏟️ Matchup", key=f"match_link_{mid}", use_container_width=True):
+                    st.session_state["_nav_match_id"] = mid
+                    st.switch_page("pages/matchup.py")
+
+    # Formation
+    if not roster.empty:
+        st.markdown("### 🟩 Predicted Starting XI")
+        _, _fc, _ = st.columns([1, 2, 1])
+        with _fc:
+            st.markdown(_formation_svg(roster, captain_name), unsafe_allow_html=True)
+
+    # Players To Know (story-driven)
+    if featured:
+        st.markdown("### ⭐ Players To Know")
+        n_feat = min(len(featured), 5)
+        p_cols = st.columns(n_feat)
+        for col, pl in zip(p_cols, featured[:n_feat]):
+            role_emoji, role_label = _story_role(pl["role"], pl.get("position",""))
+            blurb = _player_story(role_label, pl["name"], pl.get("age", 0), pl.get("club_short",""))
+            with col:
+                st.markdown(
+                    "<div style='background:linear-gradient(160deg,#1E293B,#0F172A);border-radius:12px;"
+                    "padding:.85rem .7rem;text-align:center;color:white;border:1px solid rgba(148,163,184,.15)'>"
+                    f"<div style='font-size:1.4rem;line-height:1'>{role_emoji}</div>"
+                    f"<div style='font-size:.62rem;color:#94A3B8;font-weight:700;text-transform:uppercase;"
+                    f"letter-spacing:.04em;margin:.1rem 0'>{role_label}</div>"
+                    f"<div style='font-size:1.8rem;font-weight:900;color:#FCD34D;line-height:1.2'>#{pl['shirt_number']}</div>"
+                    f"<div style='font-size:.86rem;font-weight:800;line-height:1.25;margin:.1rem 0'>{pl['name']}</div>"
+                    f"<div style='font-size:.73rem;color:#94A3B8'>{pl['position']}</div>"
+                    f"<div style='font-size:.69rem;color:#64748B;margin:.1rem 0'>{pl['club_short']} · Age {pl['age']}</div>"
+                    f"<div style='font-size:.66rem;color:#475569;margin-top:.3rem;line-height:1.35;"
+                    f"border-top:1px solid rgba(148,163,184,.1);padding-top:.25rem'>{blurb}</div>"
+                    "</div>",
+                    unsafe_allow_html=True
+                )
+
+    # MLS & US Connections
+    if not mls_players.empty:
+        st.markdown("### 🏟️ MLS & US Connections")
+        mls_cols = st.columns(min(len(mls_players), 3))
+        for col, (_, mp) in zip(mls_cols, mls_players.iterrows()):
+            col.markdown(
+                "<div style='background:linear-gradient(135deg,#064E3B,#065F46);border-radius:10px;"
+                "padding:.65rem .9rem;color:white'>"
+                f"<div style='font-size:.95rem;font-weight:800'>#{int(mp['shirt_number'])} {mp['player_name']}</div>"
+                f"<div style='font-size:.78rem;color:#6EE7B7'>{mp['position']}</div>"
+                f"<div style='font-size:.75rem;color:#A7F3D0'>🏟️ {mp['club_short']} · Age {int(mp['age'])}</div>"
+                "</div>",
+                unsafe_allow_html=True
+            )
+
+    # Full Squad
+    if not roster.empty:
+        st.markdown("#### 📋 Full Squad")
+        for _pos in ["Goalkeeper", "Defender", "Midfielder", "Forward"]:
+            _pos_df = by_pos.get(_pos)
+            if _pos_df is None or _pos_df.empty: continue
+            _icon    = pos_icon(_pos)
+            _players = _pos_df.to_dict("records")
+            st.markdown(_position_group_html(_players, _icon, _pos), unsafe_allow_html=True)
+
+# ──────────────────────────────────────────────────────────────────────────────
+# TAB 4: WHY CHEER
+# ──────────────────────────────────────────────────────────────────────────────
+with tab_cheer:
+
+    # ── SECTION 6: WHY KIDS MIGHT CHEER FOR THIS COUNTRY ──
+    if reasons:
+        st.markdown("### 🎉 Why Kids Might Cheer For This Country")
+        r_cols = st.columns(min(len(reasons), 4))
+        for col, reason in zip(r_cols, reasons[:4]):
+            label, emoji = _split_label_emoji(reason, "⭐")
+            blurb = _cheer_blurb(label, selected_country)
+            islug = _item_slug(reason)
+            img   = get_country_card_image(cslug, islug)
+            desc, fact = _card_info("cheer", label, selected_country)
+            with col:
+                st.markdown(_cheer_card(emoji, label, blurb, img), unsafe_allow_html=True)
+                with st.popover(f"✨ {label}", use_container_width=True):
+                    st.markdown(f"### {emoji} {label}")
+                    st.markdown(blurb)
+                    st.info(f"🎯 **Fun Fact:** {fact}")
+
+    # ── SECTION 15: THIS COUNTRY'S WORLD CUP STORY ──
+    st.divider()
+    st.markdown(f"## 🏆 {selected_country} at the World Cup")
+
+    _country_moments = _WC_COUNTRY_STORY.get(selected_country, [])
+    if _country_moments:
+        st.caption(f"{selected_country}'s journey through the World Cup — the key moments.")
+        for yr, headline, story in _country_moments:
             st.markdown(
-                f"<div style='background:linear-gradient(160deg,#1E293B,#0F172A);"
-                f"border:1px solid rgba(148,163,184,.15);border-radius:14px;"
-                f"padding:.8rem .9rem;margin:.3rem 0'>"
-                f"<div style='display:flex;align-items:center;gap:.6rem;margin-bottom:.35rem'>"
-                f"<span style='font-size:2rem;line-height:1'>{nb_flag}</span>"
-                f"<div>"
-                f"<div style='font-weight:900;font-size:.96rem;color:#F1F5F9'>{nb}</div>"
-                f"<div style='font-size:.68rem;color:{nb_state_color};margin-top:.06rem'>{wc_pill}{nb_state_badge}</div>"
-                f"</div></div>"
-                f"<div style='font-size:.8rem;color:#94A3B8;line-height:1.45;margin-bottom:.5rem'>{nb_teaser}</div>"
+                f"<div style='border-left:3px solid #2563EB;padding:.6rem .9rem;margin:.5rem 0;"
+                f"background:rgba(37,99,235,.08);border-radius:0 10px 10px 0'>"
+                f"<div style='display:flex;align-items:center;gap:.6rem;margin-bottom:.2rem'>"
+                f"<span style='background:#2563EB;color:white;border-radius:6px;"
+                f"padding:.08rem .45rem;font-size:.76rem;font-weight:800'>{yr}</span>"
+                f"<span style='font-weight:800;color:#F1F5F9;font-size:.95rem'>{headline}</span>"
+                f"</div>"
+                f"<div style='font-size:.88rem;color:#CBD5E1;line-height:1.55'>{story}</div>"
                 f"</div>",
                 unsafe_allow_html=True
             )
-            if in_wc and st.button(f"Explore {nb} →", key=f"nb_{nb}", use_container_width=True):
-                st.session_state["_nav_country"] = nb
-                st.rerun()
+    else:
+        _apps = _safe(team.get("wc_appearances"), "")
+        _best = _safe(team.get("best_finish"), "")
+        if _apps and _apps != "—":
+            st.markdown(
+                f"<div style='background:rgba(30,41,59,.8);border:1px solid rgba(255,255,255,.1);"
+                f"border-radius:12px;padding:1rem 1.1rem;margin:.3rem 0'>"
+                f"<div style='font-size:2rem;margin-bottom:.4rem'>{flag}</div>"
+                f"<div style='font-weight:800;font-size:1rem;color:#F1F5F9;margin-bottom:.3rem'>"
+                f"{selected_country} at the World Cup</div>"
+                f"<div style='font-size:.9rem;color:#CBD5E1;line-height:1.6'>"
+                f"{selected_country} has appeared at the World Cup <b>{_apps}</b> time{'s' if _apps not in ('1','one') else ''}."
+                f" Their best finish has been <b>{_best}</b>."
+                f" In 2026, they arrive ready to write new chapters in their World Cup story."
+                f"</div></div>",
+                unsafe_allow_html=True
+            )
+        else:
+            st.markdown(
+                f"<div style='background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.3);"
+                f"border-radius:12px;padding:1rem 1.1rem;margin:.3rem 0'>"
+                f"<div style='font-size:2rem;margin-bottom:.4rem'>✨</div>"
+                f"<div style='font-weight:800;font-size:1rem;color:#FCD34D;margin-bottom:.3rem'>"
+                f"Making History in 2026</div>"
+                f"<div style='font-size:.9rem;color:#CBD5E1;line-height:1.6'>"
+                f"{selected_country} is competing at the World Cup in 2026. "
+                f"Every great World Cup story had to start somewhere — this could be the beginning of something special."
+                f"</div></div>",
+                unsafe_allow_html=True
+            )
+
+    if st.button("📖 See full World Cup History", key="btn_wch_moments"):
+        st.switch_page("pages/world_cup_history.py")

@@ -4,7 +4,8 @@ from datetime import date
 from services.scoring import get_leaderboard, pick_result
 from services.picks import get_all_picks
 from services.teams import get_flag
-from services.passport import get_top_favorites
+from services.passport import get_top_favorites, get_discoveries
+from services.achievements import get_user_achievements
 
 st.markdown("## 🏆 Leaderboard")
 st.caption("FIFA World Cup 2026 · Family standings")
@@ -94,12 +95,22 @@ def _extras(uid: int, row) -> dict:
     favs    = get_top_favorites(uid, 1)
     fav_str = f"{get_flag(favs[0])} {favs[0]}" if favs else ""
 
+    # Discovery count
+    disc_df      = get_discoveries(uid)
+    n_discovered = len(disc_df) if not disc_df.empty else 0
+
+    # Achievement count
+    uach         = get_user_achievements(uid)
+    n_ach        = len(uach) if not uach.empty else 0
+
     return {
         'streak': streak,
         'perfect': perfect,
         'recent': recent,
         'fav_str': fav_str,
         'n_done': n_done,
+        'n_discovered': n_discovered,
+        'n_ach': n_ach,
     }
 
 
@@ -184,6 +195,14 @@ for _, row in board.iterrows():
         if fav_str else ""
     )
 
+    # Discoveries + achievements stat chips
+    stats_row = (
+        f"<div style='display:flex;gap:.65rem;margin-top:.3rem;flex-wrap:wrap'>"
+        f"<span style='font-size:.72rem;color:#60A5FA'>🗺️ {ex['n_discovered']} countries</span>"
+        f"<span style='font-size:.72rem;color:#A78BFA'>🏅 {ex['n_ach']} achievements</span>"
+        f"</div>"
+    )
+
     # Recent picks row
     if ex['recent']:
         picks_inner = " &nbsp;·&nbsp; ".join(ex['recent'])
@@ -222,6 +241,7 @@ for _, row in board.iterrows():
         f"<div style='font-size:1.15rem;font-weight:900;color:#F1F5F9'>{p_name}{perfect_badge}</div>"
         f"<div style='margin:.08rem 0;font-size:.82rem'>{streak_html}</div>"
         f"{fav_line}"
+        f"{stats_row}"
         f"</div>"
 
         # Points

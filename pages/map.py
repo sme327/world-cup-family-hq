@@ -227,6 +227,57 @@ _CONTINENT_EMOJI = {
     'North America': '🗽', 'South America': '🌎', 'Europe': '🗼',
     'Africa': '🦁', 'Asia': '🗻', 'Oceania': '🥝',
 }
+_IDENTITY = {
+    'Argentina':            'Tango & Messi',
+    'Australia':            'Kangaroos & Opera',
+    'Belgium':              'Waffles & Chocolate',
+    'Bolivia':              "World's Highest Capital",
+    'Bosnia and Herzegovina': 'Stari Most Bridge',
+    'Brazil':               'Carnival & Samba',
+    'Cameroon':             'Indomitable Lions',
+    'Canada':               'Maple Syrup & Mountains',
+    'Cape Verde':           'Atlantic Island Nation',
+    'Chile':                'Atacama Desert',
+    'Colombia':             'Coffee & Gold',
+    'Costa Rica':           'Pura Vida',
+    'Croatia':              'Adriatic Coast',
+    'DR Congo':             'Congo River',
+    'Ecuador':              'Galápagos Islands',
+    'Egypt':                'Pyramids & Nile',
+    'England':              'Football Birthplace',
+    'France':               'Eiffel Tower & Croissants',
+    'Germany':              'Cars & Oktoberfest',
+    'Ghana':                'Black Stars',
+    'Honduras':             'Maya Ruins',
+    'Indonesia':            'Bali & 17,000 Islands',
+    'Iran':                 'Ancient Persia',
+    'Ivory Coast':          'Elephants & Cacao',
+    'Japan':                'Mt Fuji & Sushi',
+    'Kenya':                'Safari & Distance Running',
+    'Mexico':               'Tacos & Pyramids',
+    'Morocco':              'Sahara & Medinas',
+    'Netherlands':          'Tulips & Windmills',
+    'New Zealand':          'Hobbits & All Blacks',
+    'Nigeria':              'Nollywood & Jollof Rice',
+    'Panama':               'The Famous Canal',
+    'Paraguay':             'Guaraní Culture',
+    'Peru':                 'Machu Picchu',
+    'Portugal':             'Pastel de Nata',
+    'Saudi Arabia':         'Desert Kingdom',
+    'Senegal':              'Lions of Teranga',
+    'Serbia':               "Djokovic's Home",
+    'South Africa':         'Mandela & Safari',
+    'South Korea':          'K-pop & Kimchi',
+    'Spain':                'Flamenco & Tapas',
+    'Switzerland':          'Alps & Chocolate',
+    'Tunisia':              'Carthage & Medina',
+    'Turkey':               'Istanbul & Kebabs',
+    'Ukraine':              'Sunflowers & History',
+    'United States':        '🏠 Home Team!',
+    'Uruguay':              'Mate & Gaucho',
+    'Venezuela':            'Angel Falls',
+    'Algeria':              'Sahara & Couscous',
+}
 
 st.markdown("---")
 st.markdown(
@@ -280,16 +331,20 @@ for _cont in _CONTINENT_ORDER:
                 else:
                     _cc_badge, _cc_bg = "", "rgba(30,41,59,.5)"
 
+                _cc_id = _IDENTITY.get(_cc_name, '')
                 with _cc_col:
                     st.markdown(
                         f"<div style='background:{_cc_bg};"
                         f"border:1px solid rgba(148,163,184,.15);border-radius:10px;"
-                        f"padding:.55rem .45rem;text-align:center;margin:.1rem 0'>"
-                        f"<div style='font-size:1.8rem;line-height:1'>{_cc_flag}</div>"
-                        f"<div style='font-size:.67rem;font-weight:800;color:#F1F5F9;"
-                        f"line-height:1.2;margin:.18rem 0'>{_cc_name}</div>"
-                        f"<div style='font-size:.85rem'>{_cc_stamp}</div>"
-                        f"<div style='font-size:.6rem;color:#94A3B8;margin-top:.1rem'>{_cc_badge}</div>"
+                        f"padding:.5rem .35rem;text-align:center;margin:.1rem 0'>"
+                        f"<div style='font-size:1.7rem;line-height:1'>{_cc_flag}</div>"
+                        f"<div style='font-size:.65rem;font-weight:800;color:#F1F5F9;"
+                        f"line-height:1.2;margin:.15rem 0 .05rem'>{_cc_name}</div>"
+                        + (f"<div style='font-size:.57rem;color:#64748B;font-style:italic;"
+                           f"line-height:1.2;margin-bottom:.1rem'>{_cc_id}</div>"
+                           if _cc_id else "")
+                        + f"<div style='font-size:.78rem'>{_cc_stamp}</div>"
+                        f"<div style='font-size:.58rem;color:#94A3B8;margin-top:.05rem'>{_cc_badge}</div>"
                         f"</div>",
                         unsafe_allow_html=True,
                     )

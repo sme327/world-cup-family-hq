@@ -1396,15 +1396,15 @@ with tab_team:
                 unsafe_allow_html=True
             )
 
-    # Full Squad
+    # Full Squad — collapsed by default
     if not roster.empty:
-        st.markdown("#### 📋 Full Squad")
-        for _pos in ["Goalkeeper", "Defender", "Midfielder", "Forward"]:
-            _pos_df = by_pos.get(_pos)
-            if _pos_df is None or _pos_df.empty: continue
-            _icon    = pos_icon(_pos)
-            _players = _pos_df.to_dict("records")
-            st.markdown(_position_group_html(_players, _icon, _pos), unsafe_allow_html=True)
+        with st.expander(f"📋 Full Squad — {selected_country} (26 players)", expanded=False):
+            for _pos in ["Goalkeeper", "Defender", "Midfielder", "Forward"]:
+                _pos_df = by_pos.get(_pos)
+                if _pos_df is None or _pos_df.empty: continue
+                _icon    = pos_icon(_pos)
+                _players = _pos_df.to_dict("records")
+                st.markdown(_position_group_html(_players, _icon, _pos), unsafe_allow_html=True)
 
 # ──────────────────────────────────────────────────────────────────────────────
 # TAB 4: WHY CHEER

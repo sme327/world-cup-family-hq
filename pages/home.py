@@ -58,17 +58,22 @@ st.markdown("""
     min-height:3.6rem;
 }
 /* ── Leaderboard ─────────────────────────────────── */
-.lb-row { padding:.55rem .7rem; border-radius:8px; margin:.25rem 0; min-height:3.6rem; }
+.lb-row {
+    padding:.6rem .8rem; border-radius:10px; margin:.25rem 0; min-height:3.6rem;
+    box-shadow:0 2px 6px rgba(0,0,0,.2);
+}
 /* ── Story tier variants ─────────────────────────── */
 .story-t1 {
     background:rgba(251,191,36,.09) !important;
     border-color:#D97706 !important;
     border-left:3px solid #D97706 !important;
+    box-shadow:0 1px 4px rgba(217,119,6,.12) !important;
 }
 .story-t2 {
     background:rgba(16,185,129,.07) !important;
     border-color:#10B981 !important;
     border-left:3px solid #10B981 !important;
+    box-shadow:0 1px 4px rgba(16,185,129,.1) !important;
 }
 /* ── Pick participation bar ──────────────────────── */
 .pick-bar {
@@ -78,7 +83,12 @@ st.markdown("""
     text-align:center;
 }
 /* ── Section titles ──────────────────────────────── */
-.section-head { font-size:1.25rem; font-weight:800; margin:.7rem 0 .35rem; }
+.section-head {
+    font-size:1.35rem; font-weight:900; margin:.95rem 0 .4rem;
+    color:#F8FAFC; letter-spacing:-.01em;
+    padding-bottom:.3rem;
+    border-bottom:2px solid rgba(148,163,184,.2);
+}
 /* ── Achievement strip ───────────────────────────── */
 .ach-chip { display:inline-block; background:rgba(251,191,36,.13);
             border:1px solid rgba(251,191,36,.3); border-radius:20px;
@@ -652,7 +662,7 @@ st.divider()
 # ─────────────────────────────────────────────────────────────────────────────
 lb_order = board['id'].tolist()
 
-feed_col, fav_col, lb_col = st.columns([5, 5, 3])
+lb_col, fav_col, feed_col = st.columns([3, 5, 5])
 
 # ── Leaderboard ───────────────────────────────────────────────────────────────
 with lb_col:

@@ -128,21 +128,28 @@ with st.sidebar:
 # ── Global CSS ────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-.mu-section { font-size:1.15rem; font-weight:800; margin:.9rem 0 .4rem; }
+.mu-section {
+    font-size:1.25rem; font-weight:900; margin:.95rem 0 .4rem;
+    color:#F8FAFC; letter-spacing:-.01em;
+    padding-bottom:.28rem;
+    border-bottom:2px solid rgba(148,163,184,.18);
+}
 .pick-card  {
     border-radius:14px; padding:.75rem .8rem; text-align:center; color:white;
     transition:all .15s; cursor:pointer;
 }
 a.mu-chip {
-    display:inline-block; padding:.22rem .65rem; border-radius:20px;
-    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12);
-    color:#CBD5E1; font-size:.78rem; font-weight:700; text-decoration:none;
-    white-space:nowrap;
+    display:inline-block; padding:.26rem .72rem; border-radius:20px;
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
+    color:#CBD5E1; font-size:.8rem; font-weight:700; text-decoration:none;
+    white-space:nowrap; transition:background .12s;
 }
-a.mu-chip:hover { background:rgba(255,255,255,.15); color:white; }
+a.mu-chip:hover { background:rgba(255,255,255,.18); color:white; }
 .cheer-card {
-    background:#F8FAFC; border-radius:12px; padding:.7rem .5rem;
-    text-align:center; border:1px solid #E2E8F0; margin:.2rem;
+    background:linear-gradient(160deg,#1E293B,#0F172A);
+    border-radius:12px; padding:.8rem .5rem;
+    text-align:center; border:1px solid rgba(148,163,184,.15); margin:.2rem;
+    color:#F1F5F9;
 }
 .mls-card {
     background:linear-gradient(135deg,#064E3B,#065F46);
@@ -588,7 +595,7 @@ def _sec_cheer(title: str, subtitle: str):
                 st.markdown(
                     f"<div class='cheer-card'>"
                     f"<div style='font-size:2.2rem;line-height:1.1'>{emoji}</div>"
-                    f"<div style='font-size:.82rem;font-weight:700;color:#0F172A;"
+                    f"<div style='font-size:.82rem;font-weight:700;color:#F1F5F9;"
                     f"margin-top:.35rem;line-height:1.3'>{label}</div>"
                     f"</div>",
                     unsafe_allow_html=True,

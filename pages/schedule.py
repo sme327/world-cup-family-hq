@@ -11,6 +11,7 @@ st.markdown("""<style>
 .sect-hdr {
     font-size:1rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase;
     padding:.38rem .9rem;border-radius:8px;margin:1.2rem 0 .4rem;display:inline-block;
+    box-shadow:0 1px 4px rgba(0,0,0,.25);
 }
 .sect-live     { background:linear-gradient(90deg,#7F1D1D,#991B1B);color:#FCA5A5; }
 .sect-upcoming { background:linear-gradient(90deg,#1E3A5F,#1E40AF);color:#BAE6FD; }

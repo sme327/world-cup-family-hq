@@ -195,11 +195,15 @@ for _, row in board.iterrows():
         if fav_str else ""
     )
 
-    # Discoveries + achievements stat chips
+    # Stats chips: picks breakdown + exploration
+    n_correct = int(row['correct_picks'])
+    n_draws   = int(row['draw_points'])
     stats_row = (
-        f"<div style='display:flex;gap:.65rem;margin-top:.3rem;flex-wrap:wrap'>"
+        f"<div style='display:flex;gap:.6rem;margin-top:.3rem;flex-wrap:wrap'>"
+        f"<span style='font-size:.72rem;color:#4ADE80'>✅ {n_correct} wins</span>"
+        f"<span style='font-size:.72rem;color:#FCD34D'>🤝 {n_draws} draws</span>"
         f"<span style='font-size:.72rem;color:#60A5FA'>🗺️ {ex['n_discovered']} countries</span>"
-        f"<span style='font-size:.72rem;color:#A78BFA'>🏅 {ex['n_ach']} achievements</span>"
+        f"<span style='font-size:.72rem;color:#A78BFA'>🏅 {ex['n_ach']} badges</span>"
         f"</div>"
     )
 

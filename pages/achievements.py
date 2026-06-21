@@ -156,15 +156,20 @@ def _ach_card(ach, is_unlocked: bool, is_hidden: bool, unlocked_at: str = ""):
     elif is_unlocked:
         date_str = str(unlocked_at)[:10] if unlocked_at else ""
         st.markdown(
-            f"<div style='background:linear-gradient(135deg,#FFFBEB,#FEF3C7);"
-            f"border:2px solid #FCD34D;border-radius:12px;padding:.75rem 1rem;margin:.25rem 0'>"
-            f"<div style='display:flex;align-items:center;gap:.7rem'>"
-            f"<span style='font-size:2rem'>{emoji}</span>"
+            f"<div style='background:linear-gradient(135deg,#78350F,#92400E);"
+            f"border:2px solid #FCD34D;border-radius:14px;padding:.85rem 1.1rem;margin:.3rem 0;"
+            f"box-shadow:0 2px 10px rgba(252,211,77,.2)'>"
+            f"<div style='display:flex;align-items:center;gap:.8rem'>"
+            f"<span style='font-size:2.4rem;line-height:1;flex-shrink:0'>{emoji}</span>"
             f"<div style='flex:1'>"
-            f"<div style='font-size:.9rem;font-weight:900;color:#78350F'>{name}</div>"
-            f"<div style='font-size:.78rem;color:#92400E'>{desc}</div>"
+            f"<div style='font-size:.95rem;font-weight:900;color:#FEF3C7;line-height:1.2'>{name}</div>"
+            f"<div style='font-size:.78rem;color:#FDE68A;margin:.2rem 0;line-height:1.35'>{desc}</div>"
             f"</div>"
-            f"<span style='font-size:.75rem;color:#92400E;flex-shrink:0'>✅ {date_str}</span>"
+            f"<div style='text-align:center;flex-shrink:0'>"
+            f"<div style='font-size:.65rem;font-weight:800;color:#FCD34D;text-transform:uppercase;"
+            f"letter-spacing:.07em'>UNLOCKED</div>"
+            f"<div style='font-size:.65rem;color:#D97706;margin-top:.1rem'>✅ {date_str}</div>"
+            f"</div>"
             f"</div></div>",
             unsafe_allow_html=True,
         )

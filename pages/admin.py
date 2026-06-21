@@ -225,6 +225,46 @@ with tabs[5]:
 
 # ── Database ──────────────────────────────────────────────────────────────────
 with tabs[6]:
+    import os as _os
+    from services.database import _restore_from_backup, DATA_DIR
+
+    # ── Restore status check ──────────────────────────────────────────────────
+    _bak_path = _os.path.join(DATA_DIR, 'picks_backup.csv')
+    _conn_check = get_connection()
+    _live_picks = _conn_check.execute("SELECT COUNT(*) FROM picks").fetchone()[0]
+    _live_scores = _conn_check.execute("SELECT COUNT(*) FROM matches WHERE status='completed'").fetchone()[0]
+    _conn_check.close()
+
+    if _os.path.exists(_bak_path):
+        import pandas as _pd2
+        _bak_df = _pd2.read_csv(_bak_path)
+        _bak_picks = len(_bak_df)
+    else:
+        _bak_picks = None
+
+    if _live_picks == 0:
+        st.error(
+            f"⚠️ **Database has 0 picks** — the backup file has {_bak_picks} picks. "
+            "Press the button below to restore immediately."
+        )
+    elif _bak_picks and _live_picks < _bak_picks:
+        st.warning(
+            f"⚠️ Live DB has **{_live_picks} picks** but backup has **{_bak_picks}**. "
+            "Some picks may be missing."
+        )
+    else:
+        st.success(f"✅ DB looks healthy — {_live_picks} picks, {_live_scores} completed matches.")
+
+    if st.button("🔄 Restore from picks_backup.csv now", type="primary"):
+        _rconn = get_connection()
+        _rcur  = _rconn.cursor()
+        _rp, _rs = _restore_from_backup(_rcur)
+        _rconn.commit()
+        _rconn.close()
+        st.success(f"✅ Restored {_rp} picks and {_rs} scores from backup.")
+        st.rerun()
+
+    st.divider()
     st.markdown("### Database Stats")
     conn = get_connection()
     tables = ['teams', 'matches', 'users', 'picks', 'discoveries',

@@ -258,8 +258,8 @@ with tabs[7]:
 
     # Picks CSV
     _picks_rows = _bconn.execute(
-        """SELECT u.name AS user_name, m.home_team, m.away_team, m.match_date,
-                  p.picked_team
+        """SELECT u.name AS user_name, p.user_id, p.match_id,
+                  m.home_team, m.away_team, m.match_date, p.picked_team
            FROM picks p
            JOIN users u ON p.user_id = u.id
            JOIN matches m ON p.match_id = m.id
@@ -291,7 +291,7 @@ with tabs[7]:
         st.metric("Picks to backup", len(_picks_rows))
         st.download_button(
             "⬇️ Download picks_backup.csv",
-            data=_to_csv(_picks_rows, ["user_name","home_team","away_team","match_date","picked_team"]),
+            data=_to_csv(_picks_rows, ["user_name","user_id","match_id","home_team","away_team","match_date","picked_team"]),
             file_name=f"picks_backup_{_ts}.csv",
             mime="text/csv",
             use_container_width=True,

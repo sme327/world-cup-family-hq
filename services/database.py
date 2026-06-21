@@ -110,6 +110,62 @@ def get_connection():
     return sqlite3.connect(os.path.abspath(DB_PATH))
 
 
+def _restore_from_backup(cursor) -> tuple[int, int]:
+    """Restore picks and scores from committed backup CSVs.
+    Called automatically when the picks table is empty (e.g. after a cloud sleep/wake cycle).
+    Handles both the full backup format (with user_id/match_id) and the Admin download
+    format (with user_name/home_team/away_team/match_date). Returns (picks_restored, scores_restored).
+    """
+    picks_path  = os.path.join(DATA_DIR, 'picks_backup.csv')
+    scores_path = os.path.join(DATA_DIR, 'scores_backup.csv')
+    n_picks = n_scores = 0
+
+    if os.path.exists(picks_path):
+        df = pd.read_csv(picks_path)
+        has_ids = 'user_id' in df.columns and 'match_id' in df.columns
+        for _, row in df.iterrows():
+            try:
+                if has_ids:
+                    uid = int(row['user_id'])
+                    mid = int(row['match_id'])
+                else:
+                    # Look up IDs by name/match — handles Admin-format CSV
+                    u = cursor.execute(
+                        "SELECT id FROM users WHERE name=?", (str(row['user_name']),)
+                    ).fetchone()
+                    m = cursor.execute(
+                        "SELECT id FROM matches WHERE home_team=? AND away_team=? AND match_date=?",
+                        (str(row['home_team']), str(row['away_team']), str(row['match_date'])),
+                    ).fetchone()
+                    if not u or not m:
+                        continue
+                    uid, mid = u[0], m[0]
+                cursor.execute(
+                    "INSERT OR IGNORE INTO picks (user_id, match_id, picked_team) VALUES (?,?,?)",
+                    (uid, mid, str(row['picked_team'])),
+                )
+                n_picks += cursor.rowcount
+            except Exception:
+                pass
+
+    if os.path.exists(scores_path):
+        df = pd.read_csv(scores_path)
+        for _, row in df.iterrows():
+            try:
+                cursor.execute(
+                    """UPDATE matches SET home_score=?, away_score=?, status='completed'
+                       WHERE home_team=? AND away_team=? AND match_date=?""",
+                    (int(row['home_score']), int(row['away_score']),
+                     str(row['home_team']), str(row['away_team']), str(row['match_date'])),
+                )
+                if cursor.rowcount:
+                    n_scores += 1
+            except Exception:
+                pass
+
+    return n_picks, n_scores
+
+
 def init_db():
     conn = get_connection()
     conn.executescript(_SCHEMA)
@@ -144,6 +200,14 @@ def init_db():
             VALUES (?, ?, ?, ?, ?)
         """, (int(row['id']), str(row['name']), str(row['avatar']),
               str(row['theme_color']), int(row.get('picks_only', 0))))
+
+    # Auto-restore picks + scores from backup CSVs when the DB is freshly created
+    # (catches Streamlit Cloud sleep/wake cycles where worldcup.db is rebuilt from scratch)
+    if cursor.execute("SELECT COUNT(*) FROM picks").fetchone()[0] == 0:
+        picks_path = os.path.join(DATA_DIR, 'picks_backup.csv')
+        if os.path.exists(picks_path):
+            n_picks, n_scores = _restore_from_backup(cursor)
+            conn.commit()
 
     conn.commit()
     conn.close()

@@ -114,11 +114,12 @@ def _passport_user_ids() -> list[int]:
 
 # ── Discovery tracking ────────────────────────────────────────────────────────
 
-def log_discovery(user_id: int, country_name: str):
+def log_discovery(user_id: int, country_name: str) -> bool:
     """Log or update a profile visit. Fires activity log on first visit.
-    Skipped silently for picks-only users."""
+    Returns True if this was the user's first visit to this country.
+    Skipped silently for picks-only users (returns False)."""
     if _user_picks_only(user_id):
-        return
+        return False
 
     from services.activity import log_discovery_activity
 
@@ -144,6 +145,8 @@ def log_discovery(user_id: int, country_name: str):
     if is_first:
         log_discovery_activity(user_id, country_name)
         _check_continent_completion(user_id, country_name)
+
+    return is_first
 
 
 def _check_continent_completion(user_id: int, newly_discovered: str):

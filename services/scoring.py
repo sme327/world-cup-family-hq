@@ -75,3 +75,121 @@ def get_leaderboard() -> pd.DataFrame:
     board['countries_won'] = board['id'].map(won_map).fillna(0).astype(int)
 
     return board.sort_values('total_points', ascending=False).reset_index(drop=True)
+
+
+def get_group_standings() -> dict:
+    """Returns {group_letter: [list of team dicts sorted by pts]}.
+    Each dict has: team, flag, group, p, w, d, l, gf, ga, pts, gd."""
+    conn = get_connection()
+    matches = pd.read_sql(
+        "SELECT * FROM matches WHERE status='completed' ORDER BY match_date, kickoff_time_et",
+        conn,
+    )
+    teams = pd.read_sql(
+        "SELECT name, flag_emoji, group_letter FROM teams "
+        "WHERE group_letter IS NOT NULL AND group_letter != ''",
+        conn,
+    )
+    conn.close()
+
+    stats: dict = {}
+    for _, t in teams.iterrows():
+        g = t['group_letter']
+        if pd.isna(g) or g == '':
+            continue
+        stats.setdefault(g, {})[t['name']] = dict(
+            team=t['name'], flag=t['flag_emoji'], group=g,
+            p=0, w=0, d=0, l=0, gf=0, ga=0,
+        )
+
+    for _, m in matches.iterrows():
+        ht, at = m['home_team'], m['away_team']
+        hs, as_ = int(m['home_score']), int(m['away_score'])
+        team_row = teams[teams['name'] == ht]
+        if team_row.empty:
+            continue
+        g = team_row.iloc[0]['group_letter']
+        if g not in stats or ht not in stats[g] or at not in stats[g]:
+            continue
+        h = stats[g][ht]; a = stats[g][at]
+        h['p'] += 1; a['p'] += 1
+        h['gf'] += hs; h['ga'] += as_
+        a['gf'] += as_; a['ga'] += hs
+        if hs > as_:
+            h['w'] += 1; a['l'] += 1
+        elif hs < as_:
+            a['w'] += 1; h['l'] += 1
+        else:
+            h['d'] += 1; a['d'] += 1
+
+    result = {}
+    for g, td in sorted(stats.items()):
+        df = pd.DataFrame(list(td.values()))
+        df['pts'] = df['w'] * 3 + df['d']
+        df['gd']  = df['gf'] - df['ga']
+        df = df.sort_values(
+            ['pts', 'gd', 'gf', 'team'],
+            ascending=[False, False, False, True],
+        ).reset_index(drop=True)
+        result[g] = df.to_dict('records')
+
+    return result
+
+
+def get_team_group_status(team: str, group_letter: str) -> dict:
+    """Return a kid-friendly status dict for a team in the group stage.
+    2026 format: top-2 from each group advance automatically; 8 best 3rd-place also advance."""
+    standings = get_group_standings()
+    group = standings.get(group_letter, [])
+
+    for i, row in enumerate(group):
+        if row['team'] != team:
+            continue
+        pos     = i + 1
+        pts     = row['pts']
+        played  = row['p']
+        remaining = max(0, 3 - played)
+
+        if played == 0:
+            status, color = "Yet to play", "#64748B"
+        elif played >= 3:
+            if pos <= 2:
+                status, color = "Advanced ✅", "#4ADE80"
+            elif pos == 3:
+                status, color = "Best 3rd — TBD", "#FCD34D"
+            else:
+                status, color = "Eliminated ❌", "#F87171"
+        elif played == 2:
+            if pts >= 6:
+                status, color = "In great shape", "#4ADE80"
+            elif pts >= 4:
+                status, color = "In great shape", "#86EFAC"
+            elif pts >= 3:
+                status, color = "Still alive", "#FCD34D"
+            elif pts >= 1:
+                status, color = "Needs a win", "#FB923C"
+            else:
+                status, color = "In trouble", "#F87171"
+        else:  # played == 1
+            if pts == 3:
+                status, color = "Strong start", "#4ADE80"
+            elif pts == 1:
+                status, color = "Still alive", "#FCD34D"
+            else:
+                status, color = "Needs points", "#FB923C"
+
+        return {
+            'position': pos,
+            'pts': pts,
+            'played': played,
+            'remaining': remaining,
+            'w': row['w'], 'd': row['d'], 'l': row['l'],
+            'gf': row['gf'], 'ga': row['ga'], 'gd': row['gd'],
+            'record': f"{row['w']}W-{row['d']}D-{row['l']}L",
+            'status': status,
+            'status_color': color,
+            'group': group_letter,
+        }
+
+    return {'status': 'Unknown', 'status_color': '#94A3B8', 'position': 0, 'pts': 0,
+            'played': 0, 'remaining': 3, 'record': '—'}

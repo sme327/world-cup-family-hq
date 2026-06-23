@@ -10,7 +10,7 @@ from services.activity import (
     get_tiered_family_activity,
     STORY_TIERS,
 )
-from services.picks import get_picks_for_match
+from services.picks import get_picks_for_match, save_pick
 from services.passport import (
     get_country_of_the_day, get_family_stamp_statuses,
     get_stamp, get_top_favorites,
@@ -467,10 +467,71 @@ else:
         with col:
             _today_match_card(m)
 
+# ─────────────────────────────────────────────────────────────────────────────
+# 3b. Today's Picks Strip
+# ─────────────────────────────────────────────────────────────────────────────
+_strip_uid   = st.session_state.get("active_user_id", 1)
+_strip_uname = st.session_state.get("active_user_name", "You")
+_upcoming_today = today_matches[today_matches['status'] != 'completed']
+
+if not _upcoming_today.empty:
+    st.markdown(
+        f'<div class="section-head">⚽ {_strip_uname}\'s Picks Today</div>',
+        unsafe_allow_html=True,
+    )
+    for _, _sm in _upcoming_today.iterrows():
+        _mid   = int(_sm['id'])
+        _spdf  = get_picks_for_match(_mid)
+        _urow  = _spdf[_spdf['user_id'] == _strip_uid] if not _spdf.empty else pd.DataFrame()
+        _upick = _urow.iloc[0]['picked_team'] if not _urow.empty else None
+        _hf    = get_flag(_sm['home_team'])
+        _af    = get_flag(_sm['away_team'])
+        _kto   = fmt_match_time(_sm['match_date'], _sm['kickoff_time_et'])
+
+        if _upick:
+            _pf = get_flag(_upick)
+            st.markdown(
+                f"<div style='background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);"
+                f"border-radius:10px;padding:.55rem 1rem;margin:.25rem 0;"
+                f"display:flex;align-items:center;gap:.75rem;flex-wrap:wrap'>"
+                f"<span style='font-size:1.4rem'>{_hf}</span>"
+                f"<span style='font-size:.88rem;font-weight:700;color:#CBD5E1;flex:1'>"
+                f"{_sm['home_team']} vs {_sm['away_team']}</span>"
+                f"<span style='font-size:.74rem;color:#64748B'>🕒 {_kto}</span>"
+                f"<span style='font-size:.88rem;color:#4ADE80;font-weight:800'>"
+                f"✅ {_pf} {_upick}</span>"
+                f"<span style='font-size:1.4rem'>{_af}</span>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                f"<div style='background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);"
+                f"border-radius:10px;padding:.55rem 1rem;margin:.25rem 0;"
+                f"display:flex;align-items:center;gap:.75rem;flex-wrap:wrap'>"
+                f"<span style='font-size:1.4rem'>{_hf}</span>"
+                f"<span style='font-size:.88rem;font-weight:700;color:#CBD5E1;flex:1'>"
+                f"{_sm['home_team']} vs {_sm['away_team']}</span>"
+                f"<span style='font-size:.74rem;color:#64748B'>🕒 {_kto}</span>"
+                f"<span style='font-size:.82rem;color:#FCD34D;font-weight:700'>⏳ Not picked</span>"
+                f"<span style='font-size:1.4rem'>{_af}</span>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+            _pb1, _pb2, _pbrest = st.columns([1, 1, 2])
+            with _pb1:
+                if st.button(f"{_hf} {_sm['home_team']}", key=f"qpick_{_mid}_h"):
+                    save_pick(_strip_uid, _mid, _sm['home_team'])
+                    st.rerun()
+            with _pb2:
+                if st.button(f"{_af} {_sm['away_team']}", key=f"qpick_{_mid}_a"):
+                    save_pick(_strip_uid, _mid, _sm['away_team'])
+                    st.rerun()
+
 st.divider()
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 3b. Mini World Atlas
+# 3d. Mini World Atlas
 # ─────────────────────────────────────────────────────────────────────────────
 _home_map_head, _home_map_btn = st.columns([5, 1])
 with _home_map_head:

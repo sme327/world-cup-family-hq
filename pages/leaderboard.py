@@ -10,9 +10,10 @@ from services.achievements import get_user_achievements
 st.markdown("## 🏆 Leaderboard")
 st.caption("FIFA World Cup 2026 · Family standings")
 
-board     = get_leaderboard()
-all_picks = get_all_picks()
-today_str = date.today().isoformat()
+board          = get_leaderboard()
+all_picks      = get_all_picks()
+today_str      = date.today().isoformat()
+active_user_id = st.session_state.get("active_user_id", 1)
 
 # ── Dense (competition-style) rank with tie support ───────────────────────────
 board = board.sort_values(['total_points', 'name'], ascending=[False, True]).reset_index(drop=True)
@@ -80,9 +81,9 @@ def _extras(uid: int, row) -> dict:
     n_losses = n_done - int(row['correct_picks']) - int(row['draw_points'])
     perfect  = n_done > 0 and n_losses == 0
 
-    # Recent picks (last 3, newest first)
+    # Recent picks (last 8, newest first)
     recent: list[str] = []
-    for _, pk in done.head(3).iterrows():
+    for _, pk in done.head(8).iterrows():
         pts  = pick_result(
             pk['picked_team'], pk['home_team'], pk['away_team'],
             pk['home_score'], pk['away_score'],
@@ -195,28 +196,46 @@ for _, row in board.iterrows():
         if fav_str else ""
     )
 
-    # Stats chips: picks breakdown + exploration
+    # Stats chips: two rows for readability
     n_correct = int(row['correct_picks'])
     n_draws   = int(row['draw_points'])
     stats_row = (
-        f"<div style='display:flex;gap:.6rem;margin-top:.3rem;flex-wrap:wrap'>"
+        f"<div style='display:flex;gap:.55rem;margin-top:.3rem;flex-wrap:wrap'>"
         f"<span style='font-size:.72rem;color:#4ADE80'>✅ {n_correct} wins</span>"
         f"<span style='font-size:.72rem;color:#FCD34D'>🤝 {n_draws} draws</span>"
-        f"<span style='font-size:.72rem;color:#60A5FA'>🗺️ {ex['n_discovered']} countries</span>"
+        f"<span style='font-size:.72rem;color:#60A5FA'>🗺️ {ex['n_discovered']} explored</span>"
         f"<span style='font-size:.72rem;color:#A78BFA'>🏅 {ex['n_ach']} badges</span>"
         f"</div>"
     )
 
-    # Recent picks row
+    # Recent picks row (up to 8, compact)
     if ex['recent']:
-        picks_inner = " &nbsp;·&nbsp; ".join(ex['recent'])
-        recent_row  = (
+        picks_items = " ".join(
+            f"<span style='display:inline-block;font-size:.82rem'>{p}</span>"
+            for p in ex['recent']
+        )
+        recent_row = (
             f"<div style='margin-top:.4rem;padding-top:.35rem;"
             f"border-top:1px solid rgba(148,163,184,.12);"
-            f"font-size:.92rem;color:#CBD5E1'>{picks_inner}</div>"
+            f"display:flex;align-items:center;gap:.4rem;flex-wrap:wrap'>"
+            f"<span style='font-size:.6rem;font-weight:800;color:#475569;text-transform:uppercase;"
+            f"letter-spacing:.05em'>Recent:</span>{picks_items}</div>"
         )
     else:
         recent_row = ""
+
+    # Active user highlight + tie indicator
+    is_active  = uid == active_user_id
+    active_glow = (
+        ";box-shadow:0 0 0 2px rgba(147,197,253,.5),0 0 18px rgba(147,197,253,.12)"
+        if is_active else ""
+    )
+    tied_count  = int((board['rank'] == rank).sum())
+    tie_badge   = (
+        "<div style='font-size:.52rem;color:#94A3B8;text-transform:uppercase;"
+        "letter-spacing:.04em;margin-top:.1rem'>TIE</div>"
+        if tied_count > 1 else ""
+    )
 
     # Extract plain strings for safe f-string embedding
     p_name   = str(row['name'])
@@ -225,16 +244,17 @@ for _, row in board.iterrows():
 
     st.markdown(
         f"<div style='background:{bg};border:2px solid {border};"
-        f"border-radius:16px;padding:.9rem 1.2rem;margin:.45rem 0'>"
+        f"border-radius:16px;padding:.9rem 1.2rem;margin:.45rem 0{active_glow}'>"
 
         # Main row
         f"<div style='display:flex;align-items:center;gap:1rem'>"
 
-        # Rank column: crown · medal · movement
+        # Rank column: crown · medal · movement · tie
         f"<div style='text-align:center;min-width:2.6rem;flex-shrink:0'>"
         f"<div style='font-size:.95rem;line-height:1.1'>{crown}</div>"
         f"<div style='font-size:1.5rem;font-weight:900;color:{pts_color};line-height:1'>{medal}</div>"
         f"<div style='font-size:.66rem;color:{move_color};margin-top:.1rem'>{movement}</div>"
+        f"{tie_badge}"
         f"</div>"
 
         # Avatar

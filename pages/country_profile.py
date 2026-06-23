@@ -13,6 +13,7 @@ from services.passport import (
     get_picks_per_country, get_points_per_country,
 )
 from services.matches import get_matches_by_team
+from services.scoring import get_team_group_status
 from services.images import get_country_image_html, get_country_card_image
 from services.roster import (
     get_team_roster, get_team_summary, get_featured_players,
@@ -815,8 +816,9 @@ with st.sidebar:
     default_idx   = all_countries.index(_nav_country) if _nav_country and _nav_country in all_countries else 0
     selected_country = st.selectbox("Country", all_countries, index=default_idx)
 
-active_user_id = st.session_state.get("active_user_id", 1)
-log_discovery(active_user_id, selected_country)
+active_user_id   = st.session_state.get("active_user_id", 1)
+active_user_name = st.session_state.get("active_user_name", "You")
+_is_new_discovery = log_discovery(active_user_id, selected_country)
 
 team    = get_team_by_name(selected_country)
 stamp   = get_stamp(selected_country)
@@ -851,6 +853,28 @@ landmarks = _parse_pipe(team.get("landmarks"))
 reasons   = _parse_pipe(team.get("cheer_reasons"))
 flag_fact = stamp.get("flag_fact", "")
 neighbors = details.get("neighbors", [])
+
+# ── Discovery Celebration ─────────────────────────────────────────────────────
+if _is_new_discovery:
+    _disc_count = get_discoveries(active_user_id)
+    _n_disc = len(_disc_count) if not _disc_count.empty else 1
+    _sem    = stamp.get("stamp_emoji", "🌍")
+    st.markdown(
+        f"<div style='background:linear-gradient(135deg,#052e16,#166534);"
+        f"border:2px solid #4ADE80;border-radius:14px;padding:.9rem 1.2rem;"
+        f"margin-bottom:.7rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap'>"
+        f"<span style='font-size:2.8rem;line-height:1'>{_sem}</span>"
+        f"<div style='flex:1'>"
+        f"<div style='font-size:1.05rem;font-weight:900;color:#4ADE80'>🎉 New Passport Stamp!</div>"
+        f"<div style='font-size:.9rem;color:#BBF7D0;margin-top:.15rem'>"
+        f"<b>{selected_country}</b> discovered. "
+        f"{active_user_name} has explored <b>{_n_disc}/48</b> countries.</div>"
+        f"</div>"
+        f"<span style='font-size:1.8rem'>🛂</span>"
+        f"</div>",
+        unsafe_allow_html=True,
+    )
+    st.balloons()
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SECTION 1 & 2: HERO BANNER  (outside tabs — always visible)
@@ -1280,6 +1304,38 @@ with tab_team:
     # ── SECTION 14: SOCCER TEAM ──
     famous_player = details.get("famous_player", _safe(team.get("captain"), "—"))
     home_stadium  = details.get("home_stadium", "—")
+
+    # Group Stage Status Card
+    _grp_letter = _safe(team.get('group_letter'), '')
+    if _grp_letter and _grp_letter != '—':
+        _gstat = get_team_group_status(selected_country, _grp_letter)
+        _gpos  = _gstat.get('position', 0)
+        _gpts  = _gstat.get('pts', 0)
+        _grec  = _gstat.get('record', '—')
+        _gplay = _gstat.get('played', 0)
+        _glbl  = _gstat.get('status', '—')
+        _gcol  = _gstat.get('status_color', '#94A3B8')
+        _gf    = _gstat.get('gf', 0)
+        _ga    = _gstat.get('ga', 0)
+        _pos_ord = {1: "1st", 2: "2nd", 3: "3rd", 4: "4th"}.get(_gpos, f"#{_gpos}")
+        st.markdown(
+            f"<div style='background:rgba(30,41,59,.7);border:1px solid rgba(148,163,184,.2);"
+            f"border-left:4px solid {_gcol};border-radius:12px;padding:.75rem 1.1rem;"
+            f"margin:.2rem 0 .8rem;display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap'>"
+            f"<div style='flex:1'>"
+            f"<div style='font-size:.7rem;font-weight:800;color:#64748B;text-transform:uppercase;"
+            f"letter-spacing:.06em;margin-bottom:.2rem'>Group {_grp_letter} Standing</div>"
+            f"<div style='font-size:1.1rem;font-weight:900;color:#F1F5F9'>"
+            f"{_pos_ord} place · {_gpts} pts · {_grec}</div>"
+            f"<div style='font-size:.8rem;color:#94A3B8;margin-top:.1rem'>"
+            f"GF {_gf} · GA {_ga} · {_gplay} game{'s' if _gplay != 1 else ''} played</div>"
+            f"</div>"
+            f"<div style='text-align:center'>"
+            f"<div style='font-size:.88rem;font-weight:800;color:{_gcol}'>{_glbl}</div>"
+            f"</div>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
 
     st.markdown("### 📊 Team Snapshot")
     _avg_age = f"{float(summary.get('average_age', 0)):.1f}" if summary else "—"

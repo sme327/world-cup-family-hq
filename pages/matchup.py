@@ -7,6 +7,7 @@ from services.time_utils import fmt_match_time
 from services.images import get_country_image_html
 from services.roster import get_featured_players, get_team_summary, get_mls_players, get_team_roster
 from services.espn import get_match_recap
+from services.scoring import get_team_group_status
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -730,21 +731,207 @@ def _sec_host_city():
             st.markdown(city_img, unsafe_allow_html=True)
 
 
+# ── New section functions ─────────────────────────────────────────────────────
+
+def _sec_result_moment():
+    """Full-width result reveal card — only shown for completed matches."""
+    if not is_completed:
+        return
+    hs, as_ = int(match['home_score']), int(match['away_score'])
+
+    # Build per-user pick results
+    pick_results: list[tuple] = []  # (name, avatar, picked_team, pts)
+    for _, pk in picks_df.iterrows():
+        pts = _pick_result(pk['picked_team'], home_team, away_team,
+                           match['home_score'], match['away_score'])
+        pick_results.append((pk['user_name'], pk['avatar'], pk['picked_team'], pts))
+
+    n_family  = len(pick_results)
+    n_correct = sum(1 for _, _, _, pts in pick_results if pts == 1.0)
+
+    # Current user's result
+    user_pts  = None
+    user_pick = None
+    if not picks_df.empty:
+        ur = picks_df[picks_df['user_name'] == active_user]
+        if not ur.empty:
+            user_pick = ur.iloc[0]['picked_team']
+            user_pts  = _pick_result(user_pick, home_team, away_team,
+                                     match['home_score'], match['away_score'])
+
+    # Result label
+    if hs > as_:
+        result_label = f"🏆 {home_flag} {home_team} wins {hs}–{as_}"
+        result_color = "#4ADE80"
+    elif as_ > hs:
+        result_label = f"🏆 {away_flag} {away_team} wins {hs}–{as_}"
+        result_color = "#4ADE80"
+    else:
+        result_label = f"🤝 It's a Draw — {hs}–{as_}"
+        result_color = "#FCD34D"
+
+    # Family summary
+    if n_family == 0:
+        family_msg = "No family picks were made."
+        family_color = "#64748B"
+    elif n_correct == n_family and hs != as_:
+        family_msg = "🎉 Everyone got it right!"
+        family_color = "#4ADE80"
+    elif n_correct == 0 and hs != as_:
+        family_msg = "😬 Tough one — no one predicted the winner."
+        family_color = "#F87171"
+    elif n_correct == 1:
+        winner_name = next((n for n, _, _, pts in pick_results if pts == 1.0), "")
+        family_msg  = f"⭐ Only {winner_name} got it right!"
+        family_color = "#FCD34D"
+    elif n_correct > 0:
+        family_msg  = f"✅ {n_correct} / {n_family} family members got it right."
+        family_color = "#86EFAC"
+    else:
+        all_draw = all(pts == 0.5 for _, _, _, pts in pick_results if pts is not None)
+        family_msg = "🤝 Draw — everyone earns half a point!" if all_draw else "Check results below."
+        family_color = "#FCD34D"
+
+    # User personal result
+    if user_pts is None:
+        user_line  = "You didn't make a pick for this match."
+        user_color = "#64748B"
+    elif user_pts == 1.0:
+        user_pf    = get_flag(user_pick)
+        user_line  = f"You picked {user_pf} {user_pick} and earned <b style='color:#4ADE80'>1 point</b>! 🎉"
+        user_color = "#4ADE80"
+    elif user_pts == 0.5:
+        user_pf    = get_flag(user_pick)
+        user_line  = f"You picked {user_pf} {user_pick} — draw! You earned <b style='color:#FCD34D'>0.5 points</b>."
+        user_color = "#FCD34D"
+    else:
+        user_pf    = get_flag(user_pick) if user_pick else "❓"
+        user_line  = f"You picked {user_pf} {user_pick} — they lost. No points this time."
+        user_color = "#F87171"
+
+    bg = "linear-gradient(135deg,#052e16,#14532d)" if hs != as_ else "linear-gradient(135deg,#1c1917,#292524)"
+    st.markdown(
+        f"<div style='background:{bg};border:2px solid {result_color};"
+        f"border-radius:16px;padding:1.1rem 1.4rem;margin:.5rem 0'>"
+        # Score line
+        f"<div style='font-size:1.35rem;font-weight:900;color:{result_color};text-align:center;"
+        f"margin-bottom:.5rem'>{result_label}</div>"
+        # Divider
+        f"<div style='border-top:1px solid rgba(255,255,255,.1);margin:.5rem 0'></div>"
+        # Two-column: family + user
+        f"<div style='display:flex;gap:1.5rem;flex-wrap:wrap'>"
+        # Family column
+        f"<div style='flex:1;min-width:180px'>"
+        f"<div style='font-size:.68rem;font-weight:800;color:#64748B;text-transform:uppercase;"
+        f"letter-spacing:.06em;margin-bottom:.3rem'>Family Result</div>"
+        f"<div style='font-size:.92rem;font-weight:700;color:{family_color}'>{family_msg}</div>"
+        f"</div>"
+        # User column
+        f"<div style='flex:1;min-width:180px'>"
+        f"<div style='font-size:.68rem;font-weight:800;color:#64748B;text-transform:uppercase;"
+        f"letter-spacing:.06em;margin-bottom:.3rem'>Your Result</div>"
+        f"<div style='font-size:.92rem;color:{user_color}'>{user_line}</div>"
+        f"</div>"
+        f"</div>"
+        f"</div>",
+        unsafe_allow_html=True,
+    )
+
+
+def _sec_stakes():
+    """Group-stage stakes card for upcoming matches — shows what each team needs."""
+    if is_completed:
+        return
+    group_letter = str(match.get('group_letter', '') or '')
+    if not group_letter:
+        return
+
+    h_stat = get_team_group_status(home_team, group_letter)
+    a_stat = get_team_group_status(away_team, group_letter)
+
+    h_played = h_stat.get('played', 0)
+    a_played = a_stat.get('played', 0)
+    if h_played == 0 and a_played == 0:
+        return  # No games yet, no stakes to show
+
+    # Narrative stake line
+    h_status = h_stat.get('status', '')
+    a_status = a_stat.get('status', '')
+    h_pts    = h_stat.get('pts', 0)
+    a_pts    = a_stat.get('pts', 0)
+    h_pos    = h_stat.get('position', 0)
+    a_pos    = a_stat.get('position', 0)
+
+    if "Advanced" in h_status and "Advanced" in a_status:
+        stake_line = "Both teams have already advanced! This match determines group seeding."
+    elif "Advanced" in h_status:
+        stake_line = f"{home_team} has already advanced. {away_team} is still fighting for their spot."
+    elif "Advanced" in a_status:
+        stake_line = f"{away_team} has already advanced. {home_team} is still fighting for their spot."
+    elif "Eliminated" in h_status and "Eliminated" in a_status:
+        stake_line = "Both teams have been eliminated. Pride is still on the line."
+    elif "Eliminated" in h_status:
+        stake_line = f"{home_team} has been eliminated. {away_team} still has something to play for."
+    elif "Eliminated" in a_status:
+        stake_line = f"{away_team} has been eliminated. {home_team} still has something to play for."
+    elif "great shape" in h_status.lower() and "great shape" in a_status.lower():
+        stake_line = "Both teams are in great shape — a win here cements their place in the Round of 32."
+    elif "trouble" in h_status.lower() or "Needs a win" in h_status:
+        stake_line = f"{home_team} needs points to stay alive — a loss here could end their tournament."
+    elif "trouble" in a_status.lower() or "Needs a win" in a_status:
+        stake_line = f"{away_team} needs points to stay alive — a loss here could end their tournament."
+    else:
+        stake_line = "Both teams still need points to secure their spot in the Round of 32."
+
+    def _team_stake_card(team, flag, stat):
+        pos     = stat.get('position', 0)
+        pts     = stat.get('pts', 0)
+        record  = stat.get('record', '—')
+        status  = stat.get('status', '—')
+        s_color = stat.get('status_color', '#94A3B8')
+        pos_ord = {1: "1st", 2: "2nd", 3: "3rd", 4: "4th"}.get(pos, f"#{pos}")
+        return (
+            f"<div style='flex:1;min-width:160px;background:rgba(15,23,42,.5);"
+            f"border-radius:12px;padding:.75rem .9rem;border:1px solid rgba(148,163,184,.12)'>"
+            f"<div style='font-size:1.5rem;line-height:1;margin-bottom:.2rem'>{flag}</div>"
+            f"<div style='font-size:.88rem;font-weight:900;color:#F1F5F9;margin-bottom:.2rem'>{team}</div>"
+            f"<div style='font-size:.78rem;color:#94A3B8'>{pos_ord} · {pts} pts · {record}</div>"
+            f"<div style='font-size:.82rem;font-weight:800;color:{s_color};margin-top:.3rem'>{status}</div>"
+            f"</div>"
+        )
+
+    h_card = _team_stake_card(home_team, home_flag, h_stat)
+    a_card = _team_stake_card(away_team, away_flag, a_stat)
+
+    st.markdown(
+        f"<div style='background:linear-gradient(135deg,#1E293B,#0F172A);"
+        f"border:1px solid rgba(251,191,36,.2);border-left:4px solid #F59E0B;"
+        f"border-radius:14px;padding:.9rem 1.1rem;margin:.5rem 0'>"
+        f"<div style='font-size:.68rem;font-weight:800;color:#D97706;text-transform:uppercase;"
+        f"letter-spacing:.07em;margin-bottom:.5rem'>⚡ What's at Stake — Group {group_letter}</div>"
+        f"<div style='font-size:.92rem;color:#CBD5E1;margin-bottom:.6rem;line-height:1.45'>{stake_line}</div>"
+        f"<div style='display:flex;gap:.6rem;flex-wrap:wrap'>{h_card}{a_card}</div>"
+        f"</div>",
+        unsafe_allow_html=True,
+    )
+
+
 # ── Explore buttons (always first after hero) ─────────────────────────────────
 _sec_explore()
 
 # ── Quick navigation chips ────────────────────────────────────────────────────
 if is_completed:
     _nav_chips = [
+        ("#mu-result",  "📊 Result"),
         ("#mu-picks",   "🏷️ Picks"),
         ("#mu-recap",   "📋 Recap"),
         ("#mu-players", "⭐ Players"),
         ("#mu-compare", "🌍 Compare"),
         ("#mu-city",    "🏙️ City"),
-        ("#mu-cheer",   "🌎 Explore"),
     ]
 else:
     _nav_chips = [
+        ("#mu-stakes",  "⚡ Stakes"),
         ("#mu-picks",   "🏷️ Picks"),
         ("#mu-cheer",   "🤔 Cheer For"),
         ("#mu-players", "⭐ Players"),
@@ -761,7 +948,9 @@ st.markdown(
 
 # ── Status-aware section order ────────────────────────────────────────────────
 if is_completed:
-    # After the whistle: result first, then educational content
+    # Anchor for result moment
+    st.markdown('<div id="mu-result"></div>', unsafe_allow_html=True)
+    _sec_result_moment()
     _sec_picks()
     _sec_recap()
     _sec_split()
@@ -775,7 +964,9 @@ if is_completed:
         "The match is over, but these countries are still fun to explore.",
     )
 else:
-    # Before kickoff: help the family decide who to pick
+    # Anchor for stakes
+    st.markdown('<div id="mu-stakes"></div>', unsafe_allow_html=True)
+    _sec_stakes()
     _sec_picks()
     _sec_cheer(
         "🤔 Who Should I Cheer For?",

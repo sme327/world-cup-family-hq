@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from services.database import get_connection
+from services.scoring import classify_group_statuses
 
 # ── Official Round of 32 bracket (FIFA 2026) ─────────────────────────────────
 # Format: (match_num, slot_A, slot_B, third_groups_for_A, third_groups_for_B)
@@ -130,7 +131,56 @@ _POS_STYLE = {
 }
 
 
-def _render_group_card(group: str, df: pd.DataFrame, played: int):
+def _group_summary(rows: list[dict]) -> str:
+    """One-sentence narrative for the top of a group card."""
+    if not any(r['p'] > 0 for r in rows):
+        return "⏳ Group stage hasn't started yet."
+
+    locked1    = [r['team'] for r in rows if r['status'] == '🔒 Locked 1st']
+    locked2    = [r['team'] for r in rows if r['status'] == '🔒 Locked 2nd']
+    adv        = [r['team'] for r in rows if r['status'] == '✅ Advanced']
+    good       = [r['team'] for r in rows if r['status'] == '🟢 In good shape']
+    alive      = [r['team'] for r in rows if r['status'] == '🟡 Still alive']
+    needs      = [r['team'] for r in rows if r['status'] == '🟠 Needs help']
+    elim       = [r['team'] for r in rows if r['status'] == '❌ Eliminated']
+
+    # Wide-open shortcut — nothing decided yet
+    if not locked1 and not locked2 and not adv and not elim:
+        if len(alive) + len(good) == 4:
+            return "🌍 Wide open — all four teams are still fighting!"
+
+    parts = []
+    for t in locked1:
+        parts.append(f"🔒 {t} has locked 1st place.")
+    for t in locked2:
+        parts.append(f"🔒 {t} has locked 2nd place.")
+    if len(adv) == 2:
+        parts.append(f"✅ {adv[0]} and {adv[1]} have advanced.")
+    elif len(adv) == 1:
+        parts.append(f"✅ {adv[0]} is through.")
+    if good and not (locked1 or locked2 or adv):
+        if len(good) == 2:
+            parts.append(f"🟢 {good[0]} and {good[1]} are in good shape.")
+        else:
+            parts.append(f"🟢 {good[0]} is in good shape.")
+    if len(alive) == 2:
+        parts.append(f"🟡 {alive[0]} and {alive[1]} are still alive.")
+    elif len(alive) == 1:
+        parts.append(f"🟡 {alive[0]} is still alive.")
+    if needs:
+        n = " and ".join(needs)
+        verb = "need" if len(needs) > 1 else "needs"
+        parts.append(f"🟠 {n} {verb} a miracle.")
+    if len(elim) == 2:
+        parts.append(f"❌ {elim[0]} and {elim[1]} have been eliminated.")
+    elif len(elim) == 1:
+        parts.append(f"❌ {elim[0]} has been eliminated.")
+
+    return " ".join(parts) if parts else "📊 Group stage in progress."
+
+
+def _render_group_card(group: str, rows: list[dict], played: int):
+    # Header with progress badge
     badge = (
         "<span style='background:#4ADE80;color:#0F172A;border-radius:5px;"
         "padding:.06rem .38rem;font-size:.65rem;font-weight:800;margin-left:.45rem'>FINAL</span>"
@@ -140,44 +190,74 @@ def _render_group_card(group: str, df: pd.DataFrame, played: int):
     )
     st.markdown(
         f"<div style='font-size:1.05rem;font-weight:900;letter-spacing:.06em;"
-        f"color:#F8FAFC;margin-bottom:.45rem'>GROUP {group}{badge}</div>",
+        f"color:#F8FAFC;margin-bottom:.3rem'>GROUP {group}{badge}</div>",
         unsafe_allow_html=True,
     )
-    # Header row
+
+    # Summary sentence
+    summary = _group_summary(rows)
     st.markdown(
-        "<div style='display:grid;grid-template-columns:1.4rem 1fr repeat(7,.82rem);"
-        "gap:.08rem;font-size:.65rem;font-weight:700;color:#64748B;"
+        f"<div style='font-size:.73rem;color:#CBD5E1;margin-bottom:.5rem;"
+        f"padding:.28rem .4rem;background:rgba(255,255,255,.04);"
+        f"border-radius:6px;border-left:2px solid rgba(148,163,184,.25)'>"
+        f"{summary}</div>",
+        unsafe_allow_html=True,
+    )
+
+    # Column header
+    st.markdown(
+        "<div style='display:grid;"
+        "grid-template-columns:1.2rem 1fr 2.2rem 4.2rem 1.8rem 5.2rem;"
+        "gap:.08rem;font-size:.58rem;font-weight:700;color:#64748B;"
         "text-transform:uppercase;letter-spacing:.04em;"
-        "padding:.18rem .35rem;border-bottom:1px solid rgba(148,163,184,.15)'>"
+        "padding:.15rem .35rem;border-bottom:1px solid rgba(148,163,184,.15)'>"
         "<span></span><span>Team</span>"
-        "<span style='text-align:center'>P</span>"
-        "<span style='text-align:center'>W</span>"
-        "<span style='text-align:center'>D</span>"
-        "<span style='text-align:center'>L</span>"
-        "<span style='text-align:center'>GF</span>"
-        "<span style='text-align:center'>GA</span>"
-        "<span style='text-align:right'>Pts</span>"
+        "<span style='text-align:center'>Pts</span>"
+        "<span style='text-align:center'>W-D-L</span>"
+        "<span style='text-align:center'>GD</span>"
+        "<span style='text-align:right'>Status</span>"
         "</div>",
         unsafe_allow_html=True,
     )
-    for i, row in df.iterrows():
-        bg, accent = _POS_STYLE.get(i, ("", "#F8FAFC"))
+
+    for i, r in enumerate(rows):
+        bg, accent    = _POS_STYLE.get(i, ("", "#F8FAFC"))
+        gd_val        = int(r['gd'])
+        gd_str        = f"+{gd_val}" if gd_val > 0 else str(gd_val)
+        record        = f"{r['w']}-{r['d']}-{r['l']}"
+        status_lbl    = r.get('status', '')
+        status_color  = r.get('status_color', '#94A3B8')
+        # Hex alpha: append 20 (≈ 12 % opacity) for pill background
+        status_bg     = status_color + "22"
+
         st.markdown(
-            f"<div style='display:grid;grid-template-columns:1.4rem 1fr repeat(7,.82rem);"
+            f"<div style='display:grid;"
+            f"grid-template-columns:1.2rem 1fr 2.2rem 4.2rem 1.8rem 5.2rem;"
             f"gap:.08rem;align-items:center;padding:.3rem .35rem;"
-            f"background:{bg};border-radius:6px;margin:.08rem 0'>"
+            f"background:{bg};border-radius:6px;margin:.07rem 0'>"
+
             f"<span style='font-size:.7rem;color:{accent};font-weight:700;"
             f"text-align:center'>{i+1}</span>"
-            f"<span style='font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>"
-            f"<span style='font-size:1.05rem'>{row['flag']}</span> "
-            f"<span style='font-weight:600;color:#F1F5F9'>{row['team']}</span></span>"
-            f"<span style='text-align:center;font-size:.78rem;color:#CBD5E1'>{row['p']}</span>"
-            f"<span style='text-align:center;font-size:.78rem;color:#CBD5E1'>{row['w']}</span>"
-            f"<span style='text-align:center;font-size:.78rem;color:#CBD5E1'>{row['d']}</span>"
-            f"<span style='text-align:center;font-size:.78rem;color:#CBD5E1'>{row['l']}</span>"
-            f"<span style='text-align:center;font-size:.78rem;color:#CBD5E1'>{row['gf']}</span>"
-            f"<span style='text-align:center;font-size:.78rem;color:#CBD5E1'>{row['ga']}</span>"
-            f"<span style='text-align:right;font-size:.92rem;font-weight:900;color:{accent}'>{row['pts']}</span>"
+
+            f"<span style='font-size:.88rem;white-space:nowrap;overflow:hidden;"
+            f"text-overflow:ellipsis'>"
+            f"<span style='font-size:1.05rem'>{r['flag']}</span> "
+            f"<span style='font-weight:600;color:#F1F5F9'>{r['team']}</span></span>"
+
+            f"<span style='text-align:center;font-size:.92rem;font-weight:900;"
+            f"color:{accent}'>{r['pts']}</span>"
+
+            f"<span style='text-align:center;font-size:.72rem;color:#CBD5E1;"
+            f"letter-spacing:.01em'>{record}</span>"
+
+            f"<span style='text-align:center;font-size:.72rem;color:#94A3B8'>{gd_str}</span>"
+
+            f"<span style='text-align:right'>"
+            f"<span style='font-size:.58rem;font-weight:700;color:{status_color};"
+            f"background:{status_bg};border-radius:4px;padding:.07rem .28rem;"
+            f"white-space:nowrap;display:inline-block'>{status_lbl}</span>"
+            f"</span>"
+
             f"</div>",
             unsafe_allow_html=True,
         )
@@ -230,16 +310,28 @@ st.progress(pct / 100)
 
 # Legend
 st.markdown(
-    "<div style='display:flex;gap:1.4rem;flex-wrap:wrap;margin:.6rem 0 .8rem'>"
+    "<div style='display:flex;gap:.9rem;flex-wrap:wrap;margin:.6rem 0 .8rem;align-items:center'>"
+    # Row background legend
     "<span><span style='display:inline-block;width:.65rem;height:.65rem;"
     "background:rgba(16,185,129,.4);border-radius:2px;margin-right:.3rem'></span>"
-    "<span style='font-size:.8rem;color:#94A3B8'>Top 2 — advancing</span></span>"
+    "<span style='font-size:.78rem;color:#94A3B8'>Top 2 row</span></span>"
     "<span><span style='display:inline-block;width:.65rem;height:.65rem;"
     "background:rgba(251,191,36,.35);border-radius:2px;margin-right:.3rem'></span>"
-    "<span style='font-size:.8rem;color:#94A3B8'>3rd — best 8 also advance</span></span>"
-    "<span><span style='display:inline-block;width:.65rem;height:.65rem;"
-    "background:rgba(148,163,184,.15);border-radius:2px;margin-right:.3rem'></span>"
-    "<span style='font-size:.8rem;color:#94A3B8'>4th — eliminated</span></span>"
+    "<span style='font-size:.78rem;color:#94A3B8'>3rd row</span></span>"
+    "<span style='color:#334155'>|</span>"
+    # Status pill legend
+    "<span style='font-size:.7rem;font-weight:700;color:#4ADE80;"
+    "background:#4ADE8022;border-radius:4px;padding:.06rem .28rem'>✅ Advanced</span>"
+    "<span style='font-size:.7rem;font-weight:700;color:#4ADE80;"
+    "background:#4ADE8022;border-radius:4px;padding:.06rem .28rem'>🔒 Locked</span>"
+    "<span style='font-size:.7rem;font-weight:700;color:#86EFAC;"
+    "background:#86EFAC22;border-radius:4px;padding:.06rem .28rem'>🟢 Good shape</span>"
+    "<span style='font-size:.7rem;font-weight:700;color:#FCD34D;"
+    "background:#FCD34D22;border-radius:4px;padding:.06rem .28rem'>🟡 Alive</span>"
+    "<span style='font-size:.7rem;font-weight:700;color:#FB923C;"
+    "background:#FB923C22;border-radius:4px;padding:.06rem .28rem'>🟠 Needs help</span>"
+    "<span style='font-size:.7rem;font-weight:700;color:#F87171;"
+    "background:#F8717122;border-radius:4px;padding:.06rem .28rem'>❌ Out</span>"
     "</div>",
     unsafe_allow_html=True,
 )
@@ -256,7 +348,10 @@ for row_groups in rows_of_2:
         with col:
             with st.container(border=True):
                 played = _group_played(matches, teams, g)
-                _render_group_card(g, standings[g], played)
+                # Convert DataFrame → list of dicts and add status labels
+                group_rows = standings[g].to_dict('records')
+                classify_group_statuses(group_rows)
+                _render_group_card(g, group_rows, played)
 
 st.divider()
 

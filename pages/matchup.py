@@ -862,24 +862,29 @@ def _sec_stakes():
     h_pos    = h_stat.get('position', 0)
     a_pos    = a_stat.get('position', 0)
 
-    if "Advanced" in h_status and "Advanced" in a_status:
+    def _is_advanced(s):  return "Advanced" in s or "Locked" in s
+    def _is_eliminated(s): return "Eliminated" in s or s.startswith("❌")
+    def _is_good(s):      return "good shape" in s
+    def _needs_help(s):   return "Needs help" in s
+
+    if _is_advanced(h_status) and _is_advanced(a_status):
         stake_line = "Both teams have already advanced! This match determines group seeding."
-    elif "Advanced" in h_status:
+    elif _is_advanced(h_status):
         stake_line = f"{home_team} has already advanced. {away_team} is still fighting for their spot."
-    elif "Advanced" in a_status:
+    elif _is_advanced(a_status):
         stake_line = f"{away_team} has already advanced. {home_team} is still fighting for their spot."
-    elif "Eliminated" in h_status and "Eliminated" in a_status:
+    elif _is_eliminated(h_status) and _is_eliminated(a_status):
         stake_line = "Both teams have been eliminated. Pride is still on the line."
-    elif "Eliminated" in h_status:
+    elif _is_eliminated(h_status):
         stake_line = f"{home_team} has been eliminated. {away_team} still has something to play for."
-    elif "Eliminated" in a_status:
+    elif _is_eliminated(a_status):
         stake_line = f"{away_team} has been eliminated. {home_team} still has something to play for."
-    elif "great shape" in h_status.lower() and "great shape" in a_status.lower():
-        stake_line = "Both teams are in great shape — a win here cements their place in the Round of 32."
-    elif "trouble" in h_status.lower() or "Needs a win" in h_status:
-        stake_line = f"{home_team} needs points to stay alive — a loss here could end their tournament."
-    elif "trouble" in a_status.lower() or "Needs a win" in a_status:
-        stake_line = f"{away_team} needs points to stay alive — a loss here could end their tournament."
+    elif _is_good(h_status) and _is_good(a_status):
+        stake_line = "Both teams are in good shape — a win here cements their place in the Round of 32."
+    elif _needs_help(h_status):
+        stake_line = f"{home_team} needs help to stay alive — a loss here could end their tournament."
+    elif _needs_help(a_status):
+        stake_line = f"{away_team} needs help to stay alive — a loss here could end their tournament."
     else:
         stake_line = "Both teams still need points to secure their spot in the Round of 32."
 

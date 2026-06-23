@@ -20,6 +20,7 @@ from services.images import get_country_image_html, get_country_image_data_uri
 from services.time_utils import fmt_match_time, pt_date_str
 from services.database import get_connection
 from services.map_utils import build_atlas_figure, get_iso3_maps
+from services.explorer import get_explorer_leaderboard, get_weekly_explorer, get_badge
 
 st.markdown("""
 <style>
@@ -745,6 +746,50 @@ with lb_col:
             f"</div></div></div>",
             unsafe_allow_html=True
         )
+
+    # ── Discovery Race compact widget ─────────────────────────────────────────
+    st.markdown(
+        "<div class='section-head' style='margin-top:.9rem'>🌎 Discovery Race</div>",
+        unsafe_allow_html=True,
+    )
+    try:
+        _exp_board  = get_explorer_leaderboard()
+        _exp_weekly = get_weekly_explorer()
+
+        # Weekly explorer teaser
+        if _exp_weekly and _exp_weekly['count'] > 0:
+            _ew_word = "country" if _exp_weekly['count'] == 1 else "countries"
+            st.markdown(
+                f"<div style='background:rgba(168,85,247,.12);border-left:3px solid #A855F7;"
+                f"border-radius:0 8px 8px 0;padding:.4rem .65rem;margin:.3rem 0 .5rem;"
+                f"font-size:.8rem'>"
+                f"<span style='color:#A855F7;font-weight:800'>🌟 Explorer of the Week</span><br>"
+                f"<span style='color:#F1F5F9'>{_exp_weekly['avatar']} {_exp_weekly['name']}"
+                f" — {_exp_weekly['count']} new {_ew_word}</span>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+
+        # Top 3 explorers
+        for _erow in _exp_board[:3]:
+            _escore = _erow['score']
+            _etitle, _eemoji = get_badge(_escore)
+            _ecolor = _erow['theme_color']
+            st.markdown(
+                f"<div class='lb-row' style='background:{_ecolor}22;border-left:3px solid {_ecolor};"
+                f"display:flex;align-items:center;gap:.5rem'>"
+                f"<span style='font-size:2rem;flex-shrink:0'>{_erow['avatar']}</span>"
+                f"<div><div style='font-size:1.05rem;font-weight:800'>{_erow['name']}</div>"
+                f"<div style='color:#475569;font-size:.82rem'>"
+                f"<b>{_escore}</b> pts · {_eemoji} {_etitle}"
+                f"</div></div></div>",
+                unsafe_allow_html=True,
+            )
+
+        st.page_link("pages/discovery_race.py", label="→ Full Discovery Race", icon="🌎")
+
+    except Exception:
+        st.caption("Discovery Race loading...")
 
 # ── Family Favorites — sorted by most shared, with context line ───────────────
 with fav_col:

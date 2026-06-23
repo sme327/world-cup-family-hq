@@ -205,6 +205,7 @@ pg = st.navigation(
             st.Page("pages/host_cities.py",     title="Host Cities", icon="🏙️"),
         ],
         "📚 Collection": [
+            st.Page("pages/discovery_race.py",      title="Discovery Race",  icon="🌎"),
             st.Page("pages/passport_individual.py", title="My Passport",     icon="🛂"),
             st.Page("pages/passport_family.py",     title="Family Passport", icon="👨‍👩‍👧‍👦"),
             st.Page("pages/achievements.py",        title="Achievements",    icon="🏅"),

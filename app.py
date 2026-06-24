@@ -178,15 +178,24 @@ st.markdown("""
     /* Remove excessive top margin on columns row */
     [data-testid="stHorizontalBlock"]:first-of-type { margin-top: 0 !important; gap: .4rem !important; }
 
-    /* ── Cross-document View Transitions (Chrome 126+) ──────────────────
-       Replaces the white flash on nav clicks with a smooth dark crossfade.
-       Falls back gracefully in browsers that don't support it yet. */
-    @view-transition { navigation: auto; }
-    @keyframes _vt-fade-in  { from { opacity: 0; } }
-    @keyframes _vt-fade-out { to   { opacity: 0; } }
-    ::view-transition-old(root) { animation: 180ms ease-out both _vt-fade-out; }
-    ::view-transition-new(root) { animation: 260ms ease-in  both _vt-fade-in;  }
 </style>
+<script>
+/* Dark overlay on nav-link click — eliminates white flash during page load.
+   The overlay sits on top of everything until the new page replaces the DOM. */
+if (!window._wcNavOverlayReady) {
+    window._wcNavOverlayReady = true;
+    document.addEventListener('click', function(e) {
+        var link = e.target.closest('a');
+        if (!link) return;
+        if (link.target === '_blank') return;
+        try { if (link.origin !== window.location.origin) return; } catch(x) { return; }
+        if (link.pathname === window.location.pathname) return;
+        var o = document.createElement('div');
+        o.style.cssText = 'position:fixed;inset:0;background:#0F172A;z-index:2147483647;pointer-events:none;';
+        document.body.appendChild(o);
+    }, true);
+}
+</script>
 """, unsafe_allow_html=True)
 
 # ── Load users ────────────────────────────────────────────────────────────────

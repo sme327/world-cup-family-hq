@@ -158,15 +158,6 @@ def _compact_picks_row(m, match_picks: pd.DataFrame) -> str:
     return " &nbsp;·&nbsp; ".join(parts)
 
 
-# ── Sidebar ────────────────────────────────────────────────────────────────────
-with st.sidebar:
-    st.markdown("### 🔍 Filter Matches")
-    groups = ["All Groups"] + get_all_group_letters()
-    selected_group = st.selectbox("Group", groups)
-    teams_df  = get_all_teams()
-    team_list = ["All Teams"] + sorted(teams_df['name'].tolist())
-    selected_team = st.selectbox("Team", team_list)
-
 # ── Session state ──────────────────────────────────────────────────────────────
 active_user    = st.session_state.get("active_user_name",   "Shawn")
 active_user_id = st.session_state.get("active_user_id",     1)
@@ -177,6 +168,16 @@ n_fam          = len(users)
 # ── Page header ────────────────────────────────────────────────────────────────
 st.markdown("## 📅 Match Schedule")
 st.caption("Group Stage · June 11–27, 2026 · All times Pacific")
+
+# ── Filters (inline) ───────────────────────────────────────────────────────────
+teams_df  = get_all_teams()
+_f1, _f2, _f3 = st.columns([1, 2, 5])
+with _f1:
+    groups = ["All Groups"] + get_all_group_letters()
+    selected_group = st.selectbox("Group", groups, label_visibility="collapsed")
+with _f2:
+    team_list = ["All Teams"] + sorted(teams_df['name'].tolist())
+    selected_team = st.selectbox("Team", team_list, label_visibility="collapsed")
 
 # ── Load data ──────────────────────────────────────────────────────────────────
 all_matches = get_all_matches()

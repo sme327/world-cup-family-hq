@@ -449,14 +449,14 @@ cities      = sorted(all_matches['city'].unique().tolist())
 
 _nav_city = st.session_state.pop("_nav_city", None)
 
-with st.sidebar:
-    st.markdown("### 🏙️ Select a City")
-    default_city_idx = (
-        cities.index(_nav_city) if _nav_city and _nav_city in cities
-        else cities.index("Seattle") if "Seattle" in cities
-        else 0
-    )
-    selected_city = st.selectbox("City", cities, index=default_city_idx)
+default_city_idx = (
+    cities.index(_nav_city) if _nav_city and _nav_city in cities
+    else cities.index("Seattle") if "Seattle" in cities
+    else 0
+)
+_hc_col, _ = st.columns([2, 5])
+with _hc_col:
+    selected_city = st.selectbox("🏙️ Choose a city", cities, index=default_city_idx)
 
 city         = CITY_DATA.get(selected_city)
 city_matches = all_matches[all_matches['city'] == selected_city].sort_values(['match_date', 'kickoff_time_et'])

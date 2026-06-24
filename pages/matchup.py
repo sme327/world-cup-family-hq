@@ -116,22 +116,22 @@ is_completed = match['status'] == 'completed'
 active_user    = st.session_state.get("active_user_name",   "Shawn")
 active_user_id = st.session_state.get("active_user_id",     1)
 
-# ── Sidebar ───────────────────────────────────────────────────────────────────
+# ── Match selector (inline) ────────────────────────────────────────────────────
 users = get_all_users()
-with st.sidebar:
-    st.markdown("### 🔍 Jump to Match")
-    all_matches = get_all_matches()
-    match_labels = [
-        f"{r['group_letter']}{r['match_number']}: {r['home_team']} vs {r['away_team']} ({r['match_date']})"
-        for _, r in all_matches.iterrows()
-    ]
-    match_ids = all_matches['id'].tolist()
-    current_idx = match_ids.index(match_id) if match_id in match_ids else 0
-    selected_label = st.selectbox("Match", match_labels, index=current_idx)
-    selected_id = match_ids[match_labels.index(selected_label)]
-    if selected_id != match_id:
-        st.query_params["match_id"] = str(selected_id)
-        st.rerun()
+all_matches = get_all_matches()
+match_labels = [
+    f"{r['group_letter']}{r['match_number']}: {r['home_team']} vs {r['away_team']} ({r['match_date']})"
+    for _, r in all_matches.iterrows()
+]
+match_ids   = all_matches['id'].tolist()
+current_idx = match_ids.index(match_id) if match_id in match_ids else 0
+_ms_col, _ = st.columns([3, 5])
+with _ms_col:
+    selected_label = st.selectbox("🔍 Jump to match", match_labels, index=current_idx)
+selected_id = match_ids[match_labels.index(selected_label)]
+if selected_id != match_id:
+    st.query_params["match_id"] = str(selected_id)
+    st.rerun()
 
 # ── Global CSS ────────────────────────────────────────────────────────────────
 st.markdown("""

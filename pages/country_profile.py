@@ -818,11 +818,11 @@ def _player_story(role_label: str, name: str, age: int, club: str) -> str:
 teams_df = get_all_teams()
 _nav_country = st.session_state.pop("_nav_country", None)
 
-with st.sidebar:
-    st.markdown("### 🌍 Explore Countries")
-    all_countries = sorted(teams_df["name"].tolist())
-    default_idx   = all_countries.index(_nav_country) if _nav_country and _nav_country in all_countries else 0
-    selected_country = st.selectbox("Country", all_countries, index=default_idx)
+all_countries = sorted(teams_df["name"].tolist())
+default_idx   = all_countries.index(_nav_country) if _nav_country and _nav_country in all_countries else 0
+_cp_col, _ = st.columns([2, 5])
+with _cp_col:
+    selected_country = st.selectbox("🌍 Choose a country", all_countries, index=default_idx)
 
 active_user_id   = st.session_state.get("active_user_id", 1)
 active_user_name = st.session_state.get("active_user_name", "You")

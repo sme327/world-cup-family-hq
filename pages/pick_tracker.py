@@ -12,9 +12,10 @@ active_avatar  = st.session_state.get("active_user_avatar", "🐘")
 
 st.markdown("## 🎯 Pick Tracker")
 
-with st.sidebar:
-    st.markdown("### 🔍 Filters")
-    group_filter = st.selectbox("Group", ["All Groups"] + get_all_group_letters())
+# ── Inline filter ──────────────────────────────────────────────────────────────
+_fc, _ = st.columns([1, 5])
+with _fc:
+    group_filter = st.selectbox("Group", ["All Groups"] + get_all_group_letters(), label_visibility="collapsed")
 
 # ── Load data ──────────────────────────────────────────────────────────────────
 all_matches = get_all_matches()

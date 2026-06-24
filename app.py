@@ -31,31 +31,26 @@ if "db_ready" not in st.session_state:
 # ── Global CSS ────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-    /* ── Global spacing — tight top so nav sits high ── */
+    /* ── Eliminate Streamlit header bar (dead space + hamburger) ── */
+    [data-testid="stHeader"] { display: none !important; }
+
+    /* ── Remove sidebar entirely ─────────────────────────────────── */
+    [data-testid="stSidebar"],
+    [data-testid="stSidebarCollapsedControl"] { display: none !important; }
+
+    /* ── Nav flush to top of viewport ────────────────────────────── */
     section.main > div.block-container {
-        padding-top: .4rem !important;
+        padding-top: 0 !important;
         padding-bottom: 1rem !important;
         overflow: visible !important;
     }
     section.main { overflow: visible !important; }
     .element-container { overflow: visible !important; }
 
-    /* ── Sidebar (user switcher only) ───────────────── */
-    [data-testid="stSidebar"] { background-color: #1E3A5F; }
-    [data-testid="stSidebar"] label,
-    [data-testid="stSidebar"] p,
-    [data-testid="stSidebar"] span:not([data-baseweb]),
-    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] * { color: white !important; }
-
     /* ── Global emoji / text size ────────────────── */
     .stMarkdown p, .stMarkdown li { font-size: 1.08rem; line-height: 1.65; }
     .stButton > button { font-size: 1rem !important; padding: 0.45rem 0.9rem !important; }
-    [data-testid="stPopover"] > button {
-        font-size: 2rem !important;
-        min-height: 3.2rem !important;
-        line-height: 1 !important;
-        padding: 0.2rem 0.3rem !important;
-    }
+    /* Large stamp popovers defined per-page in passport_individual / passport_family */
     [data-testid="metric-container"] [data-testid="metric-value"] { font-size: 1.9rem !important; }
     [data-testid="metric-container"] [data-testid="metric-label"] { font-size: 1rem !important; }
 
@@ -89,13 +84,13 @@ st.markdown("""
     /* ═══════════════════════════════════════════════
        TOP NAV BAR
     ═══════════════════════════════════════════════ */
-    .tnav-wrap { position: relative; z-index: 9000; margin-bottom: .6rem; }
+    .tnav-wrap { position: relative; z-index: 9000; margin-bottom: .55rem; }
     .tnav {
         display: flex;
         align-items: center;
         background: linear-gradient(135deg,#1E293B,#0F172A);
-        border-radius: 12px;
-        padding: .3rem .55rem;
+        border-radius: 10px;
+        padding: .28rem .5rem;
         gap: .05rem;
         border: 1px solid rgba(148,163,184,.15);
         box-shadow: 0 3px 14px rgba(0,0,0,.35);
@@ -105,8 +100,8 @@ st.markdown("""
     /* Nav items */
     .tnav-item {
         color: #94A3B8;
-        padding: .42rem .82rem;
-        border-radius: 8px;
+        padding: .4rem .8rem;
+        border-radius: 7px;
         font-size: .92rem;
         font-weight: 600;
         cursor: pointer;
@@ -154,28 +149,25 @@ st.markdown("""
         white-space: nowrap;
     }
     .tnav-menu a:hover { background: rgba(37,99,235,.28); color: white; }
-    .tnav-menu a.tnav-page-active {
-        background: rgba(37,99,235,.38);
-        color: #93C5FD;
-        font-weight: 700;
-    }
+    .tnav-menu a.tnav-page-active { background: rgba(37,99,235,.38); color: #93C5FD; font-weight: 700; }
 
-    /* User chip — right side */
-    .tnav-user {
-        margin-left: auto;
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-        background: rgba(255,255,255,.07);
-        border: 1px solid rgba(148,163,184,.15);
-        border-radius: 8px;
-        padding: .3rem .7rem;
-        color: #F1F5F9;
-        font-size: .88rem;
-        font-weight: 700;
-        white-space: nowrap;
+    /* User selector popover (first horizontal block, last column) */
+    [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="stColumn"]:last-child
+        [data-testid="stPopover"] > button {
+        font-size: .9rem !important;
+        min-height: 2.25rem !important;
+        height: 2.25rem !important;
+        padding: .25rem .7rem !important;
+        background: rgba(255,255,255,.08) !important;
+        border: 1px solid rgba(148,163,184,.2) !important;
+        border-radius: 8px !important;
+        color: #F1F5F9 !important;
+        font-weight: 700 !important;
+        line-height: 1.4 !important;
+        width: 100% !important;
     }
-    .tnav-avatar { font-size: 1.4rem; line-height: 1; }
+    /* Remove excessive top margin on columns row */
+    [data-testid="stHorizontalBlock"]:first-of-type { margin-top: 0 !important; gap: .4rem !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -231,7 +223,7 @@ def _render_first_visit() -> None:
 
     st.markdown(
         "<div style='text-align:center;opacity:0.4;margin-top:2rem;font-size:0.9rem;'>"
-        "Your browser will remember your choice — open the ☰ menu to switch users.</div>",
+        "Your browser will remember your choice — tap your name in the top-right corner to switch users.</div>",
         unsafe_allow_html=True,
     )
 
@@ -319,20 +311,7 @@ elif not _has_session:
     # (pg.run() intentionally not called; nav links visible but inactive until selected)
 
 else:
-    # ── Callback: fires at start of rerun so pg.run() sees the updated user ──
-    def _apply_user_selection():
-        _sel = st.session_state.get("global_user_selector", _names[0])
-        if _sel != st.session_state.get("active_user_name"):
-            st.session_state["ls_pending_uid"] = str(int(_ids[_sel]))
-        st.session_state.update({
-            "active_user_name":       _sel,
-            "active_user_id":         int(_ids[_sel]),
-            "active_user_avatar":     _avs[_sel],
-            "active_user_color":      _clrs[_sel],
-            "active_user_picks_only": bool(_po.get(_sel, 0)),
-        })
-
-    # ── Horizontal top nav bar ─────────────────────────────────────────────────
+    # ── Top nav: nav bar (left) + user selector (right) ───────────────────────
     _SECTION_MAP = {
         "": "home", "home": "home",
         "schedule": "play", "matchup": "play", "pick_tracker": "play",
@@ -343,10 +322,8 @@ else:
         "achievements": "passport", "discovery_race": "passport",
         "admin": "admin",
     }
-    _url  = pg.url_path
-    _sec  = _SECTION_MAP.get(_url, "home")
-    _nav_av   = st.session_state.get("active_user_avatar", "🐘")
-    _nav_name = st.session_state.get("active_user_name", "")
+    _url = pg.url_path
+    _sec = _SECTION_MAP.get(_url, "home")
 
     def _ni(section: str) -> str:
         return "tnav-item tnav-active" if _sec == section else "tnav-item"
@@ -354,7 +331,10 @@ else:
     def _pi(page: str) -> str:
         return "tnav-page-active" if _url == page else ""
 
-    st.markdown(f"""
+    _nav_col, _usr_col = st.columns([9, 2], gap="small")
+
+    with _nav_col:
+        st.markdown(f"""
 <div class='tnav-wrap'>
   <nav class='tnav'>
     <a href='/home' class='{_ni("home")}'>🏠 Home</a>
@@ -385,38 +365,35 @@ else:
         <a href='/passport_family' class='{_pi("passport_family")}'>👨‍👩‍👧‍👦 Family Passport</a>
       </div>
     </div>
-    <div class='tnav-user'>
-      <span class='tnav-avatar'>{_nav_av}</span>
-      {_nav_name}
-    </div>
   </nav>
 </div>
 """, unsafe_allow_html=True)
 
-    # Run current page — sidebar filters added by pages appear above user selector
-    pg.run()
+    with _usr_col:
+        _current  = st.session_state.get("active_user_name", _names[0])
+        _curr_av  = _avs.get(_current, "🐘")
+        with st.popover(f"{_curr_av} {_current} ▾", use_container_width=True):
+            st.caption("Switch user")
+            for _n in _names:
+                _is_me = (_n == _current)
+                if st.button(
+                    f"{_avs.get(_n, '🐘')} {_n}{'  ✓' if _is_me else ''}",
+                    key=f"_uswitch_{_n}",
+                    use_container_width=True,
+                    type="primary" if _is_me else "secondary",
+                ):
+                    if not _is_me:
+                        _uid_str = str(int(_ids[_n]))
+                        st.session_state.update({
+                            "active_user_name":       _n,
+                            "active_user_id":         int(_ids[_n]),
+                            "active_user_avatar":     _avs[_n],
+                            "active_user_color":      _clrs[_n],
+                            "active_user_picks_only": bool(_po.get(_n, 0)),
+                            "ls_pending_uid":         _uid_str,
+                        })
+                        st.rerun()
+            st.divider()
+            st.page_link("pages/admin.py", label="⚙️ Admin", icon="🔧")
 
-    # ── Sidebar: Playing As + Admin (below page filters) ──────────────────────
-    with st.sidebar:
-        _current = st.session_state.get("active_user_name", _names[0])
-        _idx     = _names.index(_current) if _current in _names else 0
-        _chosen  = st.selectbox(
-            "⚽ Playing As",
-            _names,
-            index=_idx,
-            format_func=lambda n: f"{_avs[n]} {n}",
-            key="global_user_selector",
-            on_change=_apply_user_selection,
-        )
-        # Sync every render (handles first load and edge cases)
-        if _chosen != st.session_state.get("active_user_name"):
-            st.session_state["ls_pending_uid"] = str(int(_ids[_chosen]))
-        st.session_state.update({
-            "active_user_name":       _chosen,
-            "active_user_id":         int(_ids[_chosen]),
-            "active_user_avatar":     _avs[_chosen],
-            "active_user_color":      _clrs[_chosen],
-            "active_user_picks_only": bool(_po.get(_chosen, 0)),
-        })
-        st.divider()
-        st.page_link("pages/admin.py", label="Admin", icon="🔧")
+    pg.run()

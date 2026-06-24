@@ -32,19 +32,28 @@ if "db_ready" not in st.session_state:
 st.markdown("""
 <style>
     /* ── Eliminate Streamlit header bar (dead space + hamburger) ── */
-    [data-testid="stHeader"] { display: none !important; }
+    [data-testid="stHeader"] {
+        display: none !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        visibility: hidden !important;
+    }
 
     /* ── Remove sidebar entirely ─────────────────────────────────── */
     [data-testid="stSidebar"],
     [data-testid="stSidebarCollapsedControl"] { display: none !important; }
 
-    /* ── Nav flush to top of viewport ────────────────────────────── */
+    /* ── Kill every layer of top spacing so nav sits flush ────────── */
+    [data-testid="stAppViewContainer"] { padding-top: 0 !important; margin-top: 0 !important; }
+    [data-testid="stMain"]             { padding-top: 0 !important; margin-top: 0 !important; }
+    section.main                       { padding-top: 0 !important; margin-top: 0 !important; overflow: visible !important; }
+    [data-testid="stMainBlockContainer"],
     section.main > div.block-container {
         padding-top: 0 !important;
+        margin-top: 0 !important;
         padding-bottom: 1rem !important;
         overflow: visible !important;
     }
-    section.main { overflow: visible !important; }
     .element-container { overflow: visible !important; }
 
     /* ── Global emoji / text size ────────────────── */

@@ -798,38 +798,6 @@ with lb_col:
     except Exception:
         st.caption("Discovery Race loading...")
 
-    # ── Featured Player of the Day ─────────────────────────────────────────────
-    st.markdown(
-        "<div class='section-head' style='margin-top:.9rem'>⭐ Featured Player</div>",
-        unsafe_allow_html=True,
-    )
-    try:
-        _fp = get_featured_player_of_day()
-        if _fp:
-            st.markdown(
-                f"<div style='background:linear-gradient(160deg,#1E293B,#0F172A);"
-                f"border-radius:12px;padding:.85rem .7rem;text-align:center;"
-                f"color:white;border:1px solid rgba(148,163,184,.15);margin-bottom:.3rem'>"
-                f"<div style='font-size:2.5rem;line-height:1'>{_fp['flag']}</div>"
-                f"<div style='font-size:1.6rem;font-weight:900;color:#FCD34D;margin:.2rem 0'>#{_fp['shirt_number']}</div>"
-                f"<div style='font-size:.92rem;font-weight:800;line-height:1.25'>{_fp['name']}</div>"
-                f"<div style='font-size:.75rem;color:#94A3B8'>{_fp['team']}</div>"
-                f"<div style='font-size:.72rem;color:#64748B'>{_fp['position']} · {_fp['club_short']}</div>"
-                f"<div style='font-size:.68rem;color:#475569;margin-top:.3rem;line-height:1.4;"
-                f"border-top:1px solid rgba(148,163,184,.1);padding-top:.3rem'>"
-                f"{_fp['one_thing'][:90]}{'…' if len(_fp['one_thing']) > 90 else ''}</div>"
-                f"</div>",
-                unsafe_allow_html=True,
-            )
-            if st.button(
-                "👤 Player Profile", key=f"home_fp_{_fp['player_slug']}",
-                use_container_width=True,
-            ):
-                _show_player_modal_home(_fp['player_slug'])
-        else:
-            st.caption("Roster data loading...")
-    except Exception:
-        st.caption("Featured player loading...")
 
 # ── Family Favorites — sorted by most shared, with context line ───────────────
 with fav_col:
@@ -975,6 +943,52 @@ with feed_col:
                 f"</div></div>",
                 unsafe_allow_html=True,
             )
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Featured Player of the Day — full-width horizontal card
+# ─────────────────────────────────────────────────────────────────────────────
+st.divider()
+st.markdown('<div class="section-head">⭐ Featured Player of the Day</div>', unsafe_allow_html=True)
+try:
+    _fp = get_featured_player_of_day()
+    if _fp:
+        _fp_c1, _fp_c2 = st.columns([1, 3])
+        with _fp_c1:
+            st.markdown(
+                f"<div style='text-align:center;padding:.5rem 0'>"
+                f"<div style='font-size:4rem;line-height:1'>{_fp['flag']}</div>"
+                f"<div style='font-size:2.2rem;font-weight:900;color:#FCD34D;margin:.1rem 0'>"
+                f"#{_fp['shirt_number']}</div>"
+                f"<div style='font-size:1rem;font-weight:900;color:#F1F5F9;line-height:1.2'>"
+                f"{_fp['name']}</div>"
+                f"<div style='font-size:.82rem;color:#94A3B8;margin-top:.1rem'>"
+                f"{_fp['team']}</div>"
+                f"<div style='font-size:.78rem;color:#64748B'>"
+                f"{_fp['position']} · {_fp['club_short']}</div>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+            if st.button("👤 Learn More", key=f"home_fp_{_fp['player_slug']}",
+                         use_container_width=True):
+                _show_player_modal_home(_fp['player_slug'])
+        with _fp_c2:
+            st.markdown(
+                f"<div style='background:linear-gradient(160deg,#1E293B,#0F172A);"
+                f"border-left:4px solid #F59E0B;border-radius:0 14px 14px 0;"
+                f"padding:1rem 1.2rem;height:100%;color:white;"
+                f"border:1px solid rgba(148,163,184,.12)'>"
+                f"<div style='font-size:.65rem;font-weight:800;color:#D97706;"
+                f"text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem'>"
+                f"⭐ One Thing To Remember</div>"
+                f"<div style='font-size:1.05rem;color:#F1F5F9;line-height:1.6;font-weight:500'>"
+                f"{_fp['one_thing']}</div>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+    else:
+        st.caption("Roster data loading...")
+except Exception:
+    st.caption("Featured player loading...")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Tomorrow's Matches — full width, unchanged

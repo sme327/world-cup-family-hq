@@ -643,6 +643,7 @@ def _sec_roster():
 def _sec_key_players():
     st.divider()
     st.markdown('<div id="mu-players" class="mu-section">⭐ Key Players</div>', unsafe_allow_html=True)
+    st.caption("Tap any player to learn more.")
     kp_c1, kp_c2 = st.columns(2)
     for col, team, flag, featured in [
         (kp_c1, home_team, home_flag, h_featured),
@@ -661,9 +662,8 @@ def _sec_key_players():
                     with pcol:
                         st.markdown(_player_trading_card(p), unsafe_allow_html=True)
                         if slug and st.button(
-                            "👤", key=f"mup_{slug}",
+                            "👤 Learn More", key=f"mup_{slug}",
                             use_container_width=True,
-                            help=f"Open {p['name']}'s profile",
                         ):
                             _show_player_modal(slug)
             else:
@@ -675,6 +675,7 @@ def _sec_mls():
         return
     st.divider()
     st.markdown('<div class="mu-section">🏟️ MLS & US Connections</div>', unsafe_allow_html=True)
+    st.caption("Tap any player to learn more.")
 
     def _mls_callout(team, flag, mls_df):
         if mls_df.empty:
@@ -698,9 +699,8 @@ def _sec_mls():
                     unsafe_allow_html=True,
                 )
                 if mls_slug and st.button(
-                    "👤", key=f"mls_{mls_slug}",
+                    "👤 Learn More", key=f"mls_{mls_slug}",
                     use_container_width=True,
-                    help=f"Open {p['player_name']}'s profile",
                 ):
                     _show_player_modal(mls_slug)
 
@@ -876,42 +876,73 @@ def _sec_stakes():
 
     h_played = h_stat.get('played', 0)
     a_played = a_stat.get('played', 0)
-    if h_played == 0 and a_played == 0:
-        return  # No games yet, no stakes to show
+    max_played = max(h_played, a_played)
 
-    # Narrative stake line
     h_status = h_stat.get('status', '')
     a_status = a_stat.get('status', '')
     h_pts    = h_stat.get('pts', 0)
     a_pts    = a_stat.get('pts', 0)
-    h_pos    = h_stat.get('position', 0)
-    a_pos    = a_stat.get('position', 0)
+    h_w      = h_stat.get('w', 0)
+    a_w      = a_stat.get('w', 0)
+    h_d      = h_stat.get('d', 0)
+    a_d      = a_stat.get('d', 0)
 
-    def _is_advanced(s):  return "Advanced" in s or "Locked" in s
+    def _is_advanced(s):   return "Advanced" in s or "Locked" in s
     def _is_eliminated(s): return "Eliminated" in s or s.startswith("❌")
-    def _is_good(s):      return "good shape" in s
-    def _needs_help(s):   return "Needs help" in s
+    def _is_good(s):       return "good shape" in s
+    def _needs_help(s):    return "Needs help" in s
 
-    if _is_advanced(h_status) and _is_advanced(a_status):
-        stake_line = "Both teams have already advanced! This match determines group seeding."
-    elif _is_advanced(h_status):
-        stake_line = f"{home_team} has already advanced. {away_team} is still fighting for their spot."
-    elif _is_advanced(a_status):
-        stake_line = f"{away_team} has already advanced. {home_team} is still fighting for their spot."
-    elif _is_eliminated(h_status) and _is_eliminated(a_status):
-        stake_line = "Both teams have been eliminated. Pride is still on the line."
-    elif _is_eliminated(h_status):
-        stake_line = f"{home_team} has been eliminated. {away_team} still has something to play for."
-    elif _is_eliminated(a_status):
-        stake_line = f"{away_team} has been eliminated. {home_team} still has something to play for."
-    elif _is_good(h_status) and _is_good(a_status):
-        stake_line = "Both teams are in good shape — a win here cements their place in the Round of 32."
-    elif _needs_help(h_status):
-        stake_line = f"{home_team} needs help to stay alive — a loss here could end their tournament."
-    elif _needs_help(a_status):
-        stake_line = f"{away_team} needs help to stay alive — a loss here could end their tournament."
+    # Opening match — no prior results
+    if h_played == 0 and a_played == 0:
+        stake_line = f"First match of Group {group_letter} — everything is still possible."
+    # Final group match
+    elif max_played >= 2:
+        if _is_advanced(h_status) and _is_advanced(a_status):
+            stake_line = "Both teams have already advanced! This match determines group seeding."
+        elif _is_eliminated(h_status) and _is_eliminated(a_status):
+            stake_line = "Both teams have been eliminated. Pride is still on the line."
+        elif _is_advanced(h_status):
+            stake_line = f"{home_team} is already through. {away_team} needs a result to advance."
+        elif _is_advanced(a_status):
+            stake_line = f"{away_team} is already through. {home_team} needs a result to advance."
+        elif _is_eliminated(h_status):
+            stake_line = f"{home_team} is out. {away_team} plays to secure their last-chance result."
+        elif _is_eliminated(a_status):
+            stake_line = f"{away_team} is out. {home_team} plays to secure their last-chance result."
+        else:
+            stake_line = "This is the last group game — every single point matters."
+    # Second group match
     else:
-        stake_line = "Both teams still need points to secure their spot in the Round of 32."
+        if _is_advanced(h_status) and _is_advanced(a_status):
+            stake_line = "Both teams have already advanced! This match determines group seeding."
+        elif _is_advanced(h_status):
+            stake_line = f"{home_team} has already advanced. {away_team} is still fighting for their spot."
+        elif _is_advanced(a_status):
+            stake_line = f"{away_team} has already advanced. {home_team} is still fighting for their spot."
+        elif _is_eliminated(h_status) and _is_eliminated(a_status):
+            stake_line = "Both teams have been eliminated. Pride is still on the line."
+        elif _is_eliminated(h_status):
+            stake_line = f"{home_team} has been eliminated. {away_team} still has something to play for."
+        elif _is_eliminated(a_status):
+            stake_line = f"{away_team} has been eliminated. {home_team} still has something to play for."
+        elif h_pts == 3 and a_pts == 3:
+            stake_line = f"Both teams won their opening match — a battle for the top of Group {group_letter}."
+        elif h_w == 1 and a_w == 1:
+            stake_line = "Both teams are 1 win and 1 loss — this match could decide who advances."
+        elif h_d == 1 and a_d == 1:
+            stake_line = f"Both teams are unbeaten — the winner could take control of Group {group_letter}."
+        elif h_pts == 0 and a_pts == 0:
+            stake_line = "Both teams are still looking for their first win — a must-win match."
+        elif _is_good(h_status) and _is_good(a_status):
+            stake_line = "Both teams are in good shape — a win here cements their place in the Round of 32."
+        elif _needs_help(h_status) and _needs_help(a_status):
+            stake_line = "Both teams are in trouble — they need a result to stay alive."
+        elif _needs_help(h_status):
+            stake_line = f"{home_team} needs help to stay alive — a loss here could end their tournament."
+        elif _needs_help(a_status):
+            stake_line = f"{away_team} needs help to stay alive — a loss here could end their tournament."
+        else:
+            stake_line = f"Both teams are trying to set themselves up for the final group game."
 
     def _team_stake_card(team, flag, stat):
         pos     = stat.get('position', 0)
@@ -919,7 +950,7 @@ def _sec_stakes():
         record  = stat.get('record', '—')
         status  = stat.get('status', '—')
         s_color = stat.get('status_color', '#94A3B8')
-        pos_ord = {1: "1st", 2: "2nd", 3: "3rd", 4: "4th"}.get(pos, f"#{pos}")
+        pos_ord = {1: "1st", 2: "2nd", 3: "3rd", 4: "4th"}.get(pos, "—")
         return (
             f"<div style='flex:1;min-width:160px;background:rgba(15,23,42,.5);"
             f"border-radius:12px;padding:.75rem .9rem;border:1px solid rgba(148,163,184,.12)'>"

@@ -73,6 +73,16 @@ st.markdown(
     f"</div>",
     unsafe_allow_html=True,
 )
+st.markdown(
+    "<div style='background:rgba(99,102,241,.12);border-left:3px solid #818CF8;"
+    "border-radius:0 10px 10px 0;padding:.55rem .9rem;margin:.3rem 0 .5rem;"
+    "font-size:.88rem;color:#C7D2FE;line-height:1.5'>"
+    "Explorer Score rewards <b>discovering countries</b>, <b>cheering for teams</b>, "
+    "<b>winning with countries</b>, <b>earning achievements</b>, and <b>completing continents</b> — "
+    "completely separate from the pick'em leaderboard."
+    "</div>",
+    unsafe_allow_html=True,
+)
 st.divider()
 
 # ── Section 1: Explorer Leaderboard ──────────────────────────────────────────

@@ -1423,6 +1423,7 @@ with tab_team:
     # Players To Know (story-driven)
     if featured:
         st.markdown("### ⭐ Players To Know")
+        st.caption("Tap any player to learn more.")
         n_feat = min(len(featured), 5)
         p_cols = st.columns(n_feat)
         for col, pl in zip(p_cols, featured[:n_feat]):
@@ -1446,14 +1447,15 @@ with tab_team:
                     unsafe_allow_html=True
                 )
                 if slug and st.button(
-                    "👤 Profile", key=f"cp_feat_{slug}",
-                    use_container_width=True, help=f"Open {pl['name']}'s player card"
+                    "👤 Learn More", key=f"cp_feat_{slug}",
+                    use_container_width=True,
                 ):
                     _show_player_modal(slug)
 
     # MLS & US Connections
     if not mls_players.empty:
         st.markdown("### 🏟️ MLS & US Connections")
+        st.caption("Tap any player to learn more.")
         mls_cols = st.columns(min(len(mls_players), 3))
         for col, (_, mp) in zip(mls_cols, mls_players.iterrows()):
             mls_slug = get_player_slug(selected_country, mp['player_name'])
@@ -1468,8 +1470,8 @@ with tab_team:
                     unsafe_allow_html=True
                 )
                 if mls_slug and st.button(
-                    "👤 Profile", key=f"cp_mls_{mls_slug}",
-                    use_container_width=True, help=f"Open {mp['player_name']}'s player card"
+                    "👤 Learn More", key=f"cp_mls_{mls_slug}",
+                    use_container_width=True,
                 ):
                     _show_player_modal(mls_slug)
 

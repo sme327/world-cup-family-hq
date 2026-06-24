@@ -111,7 +111,7 @@ def _resolve_slot(code: str, third_groups: str | None,
     if code == "3rd":
         # Don't try to name a specific 3rd-place team — the 495-scenario seeding
         # means multiple slots share eligible groups. Just show the group labels.
-        return "🎯", f"Best 3rd ({third_groups})", True
+        return "🎯", "Best 3rd Place 🏅", True
     pos   = int(code[0]) - 1
     group = code[1]
     df    = standings.get(group)
@@ -308,6 +308,19 @@ m2.metric("Groups Complete", f"{complete_groups} / 12")
 m3.metric("Tournament Progress", f"{pct}%")
 st.progress(pct / 100)
 
+# Group stage complete banner
+if complete_groups >= 12:
+    st.markdown(
+        "<div style='background:linear-gradient(135deg,#052e16,#166534);"
+        "border:2px solid #4ADE80;border-radius:14px;"
+        "padding:1rem 1.3rem;margin:.8rem 0;text-align:center'>"
+        "<div style='font-size:1.5rem;font-weight:900;color:#4ADE80'>✅ Group Stage Complete</div>"
+        "<div style='font-size:1rem;color:#D1FAE5;margin-top:.3rem'>"
+        "All 12 groups are done — the Round of 32 is set below.</div>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+
 # Legend
 st.markdown(
     "<div style='display:flex;gap:.9rem;flex-wrap:wrap;margin:.6rem 0 .8rem;align-items:center'>"
@@ -388,7 +401,7 @@ if top8:
         "<div style='margin:.3rem 0 1.2rem'>"
         "<div style='font-size:.75rem;font-weight:700;color:#64748B;"
         "text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem'>"
-        "🟡 Best 3rd-place race — top 8 advance (in pts order)</div>"
+        "🟡 Best 3rd-place finishers — top 8 advance (in pts order)</div>"
         "<div style='font-size:1.8rem;line-height:1.4;letter-spacing:.05rem'>"
         + third_flags +
         "</div></div>",

@@ -12,41 +12,128 @@ from services.database import get_connection
 from services.roster import get_player, _load_slugged, _roster_name, _compute_age, pos_icon
 
 # ── Hardcoded "One Thing To Remember" for prominent players ──────────────────
-# Keyed by player_slug from world_cup_players_slugged.csv (verified against the actual 2026 WC roster).
+# Keyed by player_slug from world_cup_players_slugged.csv.
 _ONE_THING: dict[str, str] = {
     # USA
     "christian-mate-pulisic":          "Captain and best player of the US national team — plays for AC Milan in Italy.",
     "giovanni-alejandro-reyna":        "His father Claudio Reyna captained the US national team — soccer runs in the family.",
     "tyler-shaan-adams":               "A former US captain known for his boundless energy in midfield.",
-    "timothy-tarpeh-weah":            "Son of former world player of the year George Weah — plays in Serie A.",
+    "timothy-tarpeh-weah":             "Son of former world player of the year George Weah — plays in Serie A.",
+    "brenden-aaronson":                "Grew up in New Jersey and became one of the first Americans to star in the Bundesliga.",
+    "matt-turner":                     "One of the top goalkeepers in MLS history — now competing in Europe.",
+    # Canada
+    "alphonso-davies":                 "Captain of Canada — one of the fastest players in the world, plays for Bayern Munich.",
+    "jonathan-david":                  "Canada's top scorer — plays in France's Ligue 1 and is one of Europe's best strikers.",
+    "cyle-larin":                      "Canada's all-time top international goal scorer — a powerful center forward.",
+    # Mexico
+    "hirving-lozano":                  "Known as 'Chucky' — one of Mexico's most exciting wingers, famous for his speed.",
+    "raul-jimenez":                    "Mexico's captain — one of the most dangerous strikers in the country's history.",
+    "edson-alvarez":                   "The rock of Mexico's midfield — plays for West Ham in England's Premier League.",
     # Brazil
     "vinicius-jose-paixao-de-oliveira-junior": "One of the fastest and most exciting players in the world — won the Champions League with Real Madrid.",
     "endrick-felipe-moreira-de-sousa-pessoa":  "Signed for Real Madrid at age 17 — the next big Brazilian superstar.",
+    "rodrygo-goes":                    "Brazilian winger at Real Madrid — famous for scoring dramatic Champions League goals.",
+    "marquinhos":                      "Brazil's captain and one of the best defenders in the world — has won everything with PSG.",
     # Argentina
     "lionel-andres-messi":             "Led Argentina to the 2022 World Cup title — considered by many as the greatest player in history.",
     "rodrigo-javier-de-paul":          "The engine of Argentina's midfield — known for his non-stop energy all 90 minutes.",
+    "julian-alvarez":                  "Won the 2022 World Cup with Argentina aged just 22 — plays for Atletico Madrid.",
+    "enzo-fernandez":                  "Won the 2022 World Cup and the Champions League in the same year — an extraordinary midfielder.",
     # France
     "kylian-mbappe-lottin":            "One of the fastest players in the world — won the World Cup in 2018 aged just 19.",
     "masour-ousmane-dembele":          "Known for incredible dribbling speed — plays for Paris Saint-Germain in France.",
+    "antoine-griezmann":               "France's creative playmaker — has won the World Cup, Euro, and Champions League.",
     # England
     "jude-victor-william-bellingham":  "Became Real Madrid's most important player at just 20 years old.",
     "harry-edward-kane":               "England's all-time top goal scorer — plays for Bayern Munich in Germany.",
     "bukayo-ayoyinka-saka":            "Arsenal's star winger and one of the most exciting young players in the world.",
+    "trent-alexander-arnold":          "Known for his extraordinary passing ability from right back — unusual in world soccer.",
     # Germany
     "florian-richard-wirtz":           "Considered Germany's best young player — a creative midfielder for Bayer Leverkusen.",
     "jamal-musiala":                   "Born in Germany, grew up in England — plays for Bayern Munich and can do things others can't.",
+    "thomas-muller":                   "Has won the World Cup and Champions League multiple times — famous for his clever positioning.",
     # Spain
     "lamine-yamal-nasraoui-ebana":     "The youngest player ever at a European Championship — scored in the 2024 Euro final aged just 16.",
+    "pedri-gonzalez-lopez":            "Barcelona's creative genius — considered one of the best young midfielders in the world.",
+    "rodri-hernandez":                 "Won Euro 2024 with Spain and the Champions League — considered the world's best midfielder.",
     # Portugal
     "cristiano-ronaldo-dos-santos-aveiro": "Has scored over 900 professional career goals — one of the most famous athletes in the world.",
     "bernardo-mota-veiga-de-carvalho-e-silva": "Plays for Manchester City and is known for his creativity and footwork.",
+    "ruben-dias":                      "Portugal's captain and one of the best center-backs in the world — plays for Manchester City.",
     # Netherlands
     "virgil-van-dijk":                 "Considered the best defender in the world — led Liverpool to the Champions League in 2019.",
+    "cody-gakpo":                      "The Netherlands' most dangerous forward — scored 3 goals in the 2022 World Cup.",
     # Japan
     "takefusa-kubo":                   "Trained at Real Madrid's academy as a teenager — now a star in Spain for Real Sociedad.",
+    "kaoru-mitoma":                    "Japan's most exciting winger — dazzled the world at the 2022 World Cup.",
+    "daichi-kamada":                   "Japan's creative midfielder — plays in the Champions League.",
+    # South Korea
+    "son-heung-min":                   "South Korea's captain — one of the Premier League's all-time top scorers for Tottenham.",
     # Morocco
     "achraf-hakimi":                   "Moroccan right back who plays for PSG — one of the best defenders in the world.",
+    "hakim-ziyech":                    "Morocco's creative star — famous for dazzling the world at the 2022 World Cup.",
+    # Senegal
+    "sadio-mane":                      "Senegal's captain — won the Africa Cup of Nations and played in the Champions League final.",
+    # Colombia
+    "james-rodriguez":                 "Won the Golden Boot at the 2014 World Cup — famous for his stunning volleys.",
+    "luis-diaz":                       "One of Liverpool's most dangerous players — grew up in a small town near the Colombian border.",
+    # Uruguay
+    "federico-valverde":               "One of the best midfielders in the world — the engine of Real Madrid's Champions League wins.",
+    "darwin-nunez":                    "Liverpool's powerful striker — one of the fastest and strongest forwards in the game.",
+    # Belgium
+    "kevin-de-bruyne":                 "Belgium's captain — many experts call him the best midfielder in the world.",
+    # Croatia
+    "luka-modric":                     "Croatia's captain and a Real Madrid legend — won the Champions League 5 times.",
+    # Australia
+    "mathew-ryan":                     "Australia's captain and goalkeeper — has played in England, Spain, and France.",
+    # Ecuador
+    "enner-valencia":                  "Ecuador's captain and all-time top scorer — famous for scoring 3 goals at the 2022 World Cup opening.",
 }
+
+# ── Kid-friendly display name overrides (for compact UI like "You Might Also Like") ──
+# Maps player_name (as stored in roster CSV) → short display name.
+_DISPLAY_NAMES: dict[str, str] = {
+    "Vinicius Jose Paixao de Oliveira Junior": "Vinícius Jr.",
+    "Endrick Felipe Moreira de Sousa Pessoa":  "Endrick",
+    "Cristiano Ronaldo dos Santos Aveiro":      "Cristiano Ronaldo",
+    "Bernardo Mota Veiga de Carvalho e Silva":  "Bernardo Silva",
+    "Lamine Yamal Nasraoui Ebana":              "Lamine Yamal",
+    "Kylian Mbappe Lottin":                     "Kylian Mbappé",
+    "Masour Ousmane Dembele":                   "Ousmane Dembélé",
+    "Bukayo Ayoyinka Saka":                     "Bukayo Saka",
+    "Jude Victor William Bellingham":           "Jude Bellingham",
+    "Harry Edward Kane":                        "Harry Kane",
+    "Florian Richard Wirtz":                    "Florian Wirtz",
+    "Rodrigo Javier De Paul":                   "Rodrigo De Paul",
+    "Timothy Tarpeh Weah":                      "Timothy Weah",
+    "Giovanni Alejandro Reyna":                 "Gio Reyna",
+    "Tyler Shaan Adams":                        "Tyler Adams",
+    "Lionel Andres Messi":                      "Lionel Messi",
+    "Pedri Gonzalez Lopez":                     "Pedri",
+    "Rodri Hernandez":                          "Rodri",
+    "Luka Modric":                              "Luka Modrić",
+    "Kevin De Bruyne":                          "Kevin De Bruyne",
+    "Ruben Dias":                               "Rúben Dias",
+    "Alphonso Davies":                          "Alphonso Davies",
+    "Son Heung-min":                            "Son Heung-min",
+    "Sadio Mane":                               "Sadio Mané",
+    "Federico Valverde":                        "Fede Valverde",
+    "Antoine Griezmann":                        "Griezmann",
+}
+
+
+def get_display_player_name(player_name: str) -> str:
+    """Return a kid-friendly short display name for compact UI.
+    Uses curated overrides for famous long-name players; shortens very long names safely;
+    leaves ordinary names untouched.
+    """
+    if player_name in _DISPLAY_NAMES:
+        return _DISPLAY_NAMES[player_name]
+    # Shorten very long names: keep first name + last word
+    words = player_name.split()
+    if len(player_name) > 24 and len(words) >= 4:
+        return f"{words[0]} {words[-1]}"
+    return player_name
 
 # ── Club country code → readable league name ──────────────────────────────────
 _LEAGUE_NAMES: dict[str, str] = {
@@ -344,10 +431,13 @@ def get_player_team_count(user_id: int) -> int:
 def get_featured_player_of_day() -> dict | None:
     """
     Deterministic daily featured player (changes once per day, not per refresh).
-    Logic: if matches today → pick a featured player from one of today's teams.
-    Otherwise → rotate through all player slugs.
+
+    Priority order:
+    1. Curated players (have _ONE_THING content) from teams playing today.
+    2. Any player from teams playing today.
+    3. Curated players from the full pool (no matches today).
+    4. Any player (last resort).
     """
-    from services.teams import get_flag
     from services.database import get_connection as _gc
 
     today = date.today()
@@ -357,7 +447,9 @@ def get_featured_player_of_day() -> dict | None:
     if df.empty:
         return None
 
-    # Try to pick from today's matches
+    curated_slugs = set(_ONE_THING.keys())
+
+    # Get today's scheduled teams
     conn = _gc()
     today_matches = pd.read_sql(
         "SELECT home_team, away_team FROM matches WHERE match_date=? AND status='scheduled'",
@@ -370,17 +462,24 @@ def get_featured_player_of_day() -> dict | None:
         for _, m in today_matches.iterrows():
             today_teams += [m['home_team'], m['away_team']]
         roster_names = {_roster_name(t) for t in today_teams}
-        pool = df[df['team'].isin(roster_names)]
+
+        # Prefer curated players from today's teams
+        pool = df[df['team'].isin(roster_names) & df['player_slug'].isin(curated_slugs)]
+        if pool.empty:
+            # Fall back: any player from today's teams
+            pool = df[df['team'].isin(roster_names)]
         if pool.empty:
             pool = df
     else:
-        pool = df
+        # No matches today — pick from global curated pool
+        pool = df[df['player_slug'].isin(curated_slugs)]
+        if pool.empty:
+            pool = df
 
-    idx    = seed % len(pool)
-    row    = pool.iloc[idx]
-    slug   = row['player_slug']
-    data   = get_player_card_data(slug)
-    return data
+    idx  = seed % len(pool)
+    row  = pool.iloc[idx]
+    slug = row['player_slug']
+    return get_player_card_data(slug)
 
 
 # ── Streamlit modal renderer ──────────────────────────────────────────────────
@@ -491,11 +590,12 @@ def render_player_modal_content(slug: str, user_id: int) -> None:
         sim_cols = st.columns(len(data['similar']))
         for scol, sim in zip(sim_cols, data['similar']):
             with scol:
+                _sim_display = get_display_player_name(sim['name'])
                 st.markdown(
                     f"<div style='background:rgba(30,41,59,.7);border:1px solid rgba(148,163,184,.15);"
                     f"border-radius:10px;padding:.6rem .5rem;text-align:center'>"
                     f"<div style='font-size:1.3rem;font-weight:900;color:#FCD34D'>#{sim['shirt_number']}</div>"
-                    f"<div style='font-size:.78rem;font-weight:700;color:#F1F5F9;line-height:1.2'>{sim['name']}</div>"
+                    f"<div style='font-size:.78rem;font-weight:700;color:#F1F5F9;line-height:1.2'>{_sim_display}</div>"
                     f"<div style='font-size:.65rem;color:#64748B;margin-top:.1rem'>{sim['club_short']}</div>"
                     f"<div style='font-size:.62rem;color:#475569'>Age {sim['age']}</div>"
                     f"</div>",

@@ -74,9 +74,11 @@ st.markdown("""
     /* ── Typography ──────────────────────────────── */
     h1, h2, h3 { font-family: 'Georgia', serif; }
 
-    /* ── Hide Admin from main nav (accessible below Playing As) ── */
+    /* ── Hide ⚙️ group (Admin/Achievements/Discovery Race) from sidebar nav ── */
     [data-testid="stSidebarNav"] a[href*="admin"],
-    [data-testid="stSidebarNav"] a[href*="Admin"] { display: none !important; }
+    [data-testid="stSidebarNav"] a[href*="Admin"],
+    [data-testid="stSidebarNav"] a[href*="achievements"],
+    [data-testid="stSidebarNav"] a[href*="discovery_race"] { display: none !important; }
     [data-testid="stSidebarNav"] > ul > li:last-child,
     [data-testid="stSidebarNav"] > div > ul > li:last-child { display: none !important; }
     [data-testid="stSidebarNav"] > ul > *:has(a[href*="admin"]),
@@ -198,26 +200,24 @@ pg = st.navigation(
             st.Page("pages/schedule.py",     title="Schedule",     icon="📅"),
             st.Page("pages/matchup.py",      title="Matchups",     icon="🏟️"),
             st.Page("pages/pick_tracker.py", title="Family Picks", icon="🎯"),
+            st.Page("pages/standings.py",    title="Standings",    icon="📊"),
+            st.Page("pages/leaderboard.py",  title="Leaderboard",  icon="🏆"),
         ],
         "🌎 Explore": [
-            st.Page("pages/map.py",             title="World Atlas", icon="🌎"),
-            st.Page("pages/country_profile.py", title="Countries",   icon="🗺️"),
-            st.Page("pages/host_cities.py",     title="Host Cities", icon="🏙️"),
+            st.Page("pages/country_profile.py",   title="Countries",        icon="🗺️"),
+            st.Page("pages/map.py",               title="World Atlas",      icon="🌎"),
+            st.Page("pages/host_cities.py",       title="Host Cities",      icon="🏙️"),
+            st.Page("pages/world_cup_history.py", title="World Cup History",icon="📖"),
         ],
-        "📚 Collection": [
-            st.Page("pages/discovery_race.py",      title="Discovery Race",  icon="🌎"),
+        "🛂 Passport": [
             st.Page("pages/passport_individual.py", title="My Passport",     icon="🛂"),
             st.Page("pages/passport_family.py",     title="Family Passport", icon="👨‍👩‍👧‍👦"),
-            st.Page("pages/achievements.py",        title="Achievements",    icon="🏅"),
         ],
-        "🏆 Tournament": [
-            st.Page("pages/leaderboard.py",       title="Leaderboard",          icon="🏆"),
-            st.Page("pages/standings.py",         title="Tournament Standings", icon="📊"),
-            st.Page("pages/world_cup_history.py", title="World Cup History",    icon="📖"),
-        ],
-        # Admin hidden from sidebar nav via CSS; must stay here for Streamlit routing.
+        # Hidden from sidebar nav via CSS; kept for routing (redirects to passport pages).
         "⚙️": [
-            st.Page("pages/admin.py", title="Admin", icon="🔧"),
+            st.Page("pages/admin.py",         title="Admin",         icon="🔧"),
+            st.Page("pages/achievements.py",  title="Achievements",  icon="🏅"),
+            st.Page("pages/discovery_race.py",title="Discovery Race",icon="🌎"),
         ],
     },
     position="sidebar",
@@ -249,6 +249,47 @@ else:
             "active_user_color":      _clrs[_sel],
             "active_user_picks_only": bool(_po.get(_sel, 0)),
         })
+
+    # ── Top nav bar — section switcher ────────────────────────────────────────
+    _SECTION_MAP = {
+        "":                   "home",
+        "home":               "home",
+        "schedule":           "play",
+        "matchup":            "play",
+        "pick_tracker":       "play",
+        "standings":          "play",
+        "leaderboard":        "play",
+        "country_profile":    "explore",
+        "map":                "explore",
+        "host_cities":        "explore",
+        "world_cup_history":  "explore",
+        "passport_individual":"passport",
+        "passport_family":    "passport",
+        "achievements":       "passport",
+        "discovery_race":     "passport",
+        "admin":              "admin",
+    }
+    _active_section = _SECTION_MAP.get(pg.url_path, "home")
+    _nav_items = [
+        ("home",     "🏠 Home",     "pages/home.py"),
+        ("play",     "⚽ Play",     "pages/schedule.py"),
+        ("explore",  "🌎 Explore",  "pages/country_profile.py"),
+        ("passport", "🛂 Passport", "pages/passport_individual.py"),
+    ]
+    _nc0, _nc1, _nc2, _nc3 = st.columns(4, gap="small")
+    for _col, (_sec, _lbl, _tgt) in zip([_nc0, _nc1, _nc2, _nc3], _nav_items):
+        with _col:
+            if _sec == _active_section:
+                st.markdown(
+                    f"<div style='background:#2563EB;border-radius:8px;padding:.45rem .25rem;"
+                    f"text-align:center;font-weight:900;color:white;font-size:.95rem;"
+                    f"line-height:1.5'>{_lbl}</div>",
+                    unsafe_allow_html=True,
+                )
+            else:
+                if st.button(_lbl, key=f"_tnav_{_sec}", use_container_width=True):
+                    st.switch_page(_tgt)
+    st.markdown("<div style='height:.25rem'></div>", unsafe_allow_html=True)
 
     # Page renders first so page-specific sidebar filters appear above Playing As.
     pg.run()

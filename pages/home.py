@@ -4,19 +4,13 @@ from datetime import date, timedelta, datetime as _dt
 from services.matches import get_all_matches
 from services.scoring import get_leaderboard
 from services.teams import get_flag, get_all_teams
-from services.activity import (
-    format_activity_message,
-    get_recent_family_discoveries,
-    get_tiered_family_activity,
-    STORY_TIERS,
-)
-from services.picks import get_picks_for_match, save_pick
+from services.activity import format_activity_message, get_tiered_family_activity
+from services.picks import get_picks_for_match
 from services.passport import (
-    get_country_of_the_day, get_family_stamp_statuses,
-    get_stamp, get_top_favorites,
+    get_country_of_the_day, get_stamp, get_top_favorites,
     get_discoveries, get_cheered_for, get_won_with, get_family_top_favorites,
 )
-from services.images import get_country_image_html, get_country_image_data_uri
+from services.images import get_country_image_data_uri
 from services.time_utils import fmt_match_time, pt_date_str
 from services.database import get_connection
 from services.map_utils import build_atlas_figure, get_iso3_maps
@@ -29,127 +23,68 @@ def _show_player_modal_home(slug: str) -> None:
     uid = st.session_state.get('active_user_id', 1)
     render_player_modal_content(slug, uid)
 
+
 st.markdown("""
 <style>
-/* ── Match card shared ───────────────────────────── */
-.match-card-tomorrow {
-    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
-    border-radius: 16px; padding: 1.1rem 1rem .7rem; color: white; margin-bottom: .5rem;
-    border: 1px solid rgba(148,163,184,.25);
-}
-.match-flags   { text-align:center; font-size:4.6rem; line-height:1; margin-bottom:.15rem; }
-.match-teams   { text-align:center; font-size:1.2rem; font-weight:900; margin-bottom:.2rem; letter-spacing:-.01em; }
-.match-meta    { text-align:center; font-size:.73rem; color:#94A3B8; margin:.05rem 0; }
+/* ── Match card ──────────────────────────────────── */
+.match-flags { text-align:center; font-size:4.6rem; line-height:1; margin-bottom:.15rem; }
+.match-teams { text-align:center; font-size:1.2rem; font-weight:900; margin-bottom:.2rem; letter-spacing:-.01em; }
+.match-meta  { text-align:center; font-size:.73rem; color:#94A3B8; margin:.05rem 0; }
 
-/* ── COTD card ───────────────────────────────────── */
-.cotd-card {
-    background: linear-gradient(160deg, #064E3B 0%, #059669 60%, #10B981 100%);
-    border-radius: 18px; overflow:hidden; color: white;
-}
-.cotd-body     { padding: .45rem .85rem .6rem; }
-.cotd-inline   { display:flex; align-items:center; gap:.45rem;
-                  justify-content:center; margin:.18rem 0 .08rem; }
-.cotd-flag     { font-size:1.9rem; line-height:1; }
-.cotd-country  { font-size:1.4rem; font-weight:900; }
-.cotd-stamp    { text-align:center; font-size:.82rem; color:#A7F3D0; margin-bottom:.15rem; }
-.cotd-context  { font-size:.79rem; color:#6EE7B7; font-weight:700; }
-.cotd-why      { font-size:.84rem; font-weight:800; color:#D1FAE5; margin:.18rem 0 .08rem; }
-.cotd-reason   { display:inline-block; background:rgba(255,255,255,.18);
-                 border-radius:8px; padding:.1rem .4rem; font-size:.75rem; margin:.05rem; color:white; }
-.cotd-fact     { font-size:.76rem; color:#ECFDF5; line-height:1.35; margin-top:.15rem; }
-
-/* ── Story cards ─────────────────────────────────── */
-.story-card {
-    display:flex; align-items:center; gap:.7rem;
-    background:rgba(248,250,252,.06); border:1px solid rgba(255,255,255,.06);
-    border-radius:12px; padding:.55rem .8rem; margin:.25rem 0;
-    min-height:3.6rem;
-}
-/* ── Leaderboard ─────────────────────────────────── */
+/* ── Leaderboard row ─────────────────────────────── */
 .lb-row {
-    padding:.6rem .8rem; border-radius:10px; margin:.25rem 0; min-height:3.6rem;
+    padding:.55rem .75rem; border-radius:10px; margin:.2rem 0;
     box-shadow:0 2px 6px rgba(0,0,0,.2);
 }
-/* ── Story tier variants ─────────────────────────── */
-.story-t1 {
-    background:rgba(251,191,36,.09) !important;
-    border-color:#D97706 !important;
-    border-left:3px solid #D97706 !important;
-    box-shadow:0 1px 4px rgba(217,119,6,.12) !important;
-}
-.story-t2 {
-    background:rgba(16,185,129,.07) !important;
-    border-color:#10B981 !important;
-    border-left:3px solid #10B981 !important;
-    box-shadow:0 1px 4px rgba(16,185,129,.1) !important;
-}
-/* ── Pick participation bar ──────────────────────── */
-.pick-bar {
-    margin:.45rem 0 .1rem;
-    font-size:.72rem;
-    font-weight:700;
-    text-align:center;
-}
+
 /* ── Section titles ──────────────────────────────── */
 .section-head {
-    font-size:1.35rem; font-weight:900; margin:.95rem 0 .4rem;
+    font-size:1.35rem; font-weight:900; margin:.9rem 0 .35rem;
     color:#F8FAFC; letter-spacing:-.01em;
-    padding-bottom:.3rem;
+    padding-bottom:.28rem;
     border-bottom:2px solid rgba(148,163,184,.2);
 }
-/* ── Achievement strip ───────────────────────────── */
-.ach-chip { display:inline-block; background:rgba(251,191,36,.13);
-            border:1px solid rgba(251,191,36,.3); border-radius:20px;
-            padding:.18rem .65rem; font-size:.88rem; margin:.12rem; }
-/* ── Passport preview ────────────────────────────── */
-.disc-chip { display:inline-flex; align-items:center; gap:.3rem;
-             background:rgba(16,185,129,.12); border:1px solid rgba(16,185,129,.25);
-             border-radius:8px; padding:.2rem .5rem; margin:.15rem; font-size:.85rem; }
+
+/* ── Compact picks strip ─────────────────────────── */
+.picks-strip {
+    background:rgba(30,41,59,.6); border:1px solid rgba(148,163,184,.15);
+    border-radius:10px; padding:.42rem .9rem; margin:.25rem 0 .5rem;
+    display:flex; align-items:center; gap:.55rem; flex-wrap:wrap;
+}
 </style>
 """, unsafe_allow_html=True)
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-def _cotd_image_block(country: str, height: str = "140px") -> str:
-    img = get_country_image_html(country, height=height, border_radius='0')
-    if img:
-        return img
+def _country_sq_img(country: str, size: str = "80px") -> str:
+    """Square background-image div for compact cards."""
+    uri  = get_country_image_data_uri(country) or ''
+    flag = get_flag(country)
+    if uri:
+        return (
+            f"<div style='width:{size};height:{size};flex-shrink:0;"
+            f"background:url(\"{uri}\") center/cover no-repeat;"
+            f"border-radius:7px'></div>"
+        )
     return (
-        f"<div style='height:{height};display:flex;flex-direction:column;"
-        "align-items:center;justify-content:center;"
-        "background:rgba(0,0,0,.25);color:rgba(255,255,255,.45);gap:.3rem'>"
-        "<span style='font-size:1.6rem'>📷</span>"
-        "<span style='font-size:.78rem'>Photo coming soon</span>"
-        "</div>"
+        f"<div style='width:{size};height:{size};flex-shrink:0;"
+        f"background:linear-gradient(135deg,#1E293B,#334155);"
+        f"display:flex;align-items:center;justify-content:center;"
+        f"font-size:2rem;border-radius:7px'>{flag}</div>"
     )
-
-
-def _cheered_by(country: str) -> list[dict]:
-    """Return list of {name, avatar} for users who picked this country in any match."""
-    conn = get_connection()
-    df = pd.read_sql("""
-        SELECT DISTINCT u.name, u.avatar
-        FROM picks p JOIN users u ON p.user_id = u.id
-        WHERE p.picked_team = ?
-        ORDER BY u.id
-    """, conn, params=(country,))
-    conn.close()
-    return df.to_dict('records')
 
 
 def _country_total_picks(country: str) -> int:
     conn = get_connection()
-    df = pd.read_sql(
-        "SELECT count(*) as cnt FROM picks WHERE picked_team = ?",
-        conn, params=(country,)
-    )
+    df   = pd.read_sql("SELECT count(*) as cnt FROM picks WHERE picked_team = ?",
+                       conn, params=(country,))
     conn.close()
     return int(df['cnt'].iloc[0]) if not df.empty else 0
 
 
 def _today_match_card(m):
-    """Match card with subtle country image background for Today's Matches."""
+    """Cinematic image-background match card for today's grid."""
     hf  = get_flag(m['home_team'])
     af  = get_flag(m['away_team'])
     mid = int(m['id'])
@@ -179,13 +114,10 @@ def _today_match_card(m):
         right_bg = f"background:url('{away_uri}') center/cover no-repeat;filter:brightness(.2) blur(2px)"
         card_html = (
             "<div style='position:relative;border-radius:16px;overflow:hidden;margin-bottom:.5rem'>"
-            # bg halves
             f"<div style='position:absolute;top:0;left:0;width:50%;height:100%;{left_bg}'></div>"
             f"<div style='position:absolute;top:0;right:0;width:50%;height:100%;{right_bg}'></div>"
-            # gradient overlay
             "<div style='position:absolute;inset:0;"
             "background:linear-gradient(135deg,rgba(30,58,95,.55) 0%,rgba(15,23,42,.45) 100%)'></div>"
-            # content
             "<div style='position:relative;z-index:1;padding:1.1rem 1rem .7rem;color:white'>"
             + flags_html
             + f"<div class='match-teams'>{m['home_team']} <span style='opacity:.5;font-weight:300'>vs</span> {m['away_team']}</div>"
@@ -194,8 +126,8 @@ def _today_match_card(m):
         )
     else:
         card_html = (
-            f"<div style='background:linear-gradient(135deg,#1E3A5F,#2563EB);"
-            f"border-radius:16px;padding:1.1rem 1rem .7rem;color:white;margin-bottom:.5rem'>"
+            "<div style='background:linear-gradient(135deg,#1E3A5F,#2563EB);"
+            "border-radius:16px;padding:1.1rem 1rem .7rem;color:white;margin-bottom:.5rem'>"
             + flags_html
             + f"<div class='match-teams'>{m['home_team']} <span style='opacity:.5;font-weight:300'>vs</span> {m['away_team']}</div>"
             + f"<div class='match-meta'>🕒 {time_str} · Group {m['group_letter']} · 📍 {m['city']}</div>"
@@ -208,134 +140,68 @@ def _today_match_card(m):
         st.switch_page("pages/matchup.py")
 
 
-def _tomorrow_match_card(m, match_picks: dict = None, all_users: list = None):
-    """match_picks: {user_id: picked_team}. all_users: list of {id,name,avatar} dicts."""
-    hf  = get_flag(m['home_team'])
-    af  = get_flag(m['away_team'])
-    mid = int(m['id'])
-    time_str = fmt_match_time(m['match_date'], m['kickoff_time_et'])
-
-    if m['status'] == 'completed':
-        hs, as_ = int(m['home_score']), int(m['away_score'])
-        flags_html = (
-            f"<div class='match-flags'>{hf}"
-            f"<span style='font-size:1.8rem;font-weight:900;color:#FCD34D;vertical-align:middle'>"
-            f"&nbsp;{hs}–{as_}&nbsp;</span>{af}</div>"
-        )
-        btn_label, btn_icon = "View Result", "📊"
-    else:
-        flags_html = (
-            f"<div class='match-flags'>{hf}"
-            f"<span style='font-size:1.4rem;color:#64748B;vertical-align:middle'>&nbsp;vs&nbsp;</span>"
-            f"{af}</div>"
-        )
-        btn_label, btn_icon = "Make Your Pick", "⚽"
-
-    # ── Pick participation block ──────────────────────────────────────────────
-    if match_picks is not None and all_users:
-        total      = len(all_users)
-        picked_ids = set(match_picks.keys())
-        n_picked   = len(picked_ids)
-        missing    = [u for u in all_users if int(u['id']) not in picked_ids]
-
-        if n_picked == total:
-            part_html = (
-                "<div class='pick-bar' style='color:#10B981'>"
-                "✅ All picks submitted!</div>"
-            )
-        elif n_picked == 0:
-            part_html = (
-                f"<div class='pick-bar' style='color:#64748B'>"
-                f"👨‍👩‍👧‍👦 No picks yet — {total} waiting</div>"
-            )
-        else:
-            missing_avs = " ".join(
-                f"<span title='{u['name']}' style='font-size:1.1rem'>{u['avatar']}</span>"
-                for u in missing
-            )
-            part_html = (
-                f"<div class='pick-bar' style='color:#F59E0B'>"
-                f"👨‍👩‍👧‍👦 {n_picked} / {total} picked</div>"
-                f"<div style='text-align:center;font-size:.72rem;color:#94A3B8;margin-bottom:.3rem'>"
-                f"⏳ Waiting: {missing_avs}</div>"
-            )
-    else:
-        part_html = ""
-
-    st.markdown(f"""
-<div class="match-card-tomorrow">
-    {flags_html}
-    <div class="match-teams">{m['home_team']} <span style='opacity:.5;font-weight:300'>vs</span> {m['away_team']}</div>
-    <div class="match-meta">🕒 {time_str} · Group {m['group_letter']} · 📍 {m['city']}</div>
-    {part_html}
-</div>""", unsafe_allow_html=True)
-
-    if st.button(f"{btn_icon} {btn_label}", key=f"home_go_{mid}", use_container_width=True):
-        st.session_state["_nav_match_id"] = mid
-        st.switch_page("pages/matchup.py")
+def _dedup_story(df: pd.DataFrame) -> pd.DataFrame:
+    """Collapse same-event / same-country / same-day rows from different users into one."""
+    if df.empty:
+        return df
+    rows: list[dict] = []
+    seen: dict       = {}
+    for _, row in df.iterrows():
+        ev  = str(row.get('event_type', '') or '')
+        cn  = str(row.get('country_name', '') or '')
+        day = str(row.get('timestamp', ''))[:10]
+        if ev in ('points_earned', 'country_discovered') and cn:
+            key = (ev, cn, day)
+            if key in seen:
+                idx = seen[key]
+                rows[idx]['_grp_avs']   = (rows[idx].get('_grp_avs')   or str(rows[idx].get('avatar','')))   + '|' + str(row.get('avatar',''))
+                rows[idx]['_grp_names'] = (rows[idx].get('_grp_names') or str(rows[idx].get('user_name',''))) + '|' + str(row.get('user_name',''))
+                continue
+            seen[key] = len(rows)
+        rows.append(dict(row))
+    return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Pre-compute dates + matches
 # ─────────────────────────────────────────────────────────────────────────────
-today     = (_dt.utcnow() - timedelta(hours=7)).date()  # UTC-7 = PDT; keeps correct date on cloud servers
-tomorrow  = today + timedelta(days=1)
+today     = (_dt.utcnow() - timedelta(hours=7)).date()   # PDT
 today_str = today.isoformat()
 
-all_matches      = get_all_matches()
+all_matches = get_all_matches()
 all_matches['pt_date'] = all_matches.apply(
     lambda r: pt_date_str(r['match_date'], r['kickoff_time_et']), axis=1
 )
+
 def _pt_sort_key(et_time: str) -> int:
-    """Convert ET kickoff time to PT minutes. Midnight ET (00:00) = 21:00 PT = 1260, sorts last."""
     try:
-        h, m = str(et_time).split(":")
-        et_min = int(h) * 60 + int(m)
-        pt_min = et_min - 180  # PDT = ET - 3h
-        if pt_min < 0:
-            pt_min += 1440  # wrap midnight: 00:00 ET → 1260 min (21:00 PT)
-        return pt_min
+        h, m   = str(et_time).split(":")
+        pt_min = int(h) * 60 + int(m) - 180
+        return pt_min + 1440 if pt_min < 0 else pt_min
     except Exception:
         return 9999
 
-today_matches    = all_matches[all_matches['pt_date'] == today_str].copy()
-today_matches['_sort_key'] = today_matches['kickoff_time_et'].apply(_pt_sort_key)
-today_matches    = today_matches.sort_values('_sort_key').drop(columns=['_sort_key'])
-
-tomorrow_matches = all_matches[all_matches['pt_date'] == tomorrow.isoformat()].copy()
-tomorrow_matches['_sort_key'] = tomorrow_matches['kickoff_time_et'].apply(_pt_sort_key)
-tomorrow_matches = tomorrow_matches.sort_values('_sort_key').drop(columns=['_sort_key'])
+today_matches = all_matches[all_matches['pt_date'] == today_str].copy()
+today_matches['_sk'] = today_matches['kickoff_time_et'].apply(_pt_sort_key)
+today_matches = today_matches.sort_values('_sk').drop(columns=['_sk'])
 
 board = get_leaderboard()
 
-# ── Pre-compute pick participation for tomorrow's matches ──────────────────────
-_conn_users = get_connection()
-_all_users_for_picks = pd.read_sql(
-    "SELECT id, name, avatar FROM users ORDER BY id", _conn_users
-).to_dict('records')
-_conn_users.close()
-
-_tomorrow_picks: dict[int, dict] = {}
-for _, _tm in tomorrow_matches.iterrows():
-    _mid = int(_tm['id'])
-    _pdf = get_picks_for_match(_mid)
-    _tomorrow_picks[_mid] = {
-        int(r['user_id']): r['picked_team'] for _, r in _pdf.iterrows()
-    }
+try:
+    cotd_hero = get_country_of_the_day()
+except Exception:
+    cotd_hero = None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 1. HERO — Dynamic World Cup Day banner
 # ─────────────────────────────────────────────────────────────────────────────
-wc_start = date(2026, 6, 11)
-wc_end   = date(2026, 7, 19)
+wc_start      = date(2026, 6, 11)
+wc_end        = date(2026, 7, 19)
 in_tournament = wc_start <= today <= wc_end
-day_num   = (today - wc_start).days + 1 if in_tournament else None
+day_num       = (today - wc_start).days + 1 if in_tournament else None
+n_today       = len(today_matches)
 
-n_today   = len(today_matches)
-completed_today = today_matches[today_matches['status'] == 'completed']
-
-# Latest result (most recent completed match overall)
 completed_all = all_matches[all_matches['status'] == 'completed'].sort_values(
     ['match_date', 'kickoff_time_et'], ascending=False
 )
@@ -343,14 +209,13 @@ last_result_html = ""
 if not completed_all.empty:
     lm = completed_all.iloc[0]
     lhf, laf = get_flag(lm['home_team']), get_flag(lm['away_team'])
-    hs, as_ = int(lm['home_score']), int(lm['away_score'])
+    hs, as_  = int(lm['home_score']), int(lm['away_score'])
     last_result_html = (
         f"<div style='font-size:.85rem;color:#CBD5E1;margin:.2rem 0'>"
         f"📊 Latest: {lhf} {lm['home_team']} <b style='color:#FCD34D'>{hs}–{as_}</b> {lm['away_team']} {laf}"
         f"</div>"
     )
 
-# Leader
 leader_html = ""
 if not board.empty:
     lr = board.iloc[0]
@@ -361,30 +226,18 @@ if not board.empty:
         f"</div>"
     )
 
-# COTD for hero
-try:
-    cotd_hero = get_country_of_the_day()
-    cotd_flag = cotd_hero['flag']
-    cotd_name = cotd_hero['country']
+cotd_hero_html = ""
+if cotd_hero:
     cotd_hero_html = (
         f"<div style='font-size:.85rem;color:#CBD5E1;margin:.2rem 0'>"
-        f"🌍 Country of the Day: {cotd_flag} <b>{cotd_name}</b>"
+        f"🌍 Country of the Day: {cotd_hero['flag']} <b>{cotd_hero['country']}</b>"
         f"</div>"
     )
-except Exception:
-    cotd_hero_html = ""
-    cotd_hero     = None
 
-# Day / matches line
-if in_tournament and day_num is not None:
-    day_label = f"⚽ Day {day_num}"
-else:
-    day_label = "⚽ FIFA World Cup 2026"
-
+day_label   = f"⚽ Day {day_num}" if in_tournament and day_num else "⚽ FIFA World Cup 2026"
 match_label = (
     f"🗓 {n_today} Match{'es' if n_today != 1 else ''} Today"
-    if n_today > 0
-    else "🗓 No matches today"
+    if n_today > 0 else "🗓 No matches today"
 )
 
 st.markdown(
@@ -394,351 +247,142 @@ st.markdown(
     "<div>"
     "<div style='font-size:1rem;font-weight:900;color:#93C5FD;letter-spacing:.04em;text-transform:uppercase'>"
     "Espinosa World Cup Family HQ</div>"
-    f"<div style='font-size:2rem;font-weight:900;color:white;margin:.1rem 0;line-height:1.1'>"
-    f"{day_label}</div>"
+    f"<div style='font-size:2rem;font-weight:900;color:white;margin:.1rem 0;line-height:1.1'>{day_label}</div>"
     f"<div style='font-size:1rem;color:#93C5FD'>{match_label}</div>"
     "</div>"
     "<div style='text-align:right'>"
-    + last_result_html
-    + leader_html
-    + cotd_hero_html
-    + "</div>"
-    "</div>"
-    "</div>",
-    unsafe_allow_html=True
+    + last_result_html + leader_html + cotd_hero_html
+    + "</div></div></div>",
+    unsafe_allow_html=True,
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 2. NEXT KICKOFF COUNTDOWN
 # ─────────────────────────────────────────────────────────────────────────────
-now_pt = _dt.utcnow() - timedelta(hours=7)   # UTC → PDT (UTC-7 in June)
+now_pt = _dt.utcnow() - timedelta(hours=7)
 
-upcoming_with_time = []
+upcoming = []
 for _, m in all_matches[all_matches['status'] == 'scheduled'].iterrows():
     try:
-        ko_et  = _dt.strptime(f"{m['match_date']} {m['kickoff_time_et']}", "%Y-%m-%d %H:%M")
-        ko_pt  = ko_et - timedelta(hours=3)
-        upcoming_with_time.append((ko_pt, m))
+        ko_pt = _dt.strptime(f"{m['match_date']} {m['kickoff_time_et']}", "%Y-%m-%d %H:%M") - timedelta(hours=3)
+        upcoming.append((ko_pt, m))
     except Exception:
         pass
 
-if upcoming_with_time:
-    upcoming_with_time.sort(key=lambda x: x[0])
-    next_ko_pt, next_m = upcoming_with_time[0]
-    delta = next_ko_pt - now_pt
-    total_secs = delta.total_seconds()
+if upcoming:
+    upcoming.sort(key=lambda x: x[0])
+    next_ko_pt, next_m = upcoming[0]
+    secs = (next_ko_pt - now_pt).total_seconds()
+    nhf  = get_flag(next_m['home_team'])
+    naf  = get_flag(next_m['away_team'])
 
-    nhf = get_flag(next_m['home_team'])
-    naf = get_flag(next_m['away_team'])
-    matchup_str = f"{nhf} {next_m['home_team']} vs {next_m['away_team']} {naf}"
-
-    if -9000 < total_secs < 0:
-        countdown_label = "🟢 Live now!"
-        countdown_color = "#4ADE80"
-    elif total_secs <= 0:
-        countdown_label = "Final"
-        countdown_color = "#94A3B8"
-    elif total_secs < 3600:
-        minutes = int(total_secs // 60)
-        countdown_label = f"Starts in {minutes}m"
-        countdown_color = "#FBBF24"
+    if -9000 < secs < 0:
+        label, color = "🟢 Live now!", "#4ADE80"
+    elif secs <= 0:
+        label, color = "Final", "#94A3B8"
+    elif secs < 3600:
+        label, color = f"Starts in {int(secs//60)}m", "#FBBF24"
     else:
-        hours   = int(total_secs // 3600)
-        minutes = int((total_secs % 3600) // 60)
-        countdown_label = f"Starts in {hours}h {minutes}m"
-        countdown_color = "#93C5FD"
+        label, color = f"Starts in {int(secs//3600)}h {int((secs%3600)//60)}m", "#93C5FD"
 
     st.markdown(
         f"<div style='background:rgba(30,58,95,.55);border:1px solid rgba(147,197,253,.25);"
         f"border-radius:12px;padding:.55rem 1rem;margin-bottom:.6rem;"
         f"display:flex;align-items:center;gap:.8rem;flex-wrap:wrap'>"
         f"<span style='font-size:1.1rem;color:#93C5FD;font-weight:700;white-space:nowrap'>⏰ Next Kickoff</span>"
-        f"<span style='font-size:1.1rem;color:#F1F5F9'>{matchup_str}</span>"
-        f"<span style='margin-left:auto;font-size:1.13rem;font-weight:800;color:{countdown_color}'>"
-        f"{countdown_label}</span>"
+        f"<span style='font-size:1.1rem;color:#F1F5F9'>{nhf} {next_m['home_team']} vs {next_m['away_team']} {naf}</span>"
+        f"<span style='margin-left:auto;font-size:1.13rem;font-weight:800;color:{color}'>{label}</span>"
         f"</div>",
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 st.divider()
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 3. Today's Matches — cinematic image-background cards
+# 3. TODAY'S MATCHES — 3-col grid for 5-6, 4-col otherwise
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown('<div class="section-head">🗓️ Today\'s Matches</div>', unsafe_allow_html=True)
 
 if today_matches.empty:
-    st.info("No matches today — check tomorrow's line-up below!")
+    st.info("No matches today — check the Schedule for upcoming matches!")
 else:
-    cols = st.columns(min(len(today_matches), 4))
-    for col, (_, m) in zip(cols, today_matches.iterrows()):
-        with col:
-            _today_match_card(m)
+    _n = len(today_matches)
+    n_cols = 3 if _n >= 5 else min(_n, 4)
+    _cols  = st.columns(n_cols)
+    for _i, (_, _m) in enumerate(today_matches.iterrows()):
+        with _cols[_i % n_cols]:
+            _today_match_card(_m)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 3b. Today's Picks Strip
+# 4. COMPACT PICKS STRIP — single horizontal line
 # ─────────────────────────────────────────────────────────────────────────────
-_strip_uid   = st.session_state.get("active_user_id", 1)
-_strip_uname = st.session_state.get("active_user_name", "You")
-_upcoming_today = today_matches[today_matches['status'] != 'completed']
+_uid   = st.session_state.get("active_user_id", 1)
+_uname = st.session_state.get("active_user_name", "You")
+_uav   = st.session_state.get("active_user_avatar", "🐘")
 
-if not _upcoming_today.empty:
+if not today_matches.empty:
+    _pick_parts: list[str] = []
+    _n_unpicked = 0
+    for _, _m in today_matches.iterrows():
+        _mid  = int(_m['id'])
+        _pdf  = get_picks_for_match(_mid)
+        _urow = _pdf[_pdf['user_id'] == _uid] if not _pdf.empty else pd.DataFrame()
+        _pick = _urow.iloc[0]['picked_team'] if not _urow.empty else None
+
+        if _m['status'] == 'completed':
+            if _pick:
+                _pf = get_flag(_pick)
+                hs, as_ = int(_m['home_score']), int(_m['away_score'])
+                if (_pick == _m['home_team'] and hs > as_) or (_pick == _m['away_team'] and as_ > hs):
+                    _res = "✅"
+                elif hs == as_:
+                    _res = "🟡"
+                else:
+                    _res = "❌"
+                _pick_parts.append(
+                    f"<span style='display:inline-flex;flex-direction:column;align-items:center;"
+                    f"gap:0;line-height:1' title='{_pick}'>"
+                    f"<span style='font-size:1.3rem'>{_pf}</span>"
+                    f"<span style='font-size:.6rem'>{_res}</span></span>"
+                )
+            else:
+                _pick_parts.append("<span style='font-size:.85rem;color:#475569'>—</span>")
+        elif _pick:
+            _pick_parts.append(f"<span style='font-size:1.4rem' title='{_pick}'>{get_flag(_pick)}</span>")
+        else:
+            _n_unpicked += 1
+            _pick_parts.append(
+                "<span style='font-size:.75rem;color:#475569;border:1px solid #334155;"
+                "border-radius:50%;width:1.1rem;height:1.1rem;"
+                "display:inline-flex;align-items:center;justify-content:center'>?</span>"
+            )
+
+    _tail = (
+        f"<span style='margin-left:auto;font-size:.8rem;color:#FBBF24;font-weight:700'>⏳ {_n_unpicked} not picked</span>"
+        if _n_unpicked else
+        "<span style='margin-left:auto;font-size:.8rem;color:#4ADE80;font-weight:700'>✅ All picked!</span>"
+    )
     st.markdown(
-        f'<div class="section-head">⚽ {_strip_uname}\'s Picks Today</div>',
+        f"<div class='picks-strip'>"
+        f"<span style='font-size:1.2rem'>{_uav}</span>"
+        f"<span style='font-size:.88rem;font-weight:800;color:#94A3B8;white-space:nowrap'>{_uname}'s Picks:</span>"
+        f"<span style='display:flex;align-items:center;gap:.45rem'>{''.join(_pick_parts)}</span>"
+        f"{_tail}</div>",
         unsafe_allow_html=True,
     )
-    for _, _sm in _upcoming_today.iterrows():
-        _mid   = int(_sm['id'])
-        _spdf  = get_picks_for_match(_mid)
-        _urow  = _spdf[_spdf['user_id'] == _strip_uid] if not _spdf.empty else pd.DataFrame()
-        _upick = _urow.iloc[0]['picked_team'] if not _urow.empty else None
-        _hf    = get_flag(_sm['home_team'])
-        _af    = get_flag(_sm['away_team'])
-        _kto   = fmt_match_time(_sm['match_date'], _sm['kickoff_time_et'])
-
-        if _upick:
-            _pf = get_flag(_upick)
-            st.markdown(
-                f"<div style='background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);"
-                f"border-radius:10px;padding:.55rem 1rem;margin:.25rem 0;"
-                f"display:flex;align-items:center;gap:.75rem;flex-wrap:wrap'>"
-                f"<span style='font-size:1.4rem'>{_hf}</span>"
-                f"<span style='font-size:.88rem;font-weight:700;color:#CBD5E1;flex:1'>"
-                f"{_sm['home_team']} vs {_sm['away_team']}</span>"
-                f"<span style='font-size:.74rem;color:#64748B'>🕒 {_kto}</span>"
-                f"<span style='font-size:.88rem;color:#4ADE80;font-weight:800'>"
-                f"✅ {_pf} {_upick}</span>"
-                f"<span style='font-size:1.4rem'>{_af}</span>"
-                f"</div>",
-                unsafe_allow_html=True,
-            )
-        else:
-            st.markdown(
-                f"<div style='background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);"
-                f"border-radius:10px;padding:.55rem 1rem;margin:.25rem 0;"
-                f"display:flex;align-items:center;gap:.75rem;flex-wrap:wrap'>"
-                f"<span style='font-size:1.4rem'>{_hf}</span>"
-                f"<span style='font-size:.88rem;font-weight:700;color:#CBD5E1;flex:1'>"
-                f"{_sm['home_team']} vs {_sm['away_team']}</span>"
-                f"<span style='font-size:.74rem;color:#64748B'>🕒 {_kto}</span>"
-                f"<span style='font-size:.82rem;color:#FCD34D;font-weight:700'>⏳ Not picked</span>"
-                f"<span style='font-size:1.4rem'>{_af}</span>"
-                f"</div>",
-                unsafe_allow_html=True,
-            )
-            _pb1, _pb2, _pbrest = st.columns([1, 1, 2])
-            with _pb1:
-                if st.button(f"{_hf} {_sm['home_team']}", key=f"qpick_{_mid}_h"):
-                    save_pick(_strip_uid, _mid, _sm['home_team'])
-                    st.rerun()
-            with _pb2:
-                if st.button(f"{_af} {_sm['away_team']}", key=f"qpick_{_mid}_a"):
-                    save_pick(_strip_uid, _mid, _sm['away_team'])
-                    st.rerun()
 
 st.divider()
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 3d. Mini World Atlas
+# 5. THREE-COLUMN: Leaderboard | Family Favorites | Discovery Race
 # ─────────────────────────────────────────────────────────────────────────────
-_home_map_head, _home_map_btn = st.columns([5, 1])
-with _home_map_head:
-    st.markdown('<div class="section-head">🌎 World Atlas</div>', unsafe_allow_html=True)
-with _home_map_btn:
-    st.markdown("&nbsp;", unsafe_allow_html=True)
-    if st.button("Open Full Atlas →", use_container_width=True, key="home_open_atlas"):
-        st.switch_page("pages/map.py")
-
-try:
-    _map_teams     = get_all_teams()
-    _map_iso3, _   = get_iso3_maps(_map_teams)
-    _active_uid    = st.session_state.get("active_user_id", 1)
-    _map_disc_df   = get_discoveries(_active_uid)
-    _map_disc      = set(_map_disc_df["country_name"].tolist()) if not _map_disc_df.empty else set()
-    _map_cheered   = set(get_cheered_for(_active_uid))
-    _map_won       = set(get_won_with(_active_uid))
-    _map_favs      = get_family_top_favorites(n=5)
-    _map_today     = set(today_matches["home_team"].tolist() + today_matches["away_team"].tolist())
-
-    _mini_fig = build_atlas_figure(
-        layer="today",
-        teams_df=_map_teams,
-        discoveries=_map_disc,
-        cheered=_map_cheered,
-        won=_map_won,
-        family_favs=_map_favs,
-        today_countries=_map_today,
-        height=300,
-    )
-    _mini_event = st.plotly_chart(
-        _mini_fig,
-        on_select="rerun",
-        use_container_width=True,
-        key="home_mini_atlas",
-    )
-    # Click on mini-map country → open country profile
-    if _mini_event and _mini_event.selection and _mini_event.selection.points:
-        _pt = _mini_event.selection.points[0]
-        _iso3 = _pt.get("location")
-        if _iso3 and _iso3 in _map_iso3:
-            st.session_state["_nav_country"] = _map_iso3[_iso3]
-            st.switch_page("pages/country_profile.py")
-
-    # Caption with today's countries
-    if _map_today:
-        _today_flags = " ".join(
-            str(_map_teams.loc[_map_teams["name"] == n, "flag_emoji"].values[0])
-            for n in sorted(_map_today)
-            if not _map_teams.loc[_map_teams["name"] == n, "flag_emoji"].empty
-        )
-        st.caption(f"⚡ Playing today: {_today_flags}  ·  📍 Blue = USA · Red = Canada · Green = Mexico")
-    else:
-        st.caption("📍 Blue = USA · Red = Canada · Green = Mexico")
-except Exception:
-    st.info("🌎 Map loading...")
-
-st.divider()
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 4. Country of the Day  +  5. Family Passport Progress
-# ─────────────────────────────────────────────────────────────────────────────
-cotd_col, _, passport_col = st.columns([5, 1, 4])
-
-with cotd_col:
-    st.markdown('<div class="section-head">🌍 Country of the Day</div>', unsafe_allow_html=True)
-    try:
-        cotd = cotd_hero if cotd_hero is not None else get_country_of_the_day()
-
-        img_html = _cotd_image_block(cotd['country'], height="115px")
-
-        reasons_html = " ".join(
-            f"<span class='cotd-reason'>{r}</span>"
-            for r in cotd['cheer_reasons'][:2]
-        )
-        if cotd['reason_detail']:
-            context_line = f"🏟️ Playing today{cotd['reason_detail']}"
-        elif "discovered" in cotd['reason'].lower():
-            context_line = "🌍 Hidden gem"
-        else:
-            context_line = "🌟 Featured today"
-
-        credit = cotd.get('hero_image_credit', '').strip()
-        credit_html = (
-            f"<div style='font-size:.65rem;color:rgba(255,255,255,.35);text-align:right;margin-top:.1rem'>"
-            f"📷 {credit}</div>"
-            if credit else ""
-        )
-
-        # Context + cheered-by on one line
-        cheerers = _cheered_by(cotd['country'])
-        if cheerers:
-            cheer_parts = []
-            for u in cheerers:
-                name, av = u['name'], u['avatar']
-                cheer_parts.append(f"<span style='font-size:1.15rem' title='{name}'>{av}</span>")
-            cheer_inline = (
-                f" &nbsp;·&nbsp; <span style='font-weight:400;color:#A7F3D0'>Cheered by: "
-                + " ".join(cheer_parts)
-                + "</span>"
-            )
-        else:
-            cheer_inline = ""
-
-        context_row = (
-            f"<div class='cotd-context' style='margin:.15rem 0'>"
-            f"{context_line}{cheer_inline}</div>"
-        )
-
-        card_html = (
-            '<div class="cotd-card">'
-            + img_html
-            + '<div class="cotd-body">'
-            + '<div class="cotd-inline">'
-            + f'<span class="cotd-flag">{cotd["flag"]}</span>'
-            + f'<span class="cotd-country">{cotd["country"]}</span>'
-            + '</div>'
-            + f'<div class="cotd-stamp">{cotd["stamp_emoji"]} {cotd["stamp_label"]} · {cotd["continent"]}</div>'
-            + '<hr style="border-color:rgba(255,255,255,.18);margin:.25rem 0">'
-            + context_row
-            + f'<div class="cotd-why">Why learn about {cotd["country"]}?</div>'
-            + f'<div style="margin-bottom:.15rem">{reasons_html}</div>'
-            + f'<div class="cotd-fact">💡 {cotd["fun_fact"]}</div>'
-            + (f'<div class="cotd-fact">🏴 {cotd["flag_fact"]}</div>' if cotd.get("flag_fact") else "")
-            + credit_html
-            + '</div>'
-            + '</div>'
-        )
-        st.markdown(card_html, unsafe_allow_html=True)
-
-        if st.button(f"🌍 Explore {cotd['country']}", use_container_width=True, key="cotd_btn"):
-            st.session_state["_nav_country"] = cotd['country']
-            st.switch_page("pages/country_profile.py")
-    except Exception as e:
-        st.info(f"Country of the Day loading… ({e})")
-
-with passport_col:
-    st.markdown('<div class="section-head">🛂 Family Passport</div>', unsafe_allow_html=True)
-    try:
-        statuses  = get_family_stamp_statuses()
-        total     = len(statuses)
-        fam_disc  = sum(1 for s in statuses.values() if s['discovered'])
-        fam_cheer = sum(1 for s in statuses.values() if s['cheered'])
-        fam_won   = sum(1 for s in statuses.values() if s['won'])
-
-        for label, count in [
-            ("🌍 Countries Visited",  fam_disc),
-            ("⚽ Teams Cheered For",  fam_cheer),
-            ("🏆 Teams Won With",     fam_won),
-        ]:
-            st.markdown(f"**{label}:** {count} / {total}")
-            st.progress(count / total)
-
-        # Recently Collected — deduplicated by country, stamp + name chips
-        recent_disc = get_recent_family_discoveries(8)
-        if not recent_disc.empty:
-            seen    = set()
-            chips   = []
-            for _, row in recent_disc.iterrows():
-                country = row['country_name']
-                if country in seen:
-                    continue
-                seen.add(country)
-                stamp_emoji = get_stamp(country).get('stamp_emoji', '🌍')
-                chips.append(
-                    f"<span class='disc-chip'>"
-                    f"<span style='font-size:1rem'>{stamp_emoji}</span> {country}"
-                    f"</span>"
-                )
-                if len(chips) >= 4:
-                    break
-
-            st.markdown(
-                "<div style='font-size:.8rem;font-weight:700;color:#475569;margin:.7rem 0 .2rem'>"
-                "Recently Collected</div>",
-                unsafe_allow_html=True
-            )
-            st.markdown(f"<div>{''.join(chips)}</div>", unsafe_allow_html=True)
-
-        if st.button("📖 Open Family Passport", use_container_width=True):
-            st.switch_page("pages/passport_family.py")
-    except Exception:
-        st.info("Passport loading...")
-
-st.divider()
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 6–8. Family Story | Family Favorites | Leaderboard
-# ─────────────────────────────────────────────────────────────────────────────
-lb_order = board['id'].tolist()
-
-lb_col, fav_col, feed_col = st.columns([3, 5, 5])
+lb_col, fav_col, disc_col = st.columns([3, 4, 4])
 
 # ── Leaderboard ───────────────────────────────────────────────────────────────
 with lb_col:
     st.markdown('<div class="section-head">🏆 Leaderboard</div>', unsafe_allow_html=True)
     medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣", "6️⃣"]
     for i, (_, row) in enumerate(board.iterrows()):
-        medal = medals[i] if i < len(medals) else " "
         pts   = float(row['total_points'])
         wins  = int(row['correct_picks'])
         cw    = int(row.get('countries_won', 0))
@@ -747,64 +391,16 @@ with lb_col:
             f"<div class='lb-row' style='background:{color}22;border-left:3px solid {color};"
             f"display:flex;align-items:center;gap:.5rem'>"
             f"<span style='font-size:2rem;flex-shrink:0'>{row['avatar']}</span>"
-            f"<div><div style='font-size:1.05rem;font-weight:800'>{medal} {row['name']}</div>"
-            f"<div style='color:#475569;font-size:.92rem'>"
-            f"<b>{pts:.1f}</b> pts · {wins} wins · {cw} 🌍"
-            f"</div></div></div>",
-            unsafe_allow_html=True
+            f"<div><div style='font-size:1.05rem;font-weight:800'>{medals[i] if i < len(medals) else ''} {row['name']}</div>"
+            f"<div style='color:#475569;font-size:.88rem'><b>{pts:.1f}</b> pts · {wins} wins · {cw} 🌍</div>"
+            f"</div></div>",
+            unsafe_allow_html=True,
         )
 
-    # ── Discovery Race compact widget ─────────────────────────────────────────
-    st.markdown(
-        "<div class='section-head' style='margin-top:.9rem'>🌎 Discovery Race</div>",
-        unsafe_allow_html=True,
-    )
-    try:
-        _exp_board  = get_explorer_leaderboard()
-        _exp_weekly = get_weekly_explorer()
-
-        # Weekly explorer teaser
-        if _exp_weekly and _exp_weekly['count'] > 0:
-            _ew_word = "country" if _exp_weekly['count'] == 1 else "countries"
-            st.markdown(
-                f"<div style='background:rgba(168,85,247,.12);border-left:3px solid #A855F7;"
-                f"border-radius:0 8px 8px 0;padding:.4rem .65rem;margin:.3rem 0 .5rem;"
-                f"font-size:.8rem'>"
-                f"<span style='color:#A855F7;font-weight:800'>🌟 Explorer of the Week</span><br>"
-                f"<span style='color:#F1F5F9'>{_exp_weekly['avatar']} {_exp_weekly['name']}"
-                f" — {_exp_weekly['count']} new {_ew_word}</span>"
-                f"</div>",
-                unsafe_allow_html=True,
-            )
-
-        # Top 3 explorers
-        for _erow in _exp_board[:3]:
-            _escore = _erow['score']
-            _etitle, _eemoji = get_badge(_escore)
-            _ecolor = _erow['theme_color']
-            st.markdown(
-                f"<div class='lb-row' style='background:{_ecolor}22;border-left:3px solid {_ecolor};"
-                f"display:flex;align-items:center;gap:.5rem'>"
-                f"<span style='font-size:2rem;flex-shrink:0'>{_erow['avatar']}</span>"
-                f"<div><div style='font-size:1.05rem;font-weight:800'>{_erow['name']}</div>"
-                f"<div style='color:#475569;font-size:.82rem'>"
-                f"<b>{_escore}</b> pts · {_eemoji} {_etitle}"
-                f"</div></div></div>",
-                unsafe_allow_html=True,
-            )
-
-        st.page_link("pages/discovery_race.py", label="→ Full Discovery Race", icon="🌎")
-
-    except Exception:
-        st.caption("Discovery Race loading...")
-
-
-# ── Family Favorites — sorted by most shared, with context line ───────────────
+# ── Family Favorites — compact [square image] + [text] media cards ─────────────
 with fav_col:
     st.markdown('<div class="section-head">⭐ Family Favorites</div>', unsafe_allow_html=True)
-
     try:
-        # Build country → [(board_rank, user_row), ...] mapping
         country_owners: dict[str, list] = {}
         no_fav_rows = []
         for i, (_, row) in enumerate(board.iterrows()):
@@ -815,139 +411,163 @@ with fav_col:
             else:
                 no_fav_rows.append(row)
 
-        # Sort: most shared first, then by best-ranking fan within ties
         sorted_countries = sorted(
             country_owners.items(),
-            key=lambda item: (-len(item[1]), min(rank for rank, _ in item[1])),
+            key=lambda item: (-len(item[1]), min(r for r, _ in item[1])),
         )
 
         for country, owners in sorted_countries:
-            n_fans    = len(owners)
-            top_rank  = owners[0][0]
-            # Border color by share level
-            if n_fans >= 4:
-                border = "#9333EA"   # purple — very popular
-            elif n_fans >= 2:
-                border = "#3B82F6"   # blue — shared
-            else:
-                border = "#D97706"   # gold — individual #1 pick
-
-            stamp      = get_stamp(country)
-            flag       = get_flag(country)
+            n_fans   = len(owners)
+            border   = "#9333EA" if n_fans >= 4 else "#3B82F6" if n_fans >= 2 else "#D97706"
+            stamp    = get_stamp(country)
+            flag     = get_flag(country)
+            landmark = stamp.get('stamp_label', '')
             pick_count = _country_total_picks(country)
-            img_html   = (
-                get_country_image_html(country, height='72px', border_radius='10px 10px 0 0')
-                or f"<div style='height:72px;background:linear-gradient(135deg,#1E293B,#334155);"
-                   f"display:flex;align-items:center;justify-content:center;"
-                   f"font-size:2.5rem;border-radius:10px 10px 0 0'>{flag}</div>"
-            )
 
-            # Context line — why this country appears
             if n_fans == 1:
-                sole = owners[0][1]
-                context_line = f"❤️ {sole['name']}'s favorite"
-                context_color = "#94A3B8"
+                ctx, ctx_color = f"❤️ {owners[0][1]['name']}'s #1 pick", "#94A3B8"
             elif n_fans == 2:
-                context_line  = f"👨‍👩‍👧‍👦 Shared by 2 family members"
-                context_color = "#60A5FA"
+                ctx, ctx_color = "👨‍👩‍👧 Shared by 2 family members", "#60A5FA"
             else:
-                context_line  = f"👨‍👩‍👧‍👦 Shared by {n_fans} family members"
-                context_color = "#A78BFA"
+                ctx, ctx_color = f"👨‍👩‍👧 Shared by {n_fans} family members", "#A78BFA"
 
-            # Avatar pills for all fans
-            av_parts = []
-            for _, r in owners:
-                av_parts.append(
-                    f"<span style='font-size:1.45rem;line-height:1' title='{r['name']}'>"
-                    f"{r['avatar']}</span>"
-                )
-            avatar_row = (
-                f"<div style='display:flex;gap:.25rem;flex-wrap:wrap;"
-                f"margin-top:.25rem;align-items:center'>"
-                + " ".join(av_parts)
-                + "</div>"
+            av_html = "".join(
+                f"<span title='{r[\"name\"]}' style='font-size:1.2rem'>{r['avatar']}</span>"
+                for _, r in owners
             )
 
             st.markdown(
-                f"<div style='background:var(--secondary-background-color);"
-                f"border:2px solid {border};border-radius:12px;"
-                f"overflow:hidden;margin:.25rem 0;box-shadow:0 1px 4px rgba(0,0,0,.08)'>"
-                f"{img_html}"
-                f"<div style='padding:.4rem .65rem'>"
-                f"<div style='display:flex;align-items:center;gap:.3rem'>"
-                f"<span style='font-size:1.3rem;line-height:1'>{flag}</span>"
-                f"<span style='font-size:.95rem;font-weight:900'>{country}</span>"
-                f"</div>"
-                f"<div style='font-size:.7rem;color:#64748B;margin:.1rem 0'>"
-                f"{stamp['stamp_emoji']} {stamp['stamp_label']}</div>"
-                f"<div style='font-size:.72rem;font-weight:700;color:{context_color}'>"
-                f"{context_line}</div>"
-                f"{avatar_row}"
-                f"<div style='font-size:.68rem;color:#475569;margin-top:.2rem'>"
-                f"⚽ {pick_count} total pick{'s' if pick_count != 1 else ''}</div>"
+                f"<div style='display:flex;align-items:flex-start;gap:.55rem;"
+                f"border:2px solid {border};border-radius:10px;"
+                f"padding:.4rem .55rem .4rem .4rem;margin:.18rem 0'>"
+                + _country_sq_img(country, "78px")
+                + f"<div style='min-width:0;flex:1'>"
+                f"<div style='font-size:.93rem;font-weight:900'>{flag} {country}</div>"
+                f"<div style='font-size:.7rem;color:#64748B;margin:.04rem 0'>{landmark}</div>"
+                f"<div style='font-size:.72rem;font-weight:700;color:{ctx_color}'>{ctx}</div>"
+                f"<div style='display:flex;gap:.15rem;margin:.06rem 0'>{av_html}</div>"
+                f"<div style='font-size:.68rem;color:#475569'>⚽ {pick_count} pick{'s' if pick_count != 1 else ''}</div>"
                 f"</div></div>",
                 unsafe_allow_html=True,
             )
 
-        # Users with no favorite yet
         for row in no_fav_rows:
             st.markdown(
-                f"<div style='background:rgba(248,250,252,.04);border:1px solid rgba(255,255,255,.07);"
-                f"border-radius:12px;padding:.55rem .7rem;margin:.25rem 0;opacity:.45;"
+                f"<div style='border:1px solid rgba(255,255,255,.07);border-radius:10px;"
+                f"padding:.38rem .65rem;margin:.18rem 0;opacity:.4;"
                 f"display:flex;align-items:center;gap:.5rem'>"
-                f"<span style='font-size:1.6rem'>{row['avatar']}</span>"
+                f"<span style='font-size:1.4rem'>{row['avatar']}</span>"
                 f"<span style='font-size:.8rem;color:#94A3B8;font-style:italic'>"
-                f"{row['name']}'s favorite — keep exploring!</span></div>",
+                f"{row['name']} — keep exploring!</span></div>",
                 unsafe_allow_html=True,
             )
     except Exception:
-        st.info("Favorites loading...")
+        st.caption("Favorites loading...")
 
-# ── Family Story — tiered (milestones first, then exploration, then routine) ───
-with feed_col:
-    st.markdown('<div class="section-head">📖 Family Story</div>', unsafe_allow_html=True)
+# ── Discovery Race — promoted to first-class column ───────────────────────────
+with disc_col:
+    st.markdown('<div class="section-head">🌎 Discovery Race</div>', unsafe_allow_html=True)
+    try:
+        _exp_board  = get_explorer_leaderboard()
+        _exp_weekly = get_weekly_explorer()
 
-    _TIER_CLASS  = {1: "story-t1", 2: "story-t2", 3: ""}
-    _TIER_BADGE  = {1: "<span style='font-size:.65rem;font-weight:800;color:#D97706;"
-                       "background:rgba(251,191,36,.15);border-radius:4px;"
-                       "padding:.08rem .35rem;margin-left:.4rem'>✨ MILESTONE</span>",
-                    2: "", 3: ""}
-
-    story_items = get_tiered_family_activity(limit=8)
-
-    if story_items.empty:
-        st.markdown("""
-<div style='background:rgba(248,250,252,.05);border:1px solid rgba(255,255,255,.08);
-     border-radius:12px;padding:1.5rem;text-align:center;color:#64748B'>
-    <div style='font-size:2.8rem'>🗺️</div>
-    <div style='font-weight:700;margin:.4rem 0'>The adventure begins here.</div>
-    <div style='font-size:.88rem'>Explore Country Profiles and make picks to write the family story.</div>
-</div>""", unsafe_allow_html=True)
-    else:
-        for _, activity in story_items.iterrows():
-            icon, narrative = format_activity_message(activity)
-            tier   = int(activity.get('_tier', 3))
-            ts     = str(activity.get('timestamp', ''))[:10]
-            avatar = activity.get('avatar', '⚽')
-            name   = activity.get('user_name', '')
-            t_cls  = _TIER_CLASS.get(tier, "")
-            badge  = _TIER_BADGE.get(tier, "")
+        if _exp_weekly and _exp_weekly.get('count', 0) > 0:
+            _ew_word = "country" if _exp_weekly['count'] == 1 else "countries"
             st.markdown(
-                f'<div class="story-card {t_cls}">'
-                f"<span style='font-size:2.2rem;flex-shrink:0;line-height:1'>{avatar}</span>"
-                f"<div style='min-width:0;flex:1'>"
-                f"<div style='font-weight:800;font-size:.9rem;line-height:1.2'>"
-                f"{name}{badge}</div>"
-                f"<div style='font-size:.9rem;margin:.1rem 0'>{icon} {narrative}</div>"
-                f"<div style='font-size:.75rem;color:#94A3B8'>{ts}</div>"
-                f"</div></div>",
+                f"<div style='background:rgba(168,85,247,.12);border-left:3px solid #A855F7;"
+                f"border-radius:0 8px 8px 0;padding:.38rem .6rem;margin:.25rem 0 .45rem;"
+                f"font-size:.8rem'>"
+                f"<span style='color:#A855F7;font-weight:800'>🌟 This Week's Explorer</span><br>"
+                f"<span style='color:#F1F5F9'>{_exp_weekly['avatar']} {_exp_weekly['name']}"
+                f" — {_exp_weekly['count']} new {_ew_word}</span></div>",
                 unsafe_allow_html=True,
             )
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Featured Player of the Day — full-width horizontal card
-# ─────────────────────────────────────────────────────────────────────────────
+        medals_exp = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣", "6️⃣"]
+        for i, _erow in enumerate(_exp_board):
+            _escore        = _erow['score']
+            _etitle, _eemoji = get_badge(_escore)
+            _ecolor        = _erow['theme_color']
+            st.markdown(
+                f"<div class='lb-row' style='background:{_ecolor}22;border-left:3px solid {_ecolor};"
+                f"display:flex;align-items:center;gap:.5rem'>"
+                f"<span style='font-size:2rem;flex-shrink:0'>{_erow['avatar']}</span>"
+                f"<div><div style='font-size:1.05rem;font-weight:800'>"
+                f"{medals_exp[i] if i < len(medals_exp) else ''} {_erow['name']}</div>"
+                f"<div style='color:#475569;font-size:.82rem'><b>{_escore}</b> pts · {_eemoji} {_etitle}"
+                f"</div></div></div>",
+                unsafe_allow_html=True,
+            )
+        st.page_link("pages/discovery_race.py", label="→ Full Discovery Race", icon="🌎")
+    except Exception:
+        st.caption("Discovery Race loading...")
+
 st.divider()
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 6. FAMILY STORY — full-width compact 2-column feed, deduplicated
+# ─────────────────────────────────────────────────────────────────────────────
+st.markdown('<div class="section-head">📖 Family Story</div>', unsafe_allow_html=True)
+
+_TIER_STYLE = {
+    1: ("rgba(251,191,36,.07)",  "rgba(217,119,6,.55)"),
+    2: ("rgba(16,185,129,.06)",  "rgba(16,185,129,.4)"),
+    3: ("rgba(248,250,252,.03)", "rgba(255,255,255,.07)"),
+}
+
+story_items = _dedup_story(get_tiered_family_activity(limit=20))
+
+if story_items.empty:
+    st.markdown(
+        "<div style='background:rgba(248,250,252,.05);border:1px solid rgba(255,255,255,.08);"
+        "border-radius:12px;padding:1.2rem;text-align:center;color:#64748B'>"
+        "<div style='font-size:2.5rem'>🗺️</div>"
+        "<div style='font-weight:700;margin:.3rem 0'>The adventure begins here.</div>"
+        "<div style='font-size:.88rem'>Explore countries and make picks to write the family story.</div>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+else:
+    _scols = st.columns(2)
+    for _i, (_, _act) in enumerate(story_items.head(12).iterrows()):
+        _icon, _narr = format_activity_message(_act)
+        _tier  = int(_act.get('_tier', 3))
+        _ts    = str(_act.get('timestamp', ''))[:10]
+        _av    = str(_act.get('avatar', '⚽'))
+        _name  = str(_act.get('user_name', ''))
+        _bg, _border = _TIER_STYLE.get(_tier, _TIER_STYLE[3])
+
+        # Merge grouped users
+        _grp_avs = str(_act.get('_grp_avs') or '')
+        if '|' in _grp_avs:
+            _av = " ".join(a for a in _grp_avs.split('|')[:4] if a)
+            _grp_names = str(_act.get('_grp_names') or '').split('|')
+            _grp_names = [n for n in _grp_names if n]
+            if len(_grp_names) <= 3:
+                _name = " & ".join(_grp_names)
+            else:
+                _name = f"{len(_grp_names)} family members"
+
+        with _scols[_i % 2]:
+            st.markdown(
+                f"<div style='display:flex;align-items:center;gap:.45rem;padding:.28rem .55rem;"
+                f"border-radius:8px;margin:.08rem 0;background:{_bg};border:1px solid {_border}'>"
+                f"<span style='font-size:1.1rem;flex-shrink:0'>{_icon}</span>"
+                f"<span style='font-size:.95rem;flex-shrink:0'>{_av}</span>"
+                f"<span style='font-size:.84rem;font-weight:700;flex-shrink:0;color:#F1F5F9;"
+                f"max-width:5.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>{_name}</span>"
+                f"<span style='font-size:.83rem;flex:1;color:#CBD5E1;min-width:0;"
+                f"overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>{_narr}</span>"
+                f"<span style='font-size:.68rem;color:#475569;flex-shrink:0;white-space:nowrap'>{_ts}</span>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+
+st.divider()
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 7. FEATURED PLAYER OF THE DAY
+# ─────────────────────────────────────────────────────────────────────────────
 st.markdown('<div class="section-head">⭐ Featured Player of the Day</div>', unsafe_allow_html=True)
 try:
     _fp = get_featured_player_of_day()
@@ -957,19 +577,14 @@ try:
             st.markdown(
                 f"<div style='text-align:center;padding:.5rem 0'>"
                 f"<div style='font-size:4rem;line-height:1'>{_fp['flag']}</div>"
-                f"<div style='font-size:2.2rem;font-weight:900;color:#FCD34D;margin:.1rem 0'>"
-                f"#{_fp['shirt_number']}</div>"
-                f"<div style='font-size:1rem;font-weight:900;color:#F1F5F9;line-height:1.2'>"
-                f"{_fp['name']}</div>"
-                f"<div style='font-size:.82rem;color:#94A3B8;margin-top:.1rem'>"
-                f"{_fp['team']}</div>"
-                f"<div style='font-size:.78rem;color:#64748B'>"
-                f"{_fp['position']} · {_fp['club_short']}</div>"
+                f"<div style='font-size:2.2rem;font-weight:900;color:#FCD34D;margin:.1rem 0'>#{_fp['shirt_number']}</div>"
+                f"<div style='font-size:1rem;font-weight:900;color:#F1F5F9;line-height:1.2'>{_fp['name']}</div>"
+                f"<div style='font-size:.82rem;color:#94A3B8;margin-top:.1rem'>{_fp['team']}</div>"
+                f"<div style='font-size:.78rem;color:#64748B'>{_fp['position']} · {_fp['club_short']}</div>"
                 f"</div>",
                 unsafe_allow_html=True,
             )
-            if st.button("👤 Learn More", key=f"home_fp_{_fp['player_slug']}",
-                         use_container_width=True):
+            if st.button("👤 Learn More", key=f"home_fp_{_fp['player_slug']}", use_container_width=True):
                 _show_player_modal_home(_fp['player_slug'])
         with _fp_c2:
             st.markdown(
@@ -990,17 +605,52 @@ try:
 except Exception:
     st.caption("Featured player loading...")
 
+st.divider()
+
 # ─────────────────────────────────────────────────────────────────────────────
-# Tomorrow's Matches — full width, unchanged
+# 8. WORLD ATLAS PREVIEW
 # ─────────────────────────────────────────────────────────────────────────────
-if not tomorrow_matches.empty:
-    st.divider()
-    st.markdown('<div class="section-head">📅 Tomorrow\'s Matches</div>', unsafe_allow_html=True)
-    cols = st.columns(min(len(tomorrow_matches), 4))
-    for col, (_, m) in zip(cols, tomorrow_matches.iterrows()):
-        with col:
-            _tomorrow_match_card(
-                m,
-                match_picks=_tomorrow_picks.get(int(m['id']), {}),
-                all_users=_all_users_for_picks,
-            )
+_map_head, _map_btn = st.columns([5, 1])
+with _map_head:
+    st.markdown('<div class="section-head">🌎 World Atlas</div>', unsafe_allow_html=True)
+with _map_btn:
+    st.markdown("&nbsp;", unsafe_allow_html=True)
+    if st.button("Open Full Atlas →", use_container_width=True, key="home_open_atlas"):
+        st.switch_page("pages/map.py")
+
+try:
+    _map_teams   = get_all_teams()
+    _map_iso3, _ = get_iso3_maps(_map_teams)
+    _active_uid  = st.session_state.get("active_user_id", 1)
+    _map_disc_df = get_discoveries(_active_uid)
+    _map_disc    = set(_map_disc_df["country_name"].tolist()) if not _map_disc_df.empty else set()
+    _map_cheered = set(get_cheered_for(_active_uid))
+    _map_won     = set(get_won_with(_active_uid))
+    _map_favs    = get_family_top_favorites(n=5)
+    _map_today   = set(today_matches["home_team"].tolist() + today_matches["away_team"].tolist())
+
+    _mini_fig = build_atlas_figure(
+        layer="today", teams_df=_map_teams,
+        discoveries=_map_disc, cheered=_map_cheered, won=_map_won,
+        family_favs=_map_favs, today_countries=_map_today, height=300,
+    )
+    _mini_event = st.plotly_chart(_mini_fig, on_select="rerun",
+                                  use_container_width=True, key="home_mini_atlas")
+    if _mini_event and _mini_event.selection and _mini_event.selection.points:
+        _pt   = _mini_event.selection.points[0]
+        _iso3 = _pt.get("location")
+        if _iso3 and _iso3 in _map_iso3:
+            st.session_state["_nav_country"] = _map_iso3[_iso3]
+            st.switch_page("pages/country_profile.py")
+
+    if _map_today:
+        _today_flags = " ".join(
+            str(_map_teams.loc[_map_teams["name"] == n, "flag_emoji"].values[0])
+            for n in sorted(_map_today)
+            if not _map_teams.loc[_map_teams["name"] == n, "flag_emoji"].empty
+        )
+        st.caption(f"⚡ Playing today: {_today_flags}  ·  📍 Blue = USA · Red = Canada · Green = Mexico")
+    else:
+        st.caption("📍 Blue = USA · Red = Canada · Green = Mexico")
+except Exception:
+    st.info("🌎 Map loading...")

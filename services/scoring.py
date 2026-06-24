@@ -160,6 +160,17 @@ def _classify_status(pos: int, rows: list[dict]) -> tuple[str, str]:
     if played == 0:
         return "🟡 Still alive", "#94A3B8"
 
+    # ── Group fully complete — pos already reflects tiebreakers from sort ─────
+    if all(r['p'] >= 3 for r in rows):
+        if pos == 0:
+            return "🔒 Locked 1st", "#4ADE80"
+        elif pos == 1:
+            return "🔒 Locked 2nd", "#4ADE80"
+        elif pos == 2:
+            return "🟡 3rd place", "#FCD34D"   # may advance as best 3rd-place team
+        else:
+            return "❌ Eliminated", "#F87171"
+
     # ── Eliminated ────────────────────────────────────────────────────────────
     # At least 2 other teams already have strictly more pts than my maximum.
     # Points only increase, so those leads are permanent.

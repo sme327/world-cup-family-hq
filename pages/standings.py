@@ -141,11 +141,12 @@ def _group_summary(rows: list[dict]) -> str:
     adv        = [r['team'] for r in rows if r['status'] == '✅ Advanced']
     good       = [r['team'] for r in rows if r['status'] == '🟢 In good shape']
     alive      = [r['team'] for r in rows if r['status'] == '🟡 Still alive']
+    third      = [r['team'] for r in rows if r['status'] == '🟡 3rd place']
     needs      = [r['team'] for r in rows if r['status'] == '🟠 Needs help']
     elim       = [r['team'] for r in rows if r['status'] == '❌ Eliminated']
 
     # Wide-open shortcut — nothing decided yet
-    if not locked1 and not locked2 and not adv and not elim:
+    if not locked1 and not locked2 and not adv and not elim and not third:
         if len(alive) + len(good) == 4:
             return "🌍 Wide open — all four teams are still fighting!"
 
@@ -167,6 +168,8 @@ def _group_summary(rows: list[dict]) -> str:
         parts.append(f"🟡 {alive[0]} and {alive[1]} are still alive.")
     elif len(alive) == 1:
         parts.append(f"🟡 {alive[0]} is still alive.")
+    for t in third:
+        parts.append(f"🟡 {t} finished 3rd — still alive, competing for a best 3rd-place spot.")
     if needs:
         n = " and ".join(needs)
         verb = "need" if len(needs) > 1 else "needs"

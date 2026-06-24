@@ -432,7 +432,7 @@ with fav_col:
                 ctx, ctx_color = f"👨‍👩‍👧 Shared by {n_fans} family members", "#A78BFA"
 
             av_html = "".join(
-                f"<span title='{r[\"name\"]}' style='font-size:1.2rem'>{r['avatar']}</span>"
+                "<span title='" + str(r["name"]) + "' style='font-size:1.2rem'>" + str(r["avatar"]) + "</span>"
                 for _, r in owners
             )
 

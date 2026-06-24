@@ -177,6 +177,15 @@ st.markdown("""
     }
     /* Remove excessive top margin on columns row */
     [data-testid="stHorizontalBlock"]:first-of-type { margin-top: 0 !important; gap: .4rem !important; }
+
+    /* ── Cross-document View Transitions (Chrome 126+) ──────────────────
+       Replaces the white flash on nav clicks with a smooth dark crossfade.
+       Falls back gracefully in browsers that don't support it yet. */
+    @view-transition { navigation: auto; }
+    @keyframes _vt-fade-in  { from { opacity: 0; } }
+    @keyframes _vt-fade-out { to   { opacity: 0; } }
+    ::view-transition-old(root) { animation: 180ms ease-out both _vt-fade-out; }
+    ::view-transition-new(root) { animation: 260ms ease-in  both _vt-fade-in;  }
 </style>
 """, unsafe_allow_html=True)
 

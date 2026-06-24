@@ -346,7 +346,7 @@ else:
         st.markdown(f"""
 <div class='tnav-wrap'>
   <nav class='tnav'>
-    <a href='/home' class='{_ni("home")}' target='_self'>🏠 Home</a>
+    <a href='/' class='{_ni("home")}' target='_self'>🏠 Home</a>
     <span class='tnav-sep'></span>
     <div class='tnav-drop'>
       <span class='{_ni("play")}'>⚽ Play <span class='tnav-caret'>▾</span></span>

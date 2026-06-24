@@ -21,6 +21,13 @@ from services.time_utils import fmt_match_time, pt_date_str
 from services.database import get_connection
 from services.map_utils import build_atlas_figure, get_iso3_maps
 from services.explorer import get_explorer_leaderboard, get_weekly_explorer, get_badge
+from services.player_cards import get_featured_player_of_day, render_player_modal_content
+
+
+@st.dialog("⭐ Player Profile", width="large")
+def _show_player_modal_home(slug: str) -> None:
+    uid = st.session_state.get('active_user_id', 1)
+    render_player_modal_content(slug, uid)
 
 st.markdown("""
 <style>
@@ -790,6 +797,39 @@ with lb_col:
 
     except Exception:
         st.caption("Discovery Race loading...")
+
+    # ── Featured Player of the Day ─────────────────────────────────────────────
+    st.markdown(
+        "<div class='section-head' style='margin-top:.9rem'>⭐ Featured Player</div>",
+        unsafe_allow_html=True,
+    )
+    try:
+        _fp = get_featured_player_of_day()
+        if _fp:
+            st.markdown(
+                f"<div style='background:linear-gradient(160deg,#1E293B,#0F172A);"
+                f"border-radius:12px;padding:.85rem .7rem;text-align:center;"
+                f"color:white;border:1px solid rgba(148,163,184,.15);margin-bottom:.3rem'>"
+                f"<div style='font-size:2.5rem;line-height:1'>{_fp['flag']}</div>"
+                f"<div style='font-size:1.6rem;font-weight:900;color:#FCD34D;margin:.2rem 0'>#{_fp['shirt_number']}</div>"
+                f"<div style='font-size:.92rem;font-weight:800;line-height:1.25'>{_fp['name']}</div>"
+                f"<div style='font-size:.75rem;color:#94A3B8'>{_fp['team']}</div>"
+                f"<div style='font-size:.72rem;color:#64748B'>{_fp['position']} · {_fp['club_short']}</div>"
+                f"<div style='font-size:.68rem;color:#475569;margin-top:.3rem;line-height:1.4;"
+                f"border-top:1px solid rgba(148,163,184,.1);padding-top:.3rem'>"
+                f"{_fp['one_thing'][:90]}{'…' if len(_fp['one_thing']) > 90 else ''}</div>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+            if st.button(
+                "👤 Player Profile", key=f"home_fp_{_fp['player_slug']}",
+                use_container_width=True,
+            ):
+                _show_player_modal_home(_fp['player_slug'])
+        else:
+            st.caption("Roster data loading...")
+    except Exception:
+        st.caption("Featured player loading...")
 
 # ── Family Favorites — sorted by most shared, with context line ───────────────
 with fav_col:

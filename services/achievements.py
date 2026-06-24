@@ -117,6 +117,12 @@ def _get_user_stats(user_id: int) -> dict:
     pacific_rim = {'Japan', 'South Korea', 'Australia', 'New Zealand'}
     host_countries = {'USA', 'Canada', 'Mexico'}
 
+    from services.player_cards import (
+        get_player_discoveries_count, get_player_captain_discovered,
+        get_mls_discoveries_count, get_player_team_count,
+    )
+    players_discovered = get_player_discoveries_count(user_id)
+
     return {
         'disc_count': disc_count,
         'disc_countries': disc_countries,
@@ -128,6 +134,10 @@ def _get_user_stats(user_id: int) -> dict:
         'pacific_rim_done': pacific_rim.issubset(disc_countries),
         'all_americas_done': (na_countries | sa_countries).issubset(disc_countries),
         'host_countries_done': host_countries.issubset(disc_countries),
+        'players_discovered': players_discovered,
+        'captain_discovered': get_player_captain_discovered(user_id) if players_discovered > 0 else False,
+        'mls_players_discovered': get_mls_discoveries_count(user_id) if players_discovered > 0 else 0,
+        'player_team_count': get_player_team_count(user_id) if players_discovered > 0 else 0,
     }
 
 
@@ -165,6 +175,14 @@ def _check_rule(rule: str, threshold, stats: dict, user_id: int) -> bool:
         return stats['host_countries_done']
     if rule == 'loyal_3_matches':
         return _check_loyal_fan(user_id)
+    if rule == 'players_discovered':
+        return stats.get('players_discovered', 0) >= int(t)
+    if rule == 'captain_discovered':
+        return stats.get('captain_discovered', False)
+    if rule == 'mls_players_discovered':
+        return stats.get('mls_players_discovered', 0) >= int(t)
+    if rule == 'player_countries':
+        return stats.get('player_team_count', 0) >= int(t)
     return False
 
 

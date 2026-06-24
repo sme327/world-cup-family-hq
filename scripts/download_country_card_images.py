@@ -69,13 +69,11 @@ def _get_with_retry(url: str, params=None, allow_429_pause: bool = False):
         try:
             resp = SESSION.get(url, params=params, timeout=REQUEST_TIMEOUT)
             if resp.status_code == 429:
-                if allow_429_pause:
-                    print(f"    CDN rate-limited — pausing {RATE_LIMIT_PAUSE}s...")
-                    time.sleep(RATE_LIMIT_PAUSE)
-                    allow_429_pause = False
-                    continue
-                print("    CDN rate-limited (giving up for this image)")
-                return None
+                pause = RATE_LIMIT_PAUSE if allow_429_pause else 30
+                print(f"    Rate-limited — pausing {pause}s...")
+                time.sleep(pause)
+                allow_429_pause = False
+                continue
             resp.raise_for_status()
             return resp
         except requests.exceptions.HTTPError as e:
@@ -176,7 +174,7 @@ def try_download_one(queries: list[str], out_path: Path, label: str) -> dict | N
         print(f"    [{label}] → '{query}'")
         hits = search_commons(query)
         if not hits:
-            time.sleep(1)
+            time.sleep(8)
             continue
         best = hits[0]
         print(f"           Found: {best['title'][:65]}")

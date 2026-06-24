@@ -103,6 +103,18 @@ CREATE TABLE IF NOT EXISTS family_achievements (
     achievement_id TEXT NOT NULL UNIQUE,
     unlocked_at    TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS player_discoveries (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id          INTEGER NOT NULL,
+    player_slug      TEXT NOT NULL,
+    player_name      TEXT NOT NULL,
+    team             TEXT NOT NULL,
+    first_visited_at TEXT NOT NULL,
+    visit_count      INTEGER DEFAULT 1,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    UNIQUE(user_id, player_slug)
+);
 """
 
 

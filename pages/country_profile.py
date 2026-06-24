@@ -18,8 +18,16 @@ from services.images import get_country_image_html, get_country_card_image
 from services.roster import (
     get_team_roster, get_team_summary, get_featured_players,
     get_mls_players, get_roster_by_position, pos_icon,
+    get_player_slug,
 )
 from services.time_utils import fmt_date, fmt_match_time
+from services.player_cards import render_player_modal_content
+
+
+@st.dialog("⭐ Player Profile", width="large")
+def _show_player_modal(slug: str) -> None:
+    uid = st.session_state.get('active_user_id', 1)
+    render_player_modal_content(slug, uid)
 
 # ── ISO-2 → ISO-3 for Plotly choropleth ──────────────────────────────────────
 _ISO3 = {
@@ -1420,6 +1428,7 @@ with tab_team:
         for col, pl in zip(p_cols, featured[:n_feat]):
             role_emoji, role_label = _story_role(pl["role"], pl.get("position",""))
             blurb = _player_story(role_label, pl["name"], pl.get("age", 0), pl.get("club_short",""))
+            slug = get_player_slug(selected_country, pl['name'])
             with col:
                 st.markdown(
                     "<div style='background:linear-gradient(160deg,#1E293B,#0F172A);border-radius:12px;"
@@ -1436,21 +1445,33 @@ with tab_team:
                     "</div>",
                     unsafe_allow_html=True
                 )
+                if slug and st.button(
+                    "👤 Profile", key=f"cp_feat_{slug}",
+                    use_container_width=True, help=f"Open {pl['name']}'s player card"
+                ):
+                    _show_player_modal(slug)
 
     # MLS & US Connections
     if not mls_players.empty:
         st.markdown("### 🏟️ MLS & US Connections")
         mls_cols = st.columns(min(len(mls_players), 3))
         for col, (_, mp) in zip(mls_cols, mls_players.iterrows()):
-            col.markdown(
-                "<div style='background:linear-gradient(135deg,#064E3B,#065F46);border-radius:10px;"
-                "padding:.65rem .9rem;color:white'>"
-                f"<div style='font-size:.95rem;font-weight:800'>#{int(mp['shirt_number'])} {mp['player_name']}</div>"
-                f"<div style='font-size:.78rem;color:#6EE7B7'>{mp['position']}</div>"
-                f"<div style='font-size:.75rem;color:#A7F3D0'>🏟️ {mp['club_short']} · Age {int(mp['age'])}</div>"
-                "</div>",
-                unsafe_allow_html=True
-            )
+            mls_slug = get_player_slug(selected_country, mp['player_name'])
+            with col:
+                st.markdown(
+                    "<div style='background:linear-gradient(135deg,#064E3B,#065F46);border-radius:10px;"
+                    "padding:.65rem .9rem;color:white'>"
+                    f"<div style='font-size:.95rem;font-weight:800'>#{int(mp['shirt_number'])} {mp['player_name']}</div>"
+                    f"<div style='font-size:.78rem;color:#6EE7B7'>{mp['position']}</div>"
+                    f"<div style='font-size:.75rem;color:#A7F3D0'>🏟️ {mp['club_short']} · Age {int(mp['age'])}</div>"
+                    "</div>",
+                    unsafe_allow_html=True
+                )
+                if mls_slug and st.button(
+                    "👤 Profile", key=f"cp_mls_{mls_slug}",
+                    use_container_width=True, help=f"Open {mp['player_name']}'s player card"
+                ):
+                    _show_player_modal(mls_slug)
 
     # Full Squad — collapsed by default
     if not roster.empty:

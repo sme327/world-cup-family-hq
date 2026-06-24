@@ -173,6 +173,19 @@ def get_featured_players(team: str, captain_name: str = '') -> list[dict]:
     return featured[:5]
 
 
+def get_player_slug(team: str, player_name: str) -> str | None:
+    """
+    Return player_slug for a given app team name + player name, or None if not found.
+    Uses the slugged CSV for exact name matching.
+    """
+    df = _load_slugged()
+    rname = _roster_name(team)
+    match = df[(df['team'] == rname) & (df['player_name'] == player_name)]
+    if not match.empty:
+        return str(match.iloc[0]['player_slug'])
+    return None
+
+
 def get_player(player_slug: str) -> dict | None:
     """
     Look up a player by slug. Used for future player profile pages.

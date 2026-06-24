@@ -5,7 +5,14 @@ from services.teams import get_team_by_name, get_flag
 from services.picks import get_picks_for_match, save_pick, get_all_users
 from services.time_utils import fmt_match_time
 from services.images import get_country_image_html
-from services.roster import get_featured_players, get_team_summary, get_mls_players, get_team_roster
+from services.roster import get_featured_players, get_team_summary, get_mls_players, get_team_roster, get_player_slug
+from services.player_cards import render_player_modal_content
+
+
+@st.dialog("⭐ Player Profile", width="large")
+def _show_player_modal(slug: str) -> None:
+    uid = st.session_state.get('active_user_id', 1)
+    render_player_modal_content(slug, uid)
 from services.espn import get_match_recap
 from services.scoring import get_team_group_status
 
@@ -647,11 +654,18 @@ def _sec_key_players():
                 unsafe_allow_html=True,
             )
             if featured:
-                cards = "".join(_player_trading_card(p) for p in featured[:3])
-                st.markdown(
-                    f"<div style='display:flex;gap:.4rem;flex-wrap:wrap'>{cards}</div>",
-                    unsafe_allow_html=True,
-                )
+                n = min(3, len(featured))
+                p_sub_cols = st.columns(n)
+                for pcol, p in zip(p_sub_cols, featured[:n]):
+                    slug = get_player_slug(team, p['name'])
+                    with pcol:
+                        st.markdown(_player_trading_card(p), unsafe_allow_html=True)
+                        if slug and st.button(
+                            "👤", key=f"mup_{slug}",
+                            use_container_width=True,
+                            help=f"Open {p['name']}'s profile",
+                        ):
+                            _show_player_modal(slug)
             else:
                 st.caption("Roster data unavailable.")
 
@@ -665,19 +679,30 @@ def _sec_mls():
     def _mls_callout(team, flag, mls_df):
         if mls_df.empty:
             return
-        rows = "".join(
-            f"<div style='font-size:.85rem;margin:.3rem 0;color:#A7F3D0'>"
-            f"#{int(p['shirt_number'])} <b>{p['player_name']}</b> — {p['club_short']}</div>"
-            for _, p in mls_df.iterrows()
-        )
         st.markdown(
-            "<div class='mls-card'>"
-            f"<div style='font-size:1rem;font-weight:800;margin-bottom:.3rem'>"
-            f"{flag} {team} · {len(mls_df)} MLS Player{'s' if len(mls_df)!=1 else ''}</div>"
-            f"<div style='border-top:1px solid rgba(255,255,255,.15);margin:.4rem 0'></div>"
-            f"{rows}</div>",
+            f"<div style='font-size:1rem;font-weight:800;margin-bottom:.4rem'>"
+            f"{flag} {team} · {len(mls_df)} MLS Player{'s' if len(mls_df)!=1 else ''}</div>",
             unsafe_allow_html=True,
         )
+        mls_sub = st.columns(min(len(mls_df), 3))
+        for mcol, (_, p) in zip(mls_sub, mls_df.head(3).iterrows()):
+            mls_slug = get_player_slug(team, p['player_name'])
+            with mcol:
+                st.markdown(
+                    "<div style='background:linear-gradient(135deg,#064E3B,#065F46);"
+                    "border-radius:10px;padding:.65rem .9rem;color:white'>"
+                    f"<div style='font-size:.95rem;font-weight:800'>#{int(p['shirt_number'])} {p['player_name']}</div>"
+                    f"<div style='font-size:.78rem;color:#6EE7B7'>{p['position']}</div>"
+                    f"<div style='font-size:.75rem;color:#A7F3D0'>🏟️ {p['club_short']} · Age {int(p['age'])}</div>"
+                    "</div>",
+                    unsafe_allow_html=True,
+                )
+                if mls_slug and st.button(
+                    "👤", key=f"mls_{mls_slug}",
+                    use_container_width=True,
+                    help=f"Open {p['player_name']}'s profile",
+                ):
+                    _show_player_modal(mls_slug)
 
     mls_c1, mls_c2 = st.columns(2)
     with mls_c1:

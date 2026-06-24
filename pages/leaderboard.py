@@ -58,7 +58,7 @@ def _extras(uid: int, row) -> dict:
     )
     done = (
         upicks[upicks['status'] == 'completed']
-        .sort_values(['match_date', 'kickoff_time_et'], ascending=False)
+        .sort_values('match_date', ascending=False)
         if not upicks.empty
         else pd.DataFrame()
     )

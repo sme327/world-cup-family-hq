@@ -32,3 +32,9 @@ secret_pacific,Pacific Rim,Discover Japan South Korea Australia and New Zealand,
 secret_americas,All the Americas,Discover all 12 countries from North and South America combined,Hidden,individual,true,🌎,all_americas_discovered,
 secret_host_tour,Host City Tour,Discover all three host countries USA Canada and Mexico,Hidden,individual,true,🏟️,host_countries_discovered,
 secret_loyal,Die-Hard Fan,Pick the same country in all 3 of their group stage matches,Hidden,individual,true,💙,loyal_3_matches,
+player_first,First Player Discovered,Open your first player profile,Explorer,individual,false,🌟,players_discovered,1
+player_scout,Player Scout,Discover 10 different players,Explorer,individual,false,🔭,players_discovered,10
+player_master,World Squad,Discover 25 different players,Explorer,individual,false,🌍,players_discovered,25
+player_captain,Captain's Log,Discover a team captain,Explorer,individual,false,🎖️,captain_discovered,
+player_mls,Home Team Fan,Discover 3 MLS or US-based players,Explorer,individual,false,🏟️,mls_players_discovered,3
+player_globe,Global Scouts,Discover players from 10 different countries,Explorer,individual,false,🌐,player_countries,10

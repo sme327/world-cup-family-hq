@@ -346,32 +346,32 @@ else:
         st.markdown(f"""
 <div class='tnav-wrap'>
   <nav class='tnav'>
-    <a href='/home' class='{_ni("home")}'>🏠 Home</a>
+    <a href='/home' class='{_ni("home")}' target='_self'>🏠 Home</a>
     <span class='tnav-sep'></span>
     <div class='tnav-drop'>
       <span class='{_ni("play")}'>⚽ Play <span class='tnav-caret'>▾</span></span>
       <div class='tnav-menu'>
-        <a href='/schedule' class='{_pi("schedule")}'>📅 Schedule</a>
-        <a href='/matchup' class='{_pi("matchup")}'>🏟️ Matchups</a>
-        <a href='/pick_tracker' class='{_pi("pick_tracker")}'>🎯 Family Picks</a>
-        <a href='/standings' class='{_pi("standings")}'>📊 Standings</a>
-        <a href='/leaderboard' class='{_pi("leaderboard")}'>🏆 Leaderboard</a>
+        <a href='/schedule' class='{_pi("schedule")}' target='_self'>📅 Schedule</a>
+        <a href='/matchup' class='{_pi("matchup")}' target='_self'>🏟️ Matchups</a>
+        <a href='/pick_tracker' class='{_pi("pick_tracker")}' target='_self'>🎯 Family Picks</a>
+        <a href='/standings' class='{_pi("standings")}' target='_self'>📊 Standings</a>
+        <a href='/leaderboard' class='{_pi("leaderboard")}' target='_self'>🏆 Leaderboard</a>
       </div>
     </div>
     <div class='tnav-drop'>
       <span class='{_ni("explore")}'>🌎 Explore <span class='tnav-caret'>▾</span></span>
       <div class='tnav-menu'>
-        <a href='/country_profile' class='{_pi("country_profile")}'>🗺️ Countries</a>
-        <a href='/map' class='{_pi("map")}'>🌍 World Atlas</a>
-        <a href='/host_cities' class='{_pi("host_cities")}'>🏙️ Host Cities</a>
-        <a href='/world_cup_history' class='{_pi("world_cup_history")}'>📖 World Cup History</a>
+        <a href='/country_profile' class='{_pi("country_profile")}' target='_self'>🗺️ Countries</a>
+        <a href='/map' class='{_pi("map")}' target='_self'>🌍 World Atlas</a>
+        <a href='/host_cities' class='{_pi("host_cities")}' target='_self'>🏙️ Host Cities</a>
+        <a href='/world_cup_history' class='{_pi("world_cup_history")}' target='_self'>📖 World Cup History</a>
       </div>
     </div>
     <div class='tnav-drop'>
       <span class='{_ni("passport")}'>🛂 Passport <span class='tnav-caret'>▾</span></span>
       <div class='tnav-menu'>
-        <a href='/passport_individual' class='{_pi("passport_individual")}'>🛂 My Passport</a>
-        <a href='/passport_family' class='{_pi("passport_family")}'>👨‍👩‍👧‍👦 Family Passport</a>
+        <a href='/passport_individual' class='{_pi("passport_individual")}' target='_self'>🛂 My Passport</a>
+        <a href='/passport_family' class='{_pi("passport_family")}' target='_self'>👨‍👩‍👧‍👦 Family Passport</a>
       </div>
     </div>
   </nav>

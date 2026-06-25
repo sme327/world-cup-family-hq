@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import sys
 import os
 
@@ -202,37 +201,6 @@ if (!window._wcNavOverlayReady) {
 }
 </script>
 """, unsafe_allow_html=True)
-
-# ── Global JS (runs in iframe → window.parent = actual page) ─────────────────
-# st.markdown() strips <script> execution; components.html() actually runs JS.
-components.html("""
-<script>
-(function() {
-    var p = window.parent;
-    if (!p || p._wcHQReady) return;
-    p._wcHQReady = true;
-
-    // Force dark bg on html/body immediately so new-page flash is dark, not white
-    var s = p.document.createElement('style');
-    s.textContent =
-        'html,body{background:#0F172A!important}' +
-        '@keyframes _pg-in{from{opacity:0}to{opacity:1}}' +
-        '#root{animation:_pg-in 280ms ease-out}';
-    p.document.head.appendChild(s);
-
-    // Dark overlay the instant a nav link is clicked (covers old-page flash)
-    p.document.addEventListener('click', function(e) {
-        var a = e.target.closest('a');
-        if (!a || a.target === '_blank') return;
-        try { if (a.origin !== p.location.origin) return; } catch(_) { return; }
-        if (a.pathname === p.location.pathname) return;
-        var o = p.document.createElement('div');
-        o.style.cssText = 'position:fixed;inset:0;background:#0F172A;z-index:2147483647;pointer-events:none;';
-        p.document.body.appendChild(o);
-    }, true);
-})();
-</script>
-""", height=0)
 
 # ── Load users ────────────────────────────────────────────────────────────────
 _users  = get_all_users()

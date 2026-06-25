@@ -54,6 +54,12 @@ st.markdown("""
         padding-bottom: 1rem !important;
         overflow: visible !important;
     }
+    /* stVerticalBlock is a newer Streamlit wrapper inside stMainBlockContainer */
+    [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+        gap: 0 !important;
+    }
     .element-container { overflow: visible !important; }
 
     /* ── Global emoji / text size ────────────────── */
@@ -183,23 +189,6 @@ st.markdown("""
     [data-testid="stHorizontalBlock"]:first-of-type { margin-top: 0 !important; gap: .4rem !important; }
 
 </style>
-<script>
-/* Dark overlay on nav-link click — eliminates white flash during page load.
-   The overlay sits on top of everything until the new page replaces the DOM. */
-if (!window._wcNavOverlayReady) {
-    window._wcNavOverlayReady = true;
-    document.addEventListener('click', function(e) {
-        var link = e.target.closest('a');
-        if (!link) return;
-        if (link.target === '_blank') return;
-        try { if (link.origin !== window.location.origin) return; } catch(x) { return; }
-        if (link.pathname === window.location.pathname) return;
-        var o = document.createElement('div');
-        o.style.cssText = 'position:fixed;inset:0;background:#0F172A;z-index:2147483647;pointer-events:none;';
-        document.body.appendChild(o);
-    }, true);
-}
-</script>
 """, unsafe_allow_html=True)
 
 # ── Load users ────────────────────────────────────────────────────────────────

@@ -198,9 +198,6 @@ st.markdown("""
     [data-testid="stPopoverBody"] [data-testid="stVerticalBlock"] {
         gap: .15rem !important;
     }
-    [data-testid="stPopoverBody"] hr {
-        margin: .3rem 0 !important;
-    }
 
 </style>
 """, unsafe_allow_html=True)
@@ -399,7 +396,6 @@ else:
                         })
                         st.query_params["u"] = str(int(_ids[_n]))
                         st.rerun()
-            st.divider()
             st.page_link("pages/admin.py", label="⚙️ Admin", icon="🔧")
 
     pg.run()

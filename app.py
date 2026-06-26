@@ -58,7 +58,6 @@ st.markdown("""
     [data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] {
         padding-top: 0 !important;
         margin-top: 0 !important;
-        gap: 0 !important;
     }
     .element-container { overflow: visible !important; }
 
@@ -170,12 +169,12 @@ st.markdown("""
     .tnav-menu a:hover { background: rgba(37,99,235,.28); color: white; }
     .tnav-menu a.tnav-page-active { background: rgba(37,99,235,.38); color: #93C5FD; font-weight: 700; }
 
-    /* User selector popover (first horizontal block, last column) */
+    /* User selector popover — match nav bar height (~2.6rem) */
     [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="stColumn"]:last-child
         [data-testid="stPopover"] > button {
         font-size: .9rem !important;
-        min-height: 2.25rem !important;
-        height: 2.25rem !important;
+        min-height: 2.6rem !important;
+        height: 2.6rem !important;
         padding: .25rem .7rem !important;
         background: rgba(255,255,255,.08) !important;
         border: 1px solid rgba(148,163,184,.2) !important;
@@ -185,8 +184,12 @@ st.markdown("""
         line-height: 1.4 !important;
         width: 100% !important;
     }
-    /* Remove excessive top margin on columns row */
-    [data-testid="stHorizontalBlock"]:first-of-type { margin-top: 0 !important; gap: .4rem !important; }
+    /* Remove excessive top margin on columns row; center-align nav + button */
+    [data-testid="stHorizontalBlock"]:first-of-type {
+        margin-top: 0 !important;
+        gap: .4rem !important;
+        align-items: center !important;
+    }
 
 </style>
 """, unsafe_allow_html=True)

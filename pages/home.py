@@ -39,10 +39,8 @@ st.markdown("""
 
 /* ── Section titles ──────────────────────────────── */
 .section-head {
-    font-size:1.35rem; font-weight:900; margin:.9rem 0 .35rem;
+    font-size:1.35rem; font-weight:900; margin:.5rem 0 .3rem;
     color:#F8FAFC; letter-spacing:-.01em;
-    padding-bottom:.28rem;
-    border-bottom:2px solid rgba(148,163,184,.2);
 }
 
 /* ── Compact picks strip ─────────────────────────── */
@@ -295,8 +293,6 @@ if upcoming:
         f"</div>",
         unsafe_allow_html=True,
     )
-
-st.divider()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 3. TODAY'S MATCHES — 3-col grid for 5-6, 4-col otherwise

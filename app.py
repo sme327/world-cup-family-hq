@@ -169,12 +169,26 @@ st.markdown("""
     .tnav-menu a:hover { background: rgba(37,99,235,.28); color: white; }
     .tnav-menu a.tnav-page-active { background: rgba(37,99,235,.38); color: #93C5FD; font-weight: 700; }
 
-    /* User selector popover — match nav bar height (~2.6rem) */
+    /* Nav row: stretch so both columns are the same height */
+    [data-testid="stHorizontalBlock"]:first-of-type {
+        margin-top: 0 !important;
+        gap: .4rem !important;
+        align-items: stretch !important;
+    }
+    /* User selector popover container fills the column height */
+    [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="stColumn"]:last-child
+        [data-testid="stPopover"] {
+        height: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    /* User selector button fills the popover container */
     [data-testid="stHorizontalBlock"]:first-of-type > [data-testid="stColumn"]:last-child
         [data-testid="stPopover"] > button {
+        flex: 1 !important;
+        height: 100% !important;
+        min-height: 2.4rem !important;
         font-size: .9rem !important;
-        min-height: 2.6rem !important;
-        height: 2.6rem !important;
         padding: .25rem .7rem !important;
         background: rgba(255,255,255,.08) !important;
         border: 1px solid rgba(148,163,184,.2) !important;
@@ -183,12 +197,6 @@ st.markdown("""
         font-weight: 700 !important;
         line-height: 1.4 !important;
         width: 100% !important;
-    }
-    /* Remove excessive top margin on columns row; center-align nav + button */
-    [data-testid="stHorizontalBlock"]:first-of-type {
-        margin-top: 0 !important;
-        gap: .4rem !important;
-        align-items: center !important;
     }
 
 </style>

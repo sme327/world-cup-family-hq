@@ -60,15 +60,18 @@ st.markdown("""
         margin-top: 0 !important;
     }
 
-    /* Collapse the streamlit_javascript localStorage components — they are
-       25px tall and create dead space above the nav bar */
+    /* Pull localStorage JS components out of flex flow so they don't
+       create dead space — position:absolute removes them from layout
+       while still allowing the iframe to render and execute JS */
     [data-testid="stElementContainer"][st-key="__ls_r"],
     [data-testid="stElementContainer"][st-key^="__ls_w"] {
-        height: 0 !important;
-        min-height: 0 !important;
+        position: absolute !important;
+        left: -9999px !important;
+        top: 0 !important;
+        width: 1px !important;
+        height: 1px !important;
         overflow: hidden !important;
-        margin: 0 !important;
-        padding: 0 !important;
+        pointer-events: none !important;
     }
     .element-container { overflow: visible !important; }
 

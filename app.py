@@ -7,15 +7,6 @@ sys.path.insert(0, os.path.dirname(__file__))
 from services.database import init_db
 from services.picks import get_all_users
 
-# ── localStorage support (optional dep; graceful fallback) ────────────────────
-try:
-    from streamlit_javascript import st_javascript as _st_js
-    _LS_OK = True
-except ImportError:
-    _LS_OK = False
-
-_LS_KEY = "wc_hq_user_id"
-
 # ── Init ──────────────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="Espinosa World Cup Family HQ",
@@ -60,19 +51,6 @@ st.markdown("""
         margin-top: 0 !important;
     }
 
-    /* Pull localStorage JS components out of flex flow so they don't
-       create dead space — position:absolute removes them from layout
-       while still allowing the iframe to render and execute JS */
-    [data-testid="stElementContainer"][st-key="__ls_r"],
-    [data-testid="stElementContainer"][st-key^="__ls_w"] {
-        position: absolute !important;
-        left: -9999px !important;
-        top: 0 !important;
-        width: 1px !important;
-        height: 1px !important;
-        overflow: hidden !important;
-        pointer-events: none !important;
-    }
     .element-container { overflow: visible !important; }
 
     /* ── Global emoji / text size ────────────────── */
@@ -213,6 +191,17 @@ st.markdown("""
         width: 100% !important;
     }
 
+    /* Tighten up user-switcher popover: kill excess padding and gaps */
+    [data-testid="stPopoverBody"] {
+        padding: .5rem .5rem .3rem !important;
+    }
+    [data-testid="stPopoverBody"] [data-testid="stVerticalBlock"] {
+        gap: .15rem !important;
+    }
+    [data-testid="stPopoverBody"] hr {
+        margin: .3rem 0 !important;
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -255,15 +244,14 @@ def _render_first_visit() -> None:
                         unsafe_allow_html=True,
                     )
                     if st.button("That's me!", key=f"fp_{u['id']}", use_container_width=True):
-                        uid_str = str(int(u["id"]))
                         st.session_state.update({
                             "active_user_id":         int(u["id"]),
                             "active_user_name":       u["name"],
                             "active_user_avatar":     u["avatar"],
                             "active_user_color":      u["theme_color"],
                             "active_user_picks_only": bool(int(u.get("picks_only", 0))),
-                            "ls_pending_uid":         uid_str,
                         })
+                        st.query_params["u"] = str(int(u["id"]))
                         st.rerun()
 
     st.markdown(
@@ -273,32 +261,13 @@ def _render_first_visit() -> None:
     )
 
 
-# ── localStorage: write any pending save (from previous selection or switch) ──
-if _LS_OK and "ls_pending_uid" in st.session_state:
-    _uid_to_write = st.session_state["ls_pending_uid"]
-    # Key encodes the UID so a different UID forces a new component instance + JS re-run
-    _st_js(
-        f"localStorage.setItem('{_LS_KEY}', '{_uid_to_write}')",
-        key=f"__ls_w{_uid_to_write}",
-    )
-    del st.session_state["ls_pending_uid"]
-
-# ── localStorage: read saved user (only needed once per session) ───────────────
+# ── Restore session from URL query param ?u=<user_id> ────────────────────────
 _has_session = "active_user_id" in st.session_state
 
 if not _has_session:
-    if _LS_OK:
-        # Returns None while component loads (first render), then the string value
-        _saved_uid: str | None = _st_js(
-            f"localStorage.getItem('{_LS_KEY}') || ''",
-            key="__ls_r",
-        )
-    else:
-        _saved_uid = ""  # No JS support → treat as no saved user
-
-    # Auto-initialize session from a valid saved UID
-    if _saved_uid and _saved_uid in _by_id:
-        r = _by_id[_saved_uid]
+    _uid_from_url = st.query_params.get("u", "")
+    if _uid_from_url and _uid_from_url in _by_id:
+        r = _by_id[_uid_from_url]
         st.session_state.update({
             "active_user_id":         int(r["id"]),
             "active_user_name":       str(r["name"]),
@@ -307,8 +276,6 @@ if not _has_session:
             "active_user_picks_only": bool(int(r.get("picks_only", 0))),
         })
         _has_session = True
-else:
-    _saved_uid = "ok"  # Session already live; skip localStorage read
 
 # ── Navigation ────────────────────────────────────────────────────────────────
 pg = st.navigation(
@@ -344,13 +311,7 @@ pg = st.navigation(
 )
 
 # ── Route ─────────────────────────────────────────────────────────────────────
-_js_ready = not _LS_OK or _saved_uid is not None  # True once the read component reports
-
-if not _js_ready:
-    # st_javascript component still initializing — Streamlit auto-reruns when it fires
-    st.stop()
-
-elif not _has_session:
+if not _has_session:
     # First visit on this browser / device
     _render_first_visit()
     # (pg.run() intentionally not called; nav links visible but inactive until selected)
@@ -376,38 +337,39 @@ else:
     def _pi(page: str) -> str:
         return "tnav-page-active" if _url == page else ""
 
+    _uid_qp = str(st.session_state.get("active_user_id", ""))
     _nav_col, _usr_col = st.columns([9, 2], gap="small")
 
     with _nav_col:
         st.markdown(f"""
 <div class='tnav-wrap'>
   <nav class='tnav'>
-    <a href='/' class='{_ni("home")}' target='_self'>🏠 Home</a>
+    <a href='/?u={_uid_qp}' class='{_ni("home")}' target='_self'>🏠 Home</a>
     <span class='tnav-sep'></span>
     <div class='tnav-drop'>
       <span class='{_ni("play")}'>⚽ Play <span class='tnav-caret'>▾</span></span>
       <div class='tnav-menu'>
-        <a href='/schedule' class='{_pi("schedule")}' target='_self'>📅 Schedule</a>
-        <a href='/matchup' class='{_pi("matchup")}' target='_self'>🏟️ Matchups</a>
-        <a href='/pick_tracker' class='{_pi("pick_tracker")}' target='_self'>🎯 Family Picks</a>
-        <a href='/standings' class='{_pi("standings")}' target='_self'>📊 Standings</a>
-        <a href='/leaderboard' class='{_pi("leaderboard")}' target='_self'>🏆 Leaderboard</a>
+        <a href='/schedule?u={_uid_qp}' class='{_pi("schedule")}' target='_self'>📅 Schedule</a>
+        <a href='/matchup?u={_uid_qp}' class='{_pi("matchup")}' target='_self'>🏟️ Matchups</a>
+        <a href='/pick_tracker?u={_uid_qp}' class='{_pi("pick_tracker")}' target='_self'>🎯 Family Picks</a>
+        <a href='/standings?u={_uid_qp}' class='{_pi("standings")}' target='_self'>📊 Standings</a>
+        <a href='/leaderboard?u={_uid_qp}' class='{_pi("leaderboard")}' target='_self'>🏆 Leaderboard</a>
       </div>
     </div>
     <div class='tnav-drop'>
       <span class='{_ni("explore")}'>🌎 Explore <span class='tnav-caret'>▾</span></span>
       <div class='tnav-menu'>
-        <a href='/country_profile' class='{_pi("country_profile")}' target='_self'>🗺️ Countries</a>
-        <a href='/map' class='{_pi("map")}' target='_self'>🌍 World Atlas</a>
-        <a href='/host_cities' class='{_pi("host_cities")}' target='_self'>🏙️ Host Cities</a>
-        <a href='/world_cup_history' class='{_pi("world_cup_history")}' target='_self'>📖 World Cup History</a>
+        <a href='/country_profile?u={_uid_qp}' class='{_pi("country_profile")}' target='_self'>🗺️ Countries</a>
+        <a href='/map?u={_uid_qp}' class='{_pi("map")}' target='_self'>🌍 World Atlas</a>
+        <a href='/host_cities?u={_uid_qp}' class='{_pi("host_cities")}' target='_self'>🏙️ Host Cities</a>
+        <a href='/world_cup_history?u={_uid_qp}' class='{_pi("world_cup_history")}' target='_self'>📖 World Cup History</a>
       </div>
     </div>
     <div class='tnav-drop'>
       <span class='{_ni("passport")}'>🛂 Passport <span class='tnav-caret'>▾</span></span>
       <div class='tnav-menu'>
-        <a href='/passport_individual' class='{_pi("passport_individual")}' target='_self'>🛂 My Passport</a>
-        <a href='/passport_family' class='{_pi("passport_family")}' target='_self'>👨‍👩‍👧‍👦 Family Passport</a>
+        <a href='/passport_individual?u={_uid_qp}' class='{_pi("passport_individual")}' target='_self'>🛂 My Passport</a>
+        <a href='/passport_family?u={_uid_qp}' class='{_pi("passport_family")}' target='_self'>👨‍👩‍👧‍👦 Family Passport</a>
       </div>
     </div>
   </nav>
@@ -428,15 +390,14 @@ else:
                     type="primary" if _is_me else "secondary",
                 ):
                     if not _is_me:
-                        _uid_str = str(int(_ids[_n]))
                         st.session_state.update({
                             "active_user_name":       _n,
                             "active_user_id":         int(_ids[_n]),
                             "active_user_avatar":     _avs[_n],
                             "active_user_color":      _clrs[_n],
                             "active_user_picks_only": bool(_po.get(_n, 0)),
-                            "ls_pending_uid":         _uid_str,
                         })
+                        st.query_params["u"] = str(int(_ids[_n]))
                         st.rerun()
             st.divider()
             st.page_link("pages/admin.py", label="⚙️ Admin", icon="🔧")

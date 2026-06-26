@@ -59,6 +59,17 @@ st.markdown("""
         padding-top: 0 !important;
         margin-top: 0 !important;
     }
+
+    /* Collapse the streamlit_javascript localStorage components — they are
+       25px tall and create dead space above the nav bar */
+    [data-testid="stElementContainer"][st-key="__ls_r"],
+    [data-testid="stElementContainer"][st-key^="__ls_w"] {
+        height: 0 !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
     .element-container { overflow: visible !important; }
 
     /* ── Global emoji / text size ────────────────── */

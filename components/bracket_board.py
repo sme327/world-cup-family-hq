@@ -10,11 +10,11 @@ import streamlit as st
 from services.knockout import get_knockout_rounds
 
 # ── Dimensions ────────────────────────────────────────────────────────────────
-_BS   = 68    # base slot height for R32 (px)
+_BS   = 88    # base slot height for R32 (px) — generous to give match cards clear breathing room
 _GAP  = 22    # gap between columns (px)
 _STUB = _GAP + 2   # outgoing connector stub — crosses the gap by 2px into next col
 _CONN = '#9C8B6E'  # connector colour (warm brown)
-_TOTAL_H = 16 * _BS  # total bracket height = 1088px
+_TOTAL_H = 16 * _BS  # total bracket height = 1408px
 
 # Slot heights double each round so a pair in round N
 # occupies the same vertical space as one slot in round N+1
@@ -390,32 +390,33 @@ def _css() -> str:
 .bk-card {{
     width: 100%;
     box-sizing: border-box;
-    background: #FFFDF6;
-    border: 1.5px solid #C8B890;
+    background: #F9F4EC;
+    border: 1.5px solid #C4AE88;
     border-radius: 5px;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 1px 4px rgba(0,0,0,.1);
+    box-shadow: 0 1px 4px rgba(0,0,0,.09);
     transition: box-shadow .15s, transform .12s;
 }}
 .bk-card:hover {{
-    box-shadow: 0 4px 14px rgba(0,0,0,.2);
+    box-shadow: 0 4px 14px rgba(0,0,0,.18);
     transform: translateY(-1px);
 }}
-.bk-empty-card  {{ background: #F2EBE0; border-style: dashed; border-color: #BCA882; opacity: .72; }}
-.bk-done        {{ border-color: #9EBC98; }}
-.bk-final-card  {{ border-width: 2px; border-color: #B08030; box-shadow: 0 3px 12px rgba(0,0,0,.18); }}
+.bk-empty-card  {{ background: transparent; border-style: dashed; border-color: #BCA882; opacity: .6; }}
+.bk-done        {{ border-color: #9EBC98; background: #F5F9F4; }}
+.bk-final-card  {{ border-width: 2px; border-color: #B08030; box-shadow: 0 3px 12px rgba(0,0,0,.18); background: #FDF7EC; }}
 .bk-third-card  {{ opacity: .85; }}
 
-/* ── team rows ── */
-.bk-tr     {{ display: flex; align-items: center; gap: 4px; padding: 4px 6px; font-size: .74rem; }}
+/* ── team rows — transparent inside the card, no individual boxes ── */
+.bk-tr     {{ display: flex; align-items: center; gap: 5px; padding: 5px 8px; font-size: .75rem; background: transparent; }}
 .bk-fl     {{ font-size: 1rem; flex-shrink: 0; }}
 .bk-fl-e   {{ color: #C0AA88; font-size: .7rem; }}
 .bk-nm     {{ flex: 1; font-weight: 600; color: #241608; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
 .bk-nm-tbd {{ color: #B0A080; font-weight: 400; font-style: italic; font-size: .69rem; }}
 .bk-sc     {{ font-weight: 700; font-size: .84rem; color: #241608; min-width: 14px; text-align: right; flex-shrink: 0; }}
 .bk-sc-e   {{ min-width: 14px; }}
-.bk-sep    {{ height: 1px; background: #E4DBCE; margin: 0 5px; }}
+/* separator between the two teams within one match card — clear enough to read "two teams, one match" */
+.bk-sep    {{ height: 1px; background: #C8B48A; margin: 0; }}
 
 /* ── winner / loser row highlights ── */
 .bk-win          {{ background: rgba(175,228,175,.22); }}

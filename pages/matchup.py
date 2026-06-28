@@ -441,7 +441,7 @@ with tab_ko:
                     st.caption("Team TBD")
                     continue
                 _td  = get_team_by_name(_team)
-                _gl  = str(_td.get('group_letter', '') or '') if _td else ''
+                _gl  = str(_td.get('group_letter', '') or '') if _td is not None else ''
                 _gst = get_team_group_status(_team, _gl) if _gl else {}
 
                 _pos    = _gst.get('position', 0)
@@ -521,7 +521,7 @@ with tab_ko:
                     st.caption("Team TBD")
                     continue
                 _td3  = get_team_by_name(_team)
-                _cap3 = _safe(_td3.get('captain') if _td3 else None, '')
+                _cap3 = _safe(_td3.get('captain') if _td3 is not None else None, '')
                 _feat = get_featured_players(_team, _cap3)
                 st.markdown(
                     f"<div style='font-size:1rem;font-weight:800;margin-bottom:.4rem'>{_flag} {_team}</div>",
@@ -574,7 +574,7 @@ with tab_ko:
                     f"<div style='font-size:1.1rem;font-weight:800;margin:.4rem 0'>{_flag} {_team}</div>",
                     unsafe_allow_html=True,
                 )
-                _reasons = _parse_pipe(_chdata.get('cheer_reasons') if _chdata else None)
+                _reasons = _parse_pipe(_chdata.get('cheer_reasons') if _chdata is not None else None)
                 if _reasons:
                     _rcols = st.columns(min(len(_reasons), 4))
                     for _ri, _r in enumerate(_reasons[:4]):

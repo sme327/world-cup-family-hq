@@ -139,6 +139,30 @@ CREATE TABLE IF NOT EXISTS knockout_matches (
     loser_to_id     INTEGER REFERENCES knockout_matches(id),
     loser_to_slot   TEXT
 );
+
+CREATE TABLE IF NOT EXISTS bracket_picks (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id             INTEGER NOT NULL REFERENCES users(id),
+    knockout_match_id   INTEGER NOT NULL REFERENCES knockout_matches(id),
+    picked_team_id      INTEGER NOT NULL REFERENCES teams(id),
+    created_at          TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TEXT DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, knockout_match_id)
+);
+
+CREATE TABLE IF NOT EXISTS bracket_submissions (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id         INTEGER NOT NULL REFERENCES users(id) UNIQUE,
+    submitted_at    TEXT,
+    is_complete     INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS bracket_lock (
+    id          INTEGER PRIMARY KEY CHECK (id = 1),
+    is_locked   INTEGER DEFAULT 0,
+    locked_at   TEXT,
+    locked_by   TEXT
+);
 """
 
 
@@ -294,6 +318,8 @@ def init_db():
 
     if cursor.execute("SELECT COUNT(*) FROM knockout_matches").fetchone()[0] == 0:
         _seed_knockout_matches(cursor)
+
+    cursor.execute("INSERT OR IGNORE INTO bracket_lock (id, is_locked) VALUES (1, 0)")
 
     conn.commit()
     conn.close()

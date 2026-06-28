@@ -175,40 +175,78 @@ _KO_RND_LABELS = {
 }
 
 
+def _supporter_side_html(pickers: list[dict], active_uid: int) -> str:
+    """Centered, wrapping avatar block for one side's supporters."""
+    if not pickers:
+        return "<div style='color:#4B5563;font-size:.75rem;padding:.5rem 0;min-height:1.8rem'>—</div>"
+    parts = []
+    for p in pickers:
+        if p["user_id"] == active_uid:
+            # Gold ring + slight size bump for the active user
+            style = (
+                "font-size:1.5rem;line-height:1;"
+                "display:inline-flex;align-items:center;justify-content:center;"
+                "border-radius:50%;padding:.15rem;"
+                "box-shadow:0 0 0 2px #F59E0B,0 0 8px rgba(245,158,11,.35);"
+            )
+        else:
+            style = "font-size:1.35rem;line-height:1;"
+        parts.append(f"<span style='{style}'>{p['avatar']}</span>")
+    return (
+        f"<div style='display:flex;flex-wrap:wrap;justify-content:center;"
+        f"gap:.3rem;padding:.2rem .1rem'>"
+        + "".join(parts)
+        + "</div>"
+    )
+
+
 def _today_ko_card(km: dict) -> None:
     """Cinematic home-page card for one knockout match."""
-    mid       = km["id"]
-    rnd       = km["round"]
-    home_id   = km["home_team_id"]
-    away_id   = km["away_team_id"]
-    home_name = km["home_name"] or "TBD"
-    away_name = km["away_name"] or "TBD"
-    home_flag = km["home_flag"] or "⬜"
-    away_flag = km["away_flag"] or "⬜"
-    pts_val   = KO_ROUND_POINTS.get(rnd, 0)
-    rnd_lbl   = _KO_RND_LABELS.get(rnd, rnd)
+    mid        = km["id"]
+    rnd        = km["round"]
+    home_id    = km["home_team_id"]
+    away_id    = km["away_team_id"]
+    home_name  = km["home_name"] or "TBD"
+    away_name  = km["away_name"] or "TBD"
+    home_flag  = km["home_flag"] or "⬜"
+    away_flag  = km["away_flag"] or "⬜"
+    pts_val    = KO_ROUND_POINTS.get(rnd, 0)
+    rnd_lbl    = _KO_RND_LABELS.get(rnd, rnd)
     bg_c, tx_c = _KO_RND_COLORS.get(rnd, ("#374151", "#E2E8F0"))
-    time_str  = fmt_match_time(km["match_date"], km["kickoff_time_et"])
-    is_done   = km["status"] == "completed"
+    time_str   = fmt_match_time(km["match_date"], km["kickoff_time_et"])
+    is_done    = km["status"] == "completed"
+    active_uid = st.session_state.get("active_user_id", 1)
 
-    # Family pick stickers (only when both teams known)
-    sticker_html = ""
+    # ── Supporter section ───────────────────────────────────────────────────
+    # Two-column layout: home supporters left, away supporters right.
+    # Only shown when both teams are known.
+    supporter_html = ""
     if home_id and away_id:
-        ko_picks = get_ko_picks_for_match(mid)
+        ko_picks     = get_ko_picks_for_match(mid)
+        home_pickers = [p for p in ko_picks if p["picked_team_id"] == home_id]
+        away_pickers = [p for p in ko_picks if p["picked_team_id"] == away_id]
+
         if ko_picks:
-            home_pickers = [p for p in ko_picks if p["picked_team_id"] == home_id]
-            away_pickers = [p for p in ko_picks if p["picked_team_id"] == away_id]
-            def _avs(pickers):
-                avs = "".join(f"<span style='font-size:1.25rem'>{p['avatar']}</span>" for p in pickers)
-                return avs or "<span style='color:#374151;font-size:.75rem'>—</span>"
-            sticker_html = (
-                f"<div style='display:flex;justify-content:center;gap:3rem;margin:.3rem 0'>"
-                f"<div style='text-align:center'>{_avs(home_pickers)}</div>"
-                f"<div style='text-align:center'>{_avs(away_pickers)}</div>"
+            h_side = _supporter_side_html(home_pickers, active_uid)
+            a_side = _supporter_side_html(away_pickers, active_uid)
+            supporter_html = (
+                f"<div style='display:flex;align-items:flex-start;margin:.4rem 0 .3rem'>"
+                # Home side
+                f"<div style='flex:1;min-width:0'>{h_side}</div>"
+                # Thin divider
+                f"<div style='width:1px;background:rgba(255,255,255,.08);"
+                f"align-self:stretch;flex-shrink:0;margin:.1rem 0'></div>"
+                # Away side
+                f"<div style='flex:1;min-width:0'>{a_side}</div>"
                 f"</div>"
             )
+        else:
+            supporter_html = (
+                "<div style='text-align:center;margin:.35rem 0;"
+                "font-size:.72rem;color:#4B5563'>🗳️ Picks Open</div>"
+            )
 
-    # Score or badges
+    # ── Score block or large flags ──────────────────────────────────────────
     if is_done and km.get("home_score") is not None:
         hs, as_ = int(km["home_score"]), int(km["away_score"])
         score_block = (
@@ -223,44 +261,50 @@ def _today_ko_card(km: dict) -> None:
         )
         btn_label = "⚽ Make Your Pick"
 
+    # ── Card wrapper (cinematic background or solid) ────────────────────────
     home_uri = get_country_image_data_uri(home_name) or ""
     away_uri = get_country_image_data_uri(away_name) or ""
     if home_uri and away_uri:
-        bg_style = (
-            "position:relative;border-radius:16px;overflow:hidden;margin-bottom:.5rem"
-        )
         card_html = (
-            f"<div style='{bg_style}'>"
+            "<div style='position:relative;border-radius:16px;overflow:hidden;margin-bottom:.5rem'>"
             f"<div style='position:absolute;top:0;left:0;width:50%;height:100%;"
             f"background:url('{home_uri}') center/cover no-repeat;"
             f"filter:brightness(.18) blur(2px)'></div>"
             f"<div style='position:absolute;top:0;right:0;width:50%;height:100%;"
             f"background:url('{away_uri}') center/cover no-repeat;"
             f"filter:brightness(.18) blur(2px)'></div>"
-            f"<div style='position:absolute;inset:0;"
-            f"background:linear-gradient(135deg,rgba(30,58,95,.5),rgba(15,23,42,.4))'></div>"
-            f"<div style='position:relative;z-index:1;padding:1rem 1rem .7rem;text-align:center'>"
+            "<div style='position:absolute;inset:0;"
+            "background:linear-gradient(135deg,rgba(30,58,95,.5),rgba(15,23,42,.4))'></div>"
+            "<div style='position:relative;z-index:1;padding:1rem 1rem .65rem;text-align:center'>"
         )
     else:
         card_html = (
             f"<div style='background:linear-gradient(135deg,{bg_c},{bg_c}cc);"
-            f"border-radius:16px;padding:1rem 1rem .7rem;text-align:center;margin-bottom:.5rem'>"
-            f"<div>"
+            f"border-radius:16px;padding:1rem 1rem .65rem;text-align:center;margin-bottom:.5rem'>"
+            "<div>"
         )
 
+    # ── Card body: round badge → flags → names → supporters → venue ─────────
     card_html += (
-        f"<div style='margin-bottom:.35rem'>"
+        # Round badge + pts pill
+        f"<div style='margin-bottom:.3rem'>"
         f"<span style='background:{bg_c};color:{tx_c};border-radius:4px;"
-        f"padding:.08rem .4rem;font-size:.7rem;font-weight:800;letter-spacing:.04em'>{rnd_lbl}</span>"
+        f"padding:.08rem .4rem;font-size:.7rem;font-weight:800;"
+        f"letter-spacing:.04em'>{rnd_lbl}</span>"
         f"<span style='background:rgba(255,255,255,.12);color:#FCD34D;border-radius:4px;"
-        f"padding:.08rem .35rem;font-size:.68rem;font-weight:800;margin-left:.3rem'>+{pts_val} pts</span>"
+        f"padding:.08rem .35rem;font-size:.68rem;font-weight:800;"
+        f"margin-left:.3rem'>+{pts_val} pts</span>"
         f"</div>"
+        # Flags / score
         + score_block
-        + f"<div style='font-size:1.05rem;font-weight:900;color:#F1F5F9;margin:.2rem 0'>"
+        # Team names
+        + f"<div style='font-size:1.05rem;font-weight:900;color:#F1F5F9;margin:.15rem 0'>"
         f"{home_name} <span style='opacity:.4;font-weight:300'>vs</span> {away_name}</div>"
-        + f"<div style='font-size:.72rem;color:#94A3B8'>🕒 {time_str} · 🏟️ {km['venue']}</div>"
+        # Supporter columns (sits between names and venue — feels connected to names)
+        + supporter_html
+        # Venue / kickoff
+        + f"<div style='font-size:.72rem;color:#94A3B8;margin-top:.1rem'>🕒 {time_str} · 🏟️ {km['venue']}</div>"
         + f"<div style='font-size:.68rem;color:#64748B'>📍 {km['city']}, {km['host_country']}</div>"
-        + sticker_html
         + "</div></div>"
     )
     st.markdown(card_html, unsafe_allow_html=True)

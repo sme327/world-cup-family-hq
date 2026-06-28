@@ -14,45 +14,18 @@ import pandas as pd
 
 from services.database import get_connection
 
-# ── Self-initializing schema ───────────────────────────────────────────────────
-# Ensures the three bracket tables exist even if init_db() hasn't run yet
-# (e.g. Streamlit Cloud wake-up, direct page load, or schema migration lag).
+# ── Guarantee full DB on import ────────────────────────────────────────────────
+# Streamlit Cloud reuses the same Python process across requests. If the DB is
+# rebuilt (sleep/wake, reset), sys.modules caches this module so the module-
+# level init here only runs once per process — not once per DB lifecycle.
+# We call init_db() which is idempotent and creates ALL tables (including
+# knockout_matches) and seeds data, so every function below can rely on them.
 
-_BRACKET_SCHEMA = """
-CREATE TABLE IF NOT EXISTS bracket_picks (
-    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id             INTEGER NOT NULL REFERENCES users(id),
-    knockout_match_id   INTEGER NOT NULL REFERENCES knockout_matches(id),
-    picked_team_id      INTEGER NOT NULL REFERENCES teams(id),
-    created_at          TEXT DEFAULT CURRENT_TIMESTAMP,
-    updated_at          TEXT DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(user_id, knockout_match_id)
-);
-CREATE TABLE IF NOT EXISTS bracket_submissions (
-    id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id         INTEGER NOT NULL REFERENCES users(id) UNIQUE,
-    submitted_at    TEXT,
-    is_complete     INTEGER DEFAULT 0
-);
-CREATE TABLE IF NOT EXISTS bracket_lock (
-    id          INTEGER PRIMARY KEY CHECK (id = 1),
-    is_locked   INTEGER DEFAULT 0,
-    locked_at   TEXT,
-    locked_by   TEXT
-);
-"""
+def _boot() -> None:
+    from services.database import init_db
+    init_db()
 
-def _ensure_bracket_tables() -> None:
-    try:
-        conn = get_connection()
-        conn.executescript(_BRACKET_SCHEMA)
-        conn.execute("INSERT OR IGNORE INTO bracket_lock (id, is_locked) VALUES (1, 0)")
-        conn.commit()
-        conn.close()
-    except Exception:
-        pass  # Non-fatal — full init_db() will handle it
-
-_ensure_bracket_tables()
+_boot()
 
 REQUIRED_PICKS:   int      = 31
 EXCLUDED_MATCHES: set[int] = {131}        # 3rd place — not part of bracket picks
@@ -80,14 +53,17 @@ def _get_team_map(conn) -> dict[int, dict]:
 
 def _get_structure(conn) -> dict[int, dict]:
     """All knockout matches except 131, keyed by ID."""
-    rows = conn.execute("""
-        SELECT id, round, bracket_slot, match_number,
-               home_team_id, away_team_id,
-               winner_to_id, winner_to_slot
-        FROM knockout_matches
-        WHERE id != 131
-        ORDER BY round, bracket_slot
-    """).fetchall()
+    try:
+        rows = conn.execute("""
+            SELECT id, round, bracket_slot, match_number,
+                   home_team_id, away_team_id,
+                   winner_to_id, winner_to_slot
+            FROM knockout_matches
+            WHERE id != 131
+            ORDER BY round, bracket_slot
+        """).fetchall()
+    except Exception:
+        return {}
     return {
         r[0]: {
             "id": r[0], "round": r[1], "bracket_slot": r[2], "match_number": r[3],
@@ -123,11 +99,14 @@ def get_team_map() -> dict[int, dict]:
 # ── Lock ───────────────────────────────────────────────────────────────────────
 
 def get_bracket_lock() -> dict:
-    conn = get_connection()
-    row = conn.execute(
-        "SELECT is_locked, locked_at, locked_by FROM bracket_lock WHERE id=1"
-    ).fetchone()
-    conn.close()
+    try:
+        conn = get_connection()
+        row = conn.execute(
+            "SELECT is_locked, locked_at, locked_by FROM bracket_lock WHERE id=1"
+        ).fetchone()
+        conn.close()
+    except Exception:
+        return {"is_locked": False, "locked_at": None, "locked_by": None}
     if row is None:
         return {"is_locked": False, "locked_at": None, "locked_by": None}
     return {"is_locked": bool(row[0]), "locked_at": row[1], "locked_by": row[2]}

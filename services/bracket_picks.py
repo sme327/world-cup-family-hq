@@ -14,6 +14,46 @@ import pandas as pd
 
 from services.database import get_connection
 
+# ── Self-initializing schema ───────────────────────────────────────────────────
+# Ensures the three bracket tables exist even if init_db() hasn't run yet
+# (e.g. Streamlit Cloud wake-up, direct page load, or schema migration lag).
+
+_BRACKET_SCHEMA = """
+CREATE TABLE IF NOT EXISTS bracket_picks (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id             INTEGER NOT NULL REFERENCES users(id),
+    knockout_match_id   INTEGER NOT NULL REFERENCES knockout_matches(id),
+    picked_team_id      INTEGER NOT NULL REFERENCES teams(id),
+    created_at          TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TEXT DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, knockout_match_id)
+);
+CREATE TABLE IF NOT EXISTS bracket_submissions (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id         INTEGER NOT NULL REFERENCES users(id) UNIQUE,
+    submitted_at    TEXT,
+    is_complete     INTEGER DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS bracket_lock (
+    id          INTEGER PRIMARY KEY CHECK (id = 1),
+    is_locked   INTEGER DEFAULT 0,
+    locked_at   TEXT,
+    locked_by   TEXT
+);
+"""
+
+def _ensure_bracket_tables() -> None:
+    try:
+        conn = get_connection()
+        conn.executescript(_BRACKET_SCHEMA)
+        conn.execute("INSERT OR IGNORE INTO bracket_lock (id, is_locked) VALUES (1, 0)")
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass  # Non-fatal — full init_db() will handle it
+
+_ensure_bracket_tables()
+
 REQUIRED_PICKS:   int      = 31
 EXCLUDED_MATCHES: set[int] = {131}        # 3rd place — not part of bracket picks
 QF_MATCH_IDS:     set[int] = {125, 126, 127, 128}

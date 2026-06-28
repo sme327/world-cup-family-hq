@@ -54,6 +54,7 @@ def _make_match(match_id: str,
         "score1":   score1,
         "score2":   score2,
         "winner":   winner,   # explicit — set at DB load time after scores entered
+        "pens_str": "",
     }
 
 
@@ -147,13 +148,19 @@ def render_match_card(match: dict, extra_class: str = "") -> str:
     row1 = render_team_row(team1, flag1, displayed_score1, w1, l1)
     row2 = render_team_row(team2, flag2, displayed_score2, w2, l2)
 
+    # Penalty line (only for completed tied-score matches)
+    pens_str = match.get("pens_str", "")
+    pens_html = (
+        f'<div class="bk-pens">{pens_str}</div>'
+        if pens_str else ""
+    )
+
     return (
         f'<div class="{base_cls}" data-mid="{match.get("match_id", "")}">'
         f'{row1}'
         f'<div class="bk-sep"></div>'
         f'{row2}'
-        # Phase 6C: insert family pick avatars here
-        # f'<div class="bk-picks">{pick_avatars_html}</div>'
+        f'{pens_html}'
         f'</div>'
     )
 
@@ -415,6 +422,8 @@ def _css() -> str:
 .bk-nm-tbd {{ color: #B0A080; font-weight: 400; font-style: italic; font-size: .69rem; }}
 .bk-sc     {{ font-weight: 700; font-size: .84rem; color: #241608; min-width: 14px; text-align: right; flex-shrink: 0; }}
 .bk-sc-e   {{ min-width: 14px; }}
+.bk-pens   {{ font-size: .6rem; color: #8B7D6B; text-align: center; padding: 2px 6px 3px;
+              border-top: 1px solid #E4DBCE; font-style: italic; }}
 /* separator between the two teams within one match card — clear enough to read "two teams, one match" */
 .bk-sep    {{ height: 1px; background: #C8B48A; margin: 0; }}
 

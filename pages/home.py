@@ -529,10 +529,21 @@ if upcoming:
 # 2b. TODAY'S KNOCKOUT MATCHES
 # ─────────────────────────────────────────────────────────────────────────────
 if today_ko:
-    st.markdown(
-        '<div class="section-head">⚽ Today\'s Knockout Matches</div>',
-        unsafe_allow_html=True,
-    )
+    _ko_hdr_l, _ko_hdr_r = st.columns([5, 1])
+    with _ko_hdr_l:
+        st.markdown(
+            '<div class="section-head">⚽ Today\'s Knockout Matches</div>',
+            unsafe_allow_html=True,
+        )
+    with _ko_hdr_r:
+        _uid_qp_ko = st.session_state.get("active_user_id", "")
+        st.markdown(
+            f"<div style='text-align:right;padding-top:.55rem'>"
+            f"<a href='/bracket?u={_uid_qp_ko}' target='_self' "
+            f"style='font-size:.78rem;color:#60A5FA;text-decoration:none;font-weight:600'>"
+            f"🗂️ View Bracket →</a></div>",
+            unsafe_allow_html=True,
+        )
     _nko   = len(today_ko)
     _nkcols = min(_nko, 4)
     _kocols = st.columns(_nkcols)

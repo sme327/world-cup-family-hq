@@ -13,11 +13,6 @@ active_avatar  = st.session_state.get("active_user_avatar", "🐘")
 
 st.markdown("## 🎯 Pick Tracker")
 
-# ── Inline filter ──────────────────────────────────────────────────────────────
-_fc, _ = st.columns([1, 5])
-with _fc:
-    group_filter = st.selectbox("Group", ["All Groups"] + get_all_group_letters(), label_visibility="collapsed")
-
 # ── Load data ──────────────────────────────────────────────────────────────────
 all_matches = get_all_matches()
 all_picks   = get_all_picks()
@@ -489,140 +484,135 @@ def _today_match_card(m: pd.Series, mpicks: pd.DataFrame) -> None:
 
 
 # ── TABS ───────────────────────────────────────────────────────────────────────
-tab_today, tab_match, tab_person = st.tabs(["📸 Today", "📋 By Match", "👤 By Person"])
+tab_ko, tab_group = st.tabs(["🏆 Knockout", "🌍 Group Stage"])
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# TAB 0: TODAY
+# TAB 0: KNOCKOUT PICKS
 # ══════════════════════════════════════════════════════════════════════════════
-with tab_today:
+with tab_ko:
     from datetime import datetime as _dt2, timezone as _tz2, timedelta as _td2
 
     _today_str2 = (_dt2.now(_tz2.utc) - _td2(hours=7)).date().isoformat()
-    _t_matches  = all_matches[all_matches['pt_date'] == _today_str2].copy()
-    _t_matches  = _t_matches.sort_values('kickoff_time_et').reset_index(drop=True)
 
-    st.markdown(
-        f"<div style='font-size:1.3rem;font-weight:900;color:#F8FAFC;margin:.1rem 0 .55rem'>"
-        f"📸 Today's Picks — {fmt_date(_today_str2)}</div>",
-        unsafe_allow_html=True,
-    )
-
-    # ── Group Stage section ───────────────────────────────────────────────────
-    if not _t_matches.empty:
-        st.markdown(
-            "<div style='font-size:.95rem;font-weight:800;color:#94A3B8;"
-            "text-transform:uppercase;letter-spacing:.04em;margin:.0rem 0 .4rem'>"
-            "🌍 Group Stage</div>",
-            unsafe_allow_html=True,
-        )
-        _n = len(_t_matches)
-        if _n >= 2:
-            _tcols = st.columns(2, gap="medium")
-            for _ci, (_, _m) in enumerate(_t_matches.iterrows()):
-                _mid = int(_m['id'])
-                _mp  = all_picks[all_picks['match_id'] == _mid] if not all_picks.empty else pd.DataFrame()
-                with _tcols[_ci % 2]:
-                    _today_match_card(_m, _mp)
-        else:
-            _, _m = next(_t_matches.iterrows())
-            _mid  = int(_m['id'])
-            _mp   = all_picks[all_picks['match_id'] == _mid] if not all_picks.empty else pd.DataFrame()
-            _today_match_card(_m, _mp)
-
-    # ── Knockout section ──────────────────────────────────────────────────────
     try:
         _all_ko = get_all_ko_matches_display()
-        _ko_today = [
-            km for km in _all_ko
-            if km.get("match_date") == _today_str2 and km.get("id") != 131
-        ]
+        _ko_all = [km for km in _all_ko if km.get("id") != 131]  # exclude 3rd place from primary view
     except Exception:
-        _ko_today = []
+        _ko_all = []
 
-    if _ko_today:
-        st.markdown(
-            "<div style='font-size:.95rem;font-weight:800;color:#94A3B8;"
-            "text-transform:uppercase;letter-spacing:.04em;margin:.6rem 0 .4rem'>"
-            "🏆 Knockout</div>",
-            unsafe_allow_html=True,
-        )
-        _ko_cols = st.columns(min(2, len(_ko_today)), gap="medium") if len(_ko_today) >= 2 else [st.container()]
-        for _ki, _km in enumerate(_ko_today):
-            _ko_mid = int(_km["id"])
-            _ko_picks = get_ko_picks_for_match(_ko_mid)
-            _rnd_lbl  = KO_ROUND_LABELS.get(_km.get("round", ""), _km.get("round", ""))
-            _pts_val  = _km.get("points", 0)
-            _time_str = fmt_match_time(_km.get("match_date", ""), _km.get("kickoff_time_et", ""))
-            _hs, _as  = _km.get("home_score"), _km.get("away_score")
-            _score_disp = f"{int(_hs)}–{int(_as)}" if _hs is not None else "vs"
+    if not _ko_all:
+        st.info("🏆 Knockout stage begins June 28 — picks open when teams are confirmed!")
+    else:
+        # Render by round (completed rounds first, then current/upcoming)
+        _KO_ROUND_ORDER = ["r32", "r16", "qf", "sf", "final"]
+        for _rnd in _KO_ROUND_ORDER:
+            _rnd_matches = [km for km in _ko_all if km.get("round") == _rnd]
+            if not _rnd_matches:
+                continue
 
-            _conf = _confidence(
-                len([p for p in _ko_picks if p["picked_team_id"] == _km.get("home_team_id")]),
-                len([p for p in _ko_picks if p["picked_team_id"] == _km.get("away_team_id")]),
-                _km.get("home_name") or "TBD",
-                _km.get("away_name") or "TBD",
-                _km.get("status", "scheduled"),
-                _hs, _as,
+            _rnd_lbl = KO_ROUND_LABELS.get(_rnd, _rnd)
+            _pts_val = _rnd_matches[0].get("points", 0)
+
+            st.markdown(
+                f"<div style='font-size:.95rem;font-weight:800;color:#94A3B8;"
+                f"text-transform:uppercase;letter-spacing:.04em;margin:.7rem 0 .3rem'>"
+                f"🏆 {_rnd_lbl} "
+                f"<span style='font-size:.7rem;color:#FCD34D;font-weight:700'>"
+                f"+{_pts_val} pts/pick</span></div>",
+                unsafe_allow_html=True,
             )
-            _board_html = _ko_pick_board_html(_km, _ko_picks, n_family)
-            _card = (
-                f"<div style='border-radius:12px;padding:.5rem .9rem;margin:.2rem 0;"
-                f"border:1px solid rgba(245,158,11,.25);background:rgba(245,158,11,.04)'>"
-                f"<div style='display:flex;justify-content:space-between;align-items:center;"
-                f"margin-bottom:.2rem'>"
-                f"<span style='font-size:.65rem;color:#F59E0B;font-weight:800;"
-                f"text-transform:uppercase;letter-spacing:.04em'>{_rnd_lbl}</span>"
-                f"<span style='font-size:.65rem;color:#FCD34D'>+{_pts_val} pts</span></div>"
-                f"<div style='font-size:.95rem;font-weight:900;color:#F1F5F9'>"
-                f"{_km.get('home_flag','')} {_km.get('home_name','TBD')} "
-                f"<span style='color:#64748B;font-weight:400'>{_score_disp}</span> "
-                f"{_km.get('away_name','TBD')} {_km.get('away_flag','')}</div>"
-                f"<div style='font-size:.68rem;color:#64748B'>{_time_str} · {_km.get('venue','')}</div>"
-                + (_board_html if _ko_picks else
-                   "<div style='font-size:.72rem;color:#4B5563;margin-top:.2rem'>🗳️ No picks yet</div>")
-                + (f"<div style='font-size:.72rem;color:#94A3B8;margin-top:.2rem'>{_conf}</div>" if _conf else "")
-                + "</div>"
-            )
-            _ko_cols[_ki % len(_ko_cols)].markdown(_card, unsafe_allow_html=True)
 
-    if _t_matches.empty and not _ko_today:
-        st.info("No matches today — check tomorrow's lineup!")
+            _n_rnd = len(_rnd_matches)
+            _rnd_cols = st.columns(min(2, _n_rnd), gap="medium") if _n_rnd >= 2 else [st.container()]
+            for _ki, _km in enumerate(_rnd_matches):
+                _ko_mid   = int(_km["id"])
+                _ko_picks = get_ko_picks_for_match(_ko_mid)
+                _hs, _as  = _km.get("home_score"), _km.get("away_score")
+                _is_today = _km.get("match_date") == _today_str2
+                _pens_str = _km.get("pens_str", "")
 
-    # ── Compact leaderboard ───────────────────────────────────────────────────
-    _board = get_leaderboard()
-    if not _board.empty:
-        st.markdown(
-            "<div style='font-size:.95rem;font-weight:800;color:#F8FAFC;"
-            "margin:.65rem 0 .25rem'>🏆 Standings</div>",
-            unsafe_allow_html=True,
-        )
-        _medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣", "6️⃣", "7️⃣"]
-        _b_rows = list(_board.iterrows())
-        _half   = (_len_b := len(_b_rows) + 1) // 2
-        _lb1, _lb2 = st.columns(2, gap="small")
-        for _i, (_, _r) in enumerate(_b_rows):
-            _pts_s = f"{float(_r['total_points']):.1f}"
-            _tc    = _r.get('theme_color', '#888888')
-            _row_h = (
-                f"<div style='display:flex;align-items:center;gap:.3rem;"
-                f"padding:.12rem .4rem;border-radius:8px;background:{_tc}18;margin:.05rem 0'>"
-                f"<span style='font-size:.82rem;width:1.3rem'>{_medals[_i] if _i < 7 else _i+1}</span>"
-                f"<span style='font-size:1.25rem;line-height:1'>{_r['avatar']}</span>"
-                f"<span style='font-size:.88rem;font-weight:700;flex:1'>{_r['name']}</span>"
-                f"<span style='font-size:.88rem;color:#FCD34D;font-weight:800'>{_pts_s}</span>"
-                f"</div>"
+                # Build score string
+                if _hs is not None and _km.get("status") == "completed":
+                    _score_disp = f"{int(_hs)}–{int(_as)}"
+                    if _pens_str:
+                        _score_disp += f" ({_pens_str})"
+                else:
+                    _score_disp = "vs"
+
+                _time_str  = fmt_match_time(_km.get("match_date", ""), _km.get("kickoff_time_et", ""))
+                _board_html = _ko_pick_board_html(_km, _ko_picks, n_family)
+                _uid_qp_ko = active_user_id
+
+                _today_badge = (
+                    "<span style='background:#F59E0B;color:#000;border-radius:3px;"
+                    "padding:.05rem .28rem;font-size:.6rem;font-weight:900;margin-left:.3rem'>"
+                    "TODAY</span>"
+                    if _is_today else ""
+                )
+
+                _card = (
+                    f"<div style='border-radius:12px;padding:.5rem .9rem;margin:.15rem 0;"
+                    f"border:1px solid rgba(245,158,11,.25);background:rgba(245,158,11,.04)'>"
+                    f"<div style='font-size:.9rem;font-weight:900;color:#F1F5F9;margin-bottom:.1rem'>"
+                    f"{_km.get('home_flag','')} {_km.get('home_name') or 'TBD'} "
+                    f"<span style='color:#FCD34D;font-weight:400'>{_score_disp}</span> "
+                    f"{_km.get('away_name') or 'TBD'} {_km.get('away_flag','')}{_today_badge}</div>"
+                    f"<div style='font-size:.65rem;color:#64748B;margin-bottom:.2rem'>"
+                    f"{_time_str} · {_km.get('venue','')}</div>"
+                    + (_board_html if _ko_picks else
+                       "<div style='font-size:.72rem;color:#4B5563;margin-top:.15rem'>🗳️ No picks yet</div>")
+                    + f"<div style='text-align:right;margin-top:.2rem'>"
+                    f"<a href='/ko_matchup?match_id={_ko_mid}&u={_uid_qp_ko}' target='_self' "
+                    f"style='font-size:.65rem;color:#60A5FA;text-decoration:none'>"
+                    f"🏟️ Matchup →</a></div>"
+                    + "</div>"
+                )
+                _rnd_cols[_ki % len(_rnd_cols)].markdown(_card, unsafe_allow_html=True)
+
+        # 3rd place match (shown separately at bottom)
+        _third = next((km for km in _all_ko if km.get("id") == 131), None)
+        if _third:
+            _t_picks  = get_ko_picks_for_match(131)
+            _t_hs, _t_as = _third.get("home_score"), _third.get("away_score")
+            _t_score  = f"{int(_t_hs)}–{int(_t_as)}" if _t_hs is not None else "vs"
+            _t_pens   = _third.get("pens_str", "")
+            if _t_pens:
+                _t_score += f" ({_t_pens})"
+            _t_time   = fmt_match_time(_third.get("match_date", ""), _third.get("kickoff_time_et", ""))
+            _t_board  = _ko_pick_board_html(_third, _t_picks, n_family)
+            st.markdown(
+                f"<div style='font-size:.95rem;font-weight:800;color:#94A3B8;"
+                f"text-transform:uppercase;letter-spacing:.04em;margin:.7rem 0 .3rem'>"
+                f"🥉 3rd Place</div>",
+                unsafe_allow_html=True,
             )
-            if _i < (_len_b - 1) // 2:
-                _lb1.markdown(_row_h, unsafe_allow_html=True)
-            else:
-                _lb2.markdown(_row_h, unsafe_allow_html=True)
+            st.markdown(
+                f"<div style='border-radius:12px;padding:.5rem .9rem;"
+                f"border:1px solid rgba(148,163,184,.2);background:rgba(148,163,184,.04)'>"
+                f"<div style='font-size:.9rem;font-weight:900;color:#F1F5F9;margin-bottom:.1rem'>"
+                f"{_third.get('home_flag','')} {_third.get('home_name') or 'TBD'} "
+                f"<span style='color:#94A3B8;font-weight:400'>{_t_score}</span> "
+                f"{_third.get('away_name') or 'TBD'} {_third.get('away_flag','')}</div>"
+                f"<div style='font-size:.65rem;color:#64748B;margin-bottom:.2rem'>{_t_time}</div>"
+                + (_t_board if _t_picks else "<div style='font-size:.72rem;color:#4B5563'>🗳️ No picks yet</div>")
+                + "</div>",
+                unsafe_allow_html=True,
+            )
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# TAB 1: BY MATCH
+# TAB 1: GROUP STAGE (By Match + By Person)
 # ══════════════════════════════════════════════════════════════════════════════
-with tab_match:
+with tab_group:
+  _gsub_match, _gsub_person = st.tabs(["📋 By Match", "👤 By Person"])
+
+with _gsub_match:
+    # ── Group filter ─────────────────────────────────────────────────────────
+    _fc, _ = st.columns([1, 5])
+    with _fc:
+        group_filter = st.selectbox("Group", ["All Groups"] + get_all_group_letters(),
+                                    label_visibility="collapsed")
 
     # ── Family Favorite Countries (compact) ───────────────────────────────────
     if not all_picks.empty:
@@ -728,10 +718,7 @@ with tab_match:
                     _render_pt_card(_pt_rows[_i][1])
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-# TAB 2: BY PERSON
-# ══════════════════════════════════════════════════════════════════════════════
-with tab_person:
+with _gsub_person:
     user_picks = get_picks_for_user(active_user_id)
     user_color = st.session_state.get("active_user_color", "#2563EB")
 

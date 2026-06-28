@@ -10,7 +10,97 @@ from services.achievements import get_user_achievements
 st.markdown("## 🏆 Leaderboard")
 st.caption("FIFA World Cup 2026 · Family standings")
 
-_tab_combined, _tab_group = st.tabs(["📊 Full Breakdown", "⚽ Group Stage"])
+_tab_ko, _tab_total, _tab_group = st.tabs(["🏆 Knockout", "📊 Total Score", "⚽ Group Stage"])
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 🏆 KNOCKOUT TAB (default)
+# ══════════════════════════════════════════════════════════════════════════════
+
+with _tab_ko:
+    _ko_active_uid = st.session_state.get("active_user_id", 1)
+    _ko_combined = get_combined_leaderboard()
+
+    if not _ko_combined:
+        st.info("No knockout picks scored yet — picks open for each round as teams advance.")
+    else:
+        _ko_sorted = sorted(_ko_combined, key=lambda e: (-e["ko_live_pts"], e["name"]))
+        _ko_any_pts = any(e["ko_live_pts"] > 0 for e in _ko_sorted)
+        if not _ko_any_pts:
+            st.info("No knockout matches scored yet — Knockout picks earn points when results are entered.")
+        else:
+            st.markdown(
+                "<div style='font-size:.85rem;color:#94A3B8;margin-bottom:.6rem'>"
+                "Points earned from live knockout picks (R32=2 · R16=3 · QF=4 · SF=5 · Final=8)</div>",
+                unsafe_allow_html=True,
+            )
+
+        _ko_medals = ["🥇", "🥈", "🥉"]
+        _ko_rank = 1
+        for _ki, _ke in enumerate(_ko_sorted):
+            if _ki > 0 and _ke["ko_live_pts"] < _ko_sorted[_ki - 1]["ko_live_pts"]:
+                _ko_rank = _ki + 1
+            _ko_medal = _ko_medals[_ko_rank - 1] if _ko_rank <= 3 else f"#{_ko_rank}"
+            _ko_uid   = _ke["user_id"]
+            _ko_is_me = _ko_uid == _ko_active_uid
+            _ko_glow  = ";box-shadow:0 0 0 2px rgba(147,197,253,.5)" if _ko_is_me else ""
+
+            if _ko_rank == 1:
+                _ko_bg, _ko_border, _ko_ptc = (
+                    "linear-gradient(135deg,#78350F,#92400E)", "#F59E0B", "#FCD34D"
+                )
+            elif _ko_rank == 2:
+                _ko_bg, _ko_border, _ko_ptc = (
+                    "linear-gradient(135deg,#1E293B,#334155)", "#94A3B8", "#E2E8F0"
+                )
+            elif _ko_rank == 3:
+                _ko_bg, _ko_border, _ko_ptc = (
+                    "linear-gradient(135deg,#1C1917,#292524)", "#CD7F32", "#E2E8F0"
+                )
+            else:
+                _ko_bg, _ko_border, _ko_ptc = (
+                    "linear-gradient(160deg,#1E293B,#0F172A)",
+                    "rgba(148,163,184,.18)", "#E2E8F0"
+                )
+
+            st.markdown(
+                f"<div style='background:{_ko_bg};border:2px solid {_ko_border};"
+                f"border-radius:14px;padding:.75rem 1.1rem;margin:.35rem 0{_ko_glow}'>"
+                f"<div style='display:flex;align-items:center;gap:.9rem'>"
+                f"<div style='font-size:1.5rem;font-weight:900;color:{_ko_ptc};"
+                f"min-width:2rem;text-align:center;flex-shrink:0'>{_ko_medal}</div>"
+                f"<div style='font-size:2.4rem;line-height:1;flex-shrink:0'>{_ke['avatar']}</div>"
+                f"<div style='flex:1;min-width:0'>"
+                f"<div style='font-size:1.05rem;font-weight:900;color:#F1F5F9'>{_ke['name']}</div>"
+                f"<div style='font-size:.75rem;color:#94A3B8;margin-top:.15rem'>"
+                f"Group: {_ke['group_pts']:.1f} pts</div>"
+                f"</div>"
+                f"<div style='text-align:center;flex-shrink:0'>"
+                f"<div style='font-size:2rem;font-weight:900;color:{_ko_ptc};line-height:1'>"
+                f"{_ke['ko_live_pts']:.0f}</div>"
+                f"<div style='font-size:.65rem;color:#94A3B8;text-transform:uppercase;"
+                f"letter-spacing:.05em'>KO pts</div>"
+                f"</div>"
+                f"</div></div>",
+                unsafe_allow_html=True,
+            )
+
+        # Scoring legend
+        st.markdown(
+            "<div style='margin-top:1.2rem;padding:.7rem 1rem;"
+            "background:rgba(255,255,255,.04);border-radius:10px;"
+            "border:1px solid rgba(148,163,184,.12)'>"
+            "<div style='font-size:.75rem;color:#64748B;font-weight:700;"
+            "text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem'>Knockout scoring</div>"
+            "<div style='font-size:.8rem;color:#94A3B8;display:flex;gap:1.2rem;flex-wrap:wrap'>"
+            "<span>R32 = <b style='color:#F1F5F9'>2 pts</b></span>"
+            "<span>R16 = <b style='color:#F1F5F9'>3 pts</b></span>"
+            "<span>QF = <b style='color:#F1F5F9'>4 pts</b></span>"
+            "<span>SF = <b style='color:#F1F5F9'>5 pts</b></span>"
+            "<span>Final = <b style='color:#F1F5F9'>8 pts</b></span>"
+            "</div></div>",
+            unsafe_allow_html=True,
+        )
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ⚽ GROUP STAGE TAB
@@ -283,10 +373,10 @@ with _tab_group:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 📊 FULL BREAKDOWN TAB
+# 📊 TOTAL SCORE TAB
 # ══════════════════════════════════════════════════════════════════════════════
 
-with _tab_combined:
+with _tab_total:
     active_user_id_cb = st.session_state.get("active_user_id", 1)
 
     combined = get_combined_leaderboard()
@@ -296,7 +386,7 @@ with _tab_combined:
         # Header blurb
         st.markdown(
             "<div style='font-size:.85rem;color:#94A3B8;margin-bottom:.75rem'>"
-            "Total = Group Stage picks + Live KO picks"
+            "Total = Group Stage picks + Knockout picks"
             "</div>",
             unsafe_allow_html=True,
         )
@@ -358,7 +448,7 @@ with _tab_combined:
                 f"<div style='font-size:1.05rem;font-weight:900;color:#F1F5F9'>{p_name}</div>"
                 f"<div style='display:flex;gap:.6rem;margin-top:.25rem;flex-wrap:wrap'>"
                 f"<span style='font-size:.75rem;color:#86EFAC'>⚽ Group: <b>{grp:.1f}</b></span>"
-                f"<span style='font-size:.75rem;color:#7DD3FC'>🎯 Knockout: <b>{ko:.0f}</b></span>"
+                f"<span style='font-size:.75rem;color:#7DD3FC'>🏆 Knockout: <b>{ko:.0f}</b></span>"
                 f"</div>"
                 f"</div>"
 
@@ -383,7 +473,7 @@ with _tab_combined:
             "text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem'>Scoring breakdown</div>"
             "<div style='font-size:.8rem;color:#94A3B8;display:flex;gap:1.2rem;flex-wrap:wrap'>"
             "<span>⚽ <b style='color:#86EFAC'>Group</b>: 1 pt/win, ½ draw</span>"
-            "<span>🎯 <b style='color:#7DD3FC'>KO Live</b>: R32=2 · R16=3 · QF=4 · SF=5 · Final=8</span>"
+            "<span>🎯 <b style='color:#7DD3FC'>Knockout</b>: R32=2 · R16=3 · QF=4 · SF=5 · Final=8</span>"
             "</div></div>",
             unsafe_allow_html=True,
         )

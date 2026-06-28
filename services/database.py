@@ -331,5 +331,12 @@ def init_db():
 
     cursor.execute("INSERT OR IGNORE INTO bracket_lock (id, is_locked) VALUES (1, 0)")
 
+    # Migrate: add penalty columns to knockout_matches if missing
+    for _col in ("home_penalties", "away_penalties"):
+        try:
+            conn.execute(f"ALTER TABLE knockout_matches ADD COLUMN {_col} INTEGER")
+        except Exception:
+            pass  # column already exists
+
     conn.commit()
     conn.close()

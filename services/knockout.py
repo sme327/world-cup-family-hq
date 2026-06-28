@@ -21,6 +21,7 @@ _QUERY = """
     SELECT
         km.id, km.round, km.bracket_slot,
         km.home_score, km.away_score, km.status,
+        km.home_penalties, km.away_penalties,
         km.home_source, km.away_source,
         km.match_date, km.kickoff_time_et,
         km.venue, km.city, km.match_number,
@@ -164,12 +165,20 @@ def get_knockout_rounds() -> dict:
         w_name = row["winner_name"]
         hs     = row["home_score"]
         as_    = row["away_score"]
+        h_pens = row["home_penalties"]
+        a_pens = row["away_penalties"]
         is_complete = row["status"] == "completed" and hs is not None
 
         if w_name:
             winner = "team1" if w_name == h_name else "team2"
         else:
             winner = None
+
+        # Penalty display string for tied-score matches
+        pens_str = ""
+        if is_complete and hs is not None and as_ is not None:
+            if int(hs) == int(as_) and h_pens is not None and a_pens is not None:
+                pens_str = f"pens {int(h_pens)}–{int(a_pens)}"
 
         rounds[rnd].append({
             "match_id": row["id"],
@@ -180,6 +189,7 @@ def get_knockout_rounds() -> dict:
             "score1":   int(hs)  if is_complete and hs  is not None else None,
             "score2":   int(as_) if is_complete and as_ is not None else None,
             "winner":   winner,
+            "pens_str": pens_str,
         })
 
     # Pad any round that came back short (shouldn't happen with a clean seed)
@@ -217,19 +227,24 @@ def get_knockout_admin_data(round_name: str = None) -> list[dict]:
 # ── Score entry and advancement ───────────────────────────────────────────────
 
 def save_knockout_result(match_id: int, home_score: int, away_score: int,
-                         winner_team_id: int) -> None:
+                         winner_team_id: int,
+                         home_penalties: int | None = None,
+                         away_penalties: int | None = None) -> None:
     """Save a knockout match result and advance the winner to the next round.
 
     For SF matches, also routes the loser to the 3rd place match.
+    home_penalties / away_penalties: only set when the match was decided by shootout.
     """
     conn = get_connection()
     cur  = conn.cursor()
 
     cur.execute("""
         UPDATE knockout_matches
-        SET home_score=?, away_score=?, winner_team_id=?, status='completed'
+        SET home_score=?, away_score=?, winner_team_id=?, status='completed',
+            home_penalties=?, away_penalties=?
         WHERE id=?
-    """, (home_score, away_score, winner_team_id, match_id))
+    """, (home_score, away_score, winner_team_id,
+          home_penalties, away_penalties, match_id))
 
     row = cur.execute("""
         SELECT winner_to_id, winner_to_slot, loser_to_id, loser_to_slot,

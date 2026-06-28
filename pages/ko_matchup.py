@@ -82,7 +82,13 @@ my_pick_id = get_ko_pick(active_user_id, mid) if home_id and away_id else None
 
 # ── Hero header ───────────────────────────────────────────────────────────────
 
-hs_str = f"{int(km['home_score'])}–{int(km['away_score'])}" if is_done and km.get("home_score") is not None else "vs"
+if is_done and km.get("home_score") is not None:
+    hs_str = f"{int(km['home_score'])}–{int(km['away_score'])}"
+    _pens = km.get("pens_str", "")
+    if _pens:
+        hs_str += f" ({_pens})"
+else:
+    hs_str = "vs"
 
 st.markdown(
     "<div style='background:linear-gradient(135deg,#1E3A5F,#1E293B);"

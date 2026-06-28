@@ -241,6 +241,7 @@ def get_all_ko_matches_display() -> list[dict]:
         SELECT km.id, km.round, km.match_number, km.bracket_slot, km.status,
                km.home_team_id, km.away_team_id,
                km.home_score, km.away_score, km.winner_team_id,
+               km.home_penalties, km.away_penalties,
                km.match_date, km.kickoff_time_et, km.venue, km.city, km.host_country,
                th.name AS home_name, th.flag_emoji AS home_flag,
                ta.name AS away_name, ta.flag_emoji AS away_flag,
@@ -257,6 +258,7 @@ def get_all_ko_matches_display() -> list[dict]:
         "id", "round", "match_number", "bracket_slot", "status",
         "home_team_id", "away_team_id",
         "home_score", "away_score", "winner_team_id",
+        "home_penalties", "away_penalties",
         "match_date", "kickoff_time_et", "venue", "city", "host_country",
         "home_name", "home_flag", "away_name", "away_flag", "winner_name",
     ]
@@ -269,5 +271,13 @@ def get_all_ko_matches_display() -> list[dict]:
         d["away_flag"]   = d["away_flag"] or ""
         d["home_name"]   = d["home_name"] or None
         d["away_name"]   = d["away_name"] or None
+        # Penalty display string (only for tied completed matches)
+        hs, as_ = d.get("home_score"), d.get("away_score")
+        hp, ap  = d.get("home_penalties"), d.get("away_penalties")
+        if (d["status"] == "completed" and hs is not None and as_ is not None
+                and int(hs) == int(as_) and hp is not None and ap is not None):
+            d["pens_str"] = f"{int(hp)}–{int(ap)} pens"
+        else:
+            d["pens_str"] = ""
         result.append(d)
     return result

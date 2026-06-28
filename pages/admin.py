@@ -147,6 +147,7 @@ with tabs[1]:
     if not ko_matches:
         st.info("No knockout matches found. Make sure the database has been reset/initialized after today's update.")
     else:
+        _SELECT_SENTINEL = "— select winner —"
         for m in ko_matches:
             mid    = int(m["id"])
             h_name = m.get("home_name") or m.get("home_source") or "TBD"
@@ -169,7 +170,7 @@ with tabs[1]:
                 else:
                     st.caption(f"📍 {venue}")
 
-                sc1, sc2, w_col, btn_col = st.columns([2, 2, 3, 2])
+                sc1, sc2, btn_col = st.columns([2, 2, 2])
 
                 with sc1:
                     ko_hs = st.number_input(
@@ -187,48 +188,80 @@ with tabs[1]:
                         disabled=not teams_known,
                         key=f"ko_as_{mid}",
                     )
-                _SELECT_SENTINEL = "— select winner —"
-                with w_col:
-                    winner_options = []
-                    if m.get("home_name"):
-                        winner_options.append(m["home_name"])
-                    if m.get("away_name"):
-                        winner_options.append(m["away_name"])
 
-                    cur_winner_name = m.get("winner_name")
-
-                    if winner_options:
-                        if cur_winner_name and cur_winner_name in winner_options:
-                            # Already saved — show known winner as default, no sentinel
-                            _opts = winner_options
-                            default_idx = winner_options.index(cur_winner_name)
-                        else:
-                            # Not yet saved — force explicit choice via sentinel
-                            _opts = [_SELECT_SENTINEL] + winner_options
-                            default_idx = 0
-                        ko_winner = st.selectbox(
-                            "Winner — must select (handles ET/penalties)",
-                            options=_opts,
-                            index=default_idx,
-                            disabled=not teams_known,
-                            key=f"ko_win_{mid}",
+                # Penalty inputs — only visible when scores are tied
+                is_tied = teams_known and (ko_hs == ko_as)
+                ko_hp = ko_ap = None
+                if is_tied:
+                    st.caption("🏆 Penalty shootout scores (if applicable):")
+                    pn1, pn2 = st.columns(2)
+                    with pn1:
+                        _hp_val = int(m.get("home_penalties") or 0)
+                        ko_hp = st.number_input(
+                            f"{h_flag} {h_name} pens",
+                            min_value=0, max_value=30, value=_hp_val,
+                            disabled=not teams_known, key=f"ko_hp_{mid}",
                         )
-                        # Score-based hint when sentinel is selected
-                        if ko_winner == _SELECT_SENTINEL and ko_hs != ko_as:
-                            _hint = m.get("home_name") if ko_hs > ko_as else m.get("away_name")
-                            if _hint:
-                                st.caption(f"💡 Score suggests: {_hint}")
-                    else:
-                        ko_winner = None
-                        st.caption("Winner TBD")
+                    with pn2:
+                        _ap_val = int(m.get("away_penalties") or 0)
+                        ko_ap = st.number_input(
+                            f"{a_flag} {a_name} pens",
+                            min_value=0, max_value=30, value=_ap_val,
+                            disabled=not teams_known, key=f"ko_ap_{mid}",
+                        )
 
+                # Winner selectbox — auto-suggest from scores/pens before rendering
+                winner_options = []
+                if m.get("home_name"):
+                    winner_options.append(m["home_name"])
+                if m.get("away_name"):
+                    winner_options.append(m["away_name"])
+
+                cur_winner_name = m.get("winner_name")
+                _win_key = f"ko_win_{mid}"
+
+                if winner_options:
+                    if cur_winner_name and cur_winner_name in winner_options:
+                        # Saved match — ensure session state matches saved winner
+                        _opts = winner_options
+                        if st.session_state.get(_win_key) not in winner_options:
+                            st.session_state[_win_key] = cur_winner_name
+                    else:
+                        # Unsaved — auto-select from scores (or penalties if tied)
+                        _opts = [_SELECT_SENTINEL] + winner_options
+                        _cur_sel = st.session_state.get(_win_key, _SELECT_SENTINEL)
+                        if _cur_sel == _SELECT_SENTINEL:
+                            if not is_tied and ko_hs > ko_as and m.get("home_name"):
+                                st.session_state[_win_key] = m["home_name"]
+                            elif not is_tied and ko_as > ko_hs and m.get("away_name"):
+                                st.session_state[_win_key] = m["away_name"]
+                            elif is_tied and ko_hp is not None and ko_ap is not None:
+                                if ko_hp > ko_ap and m.get("home_name"):
+                                    st.session_state[_win_key] = m["home_name"]
+                                elif ko_ap > ko_hp and m.get("away_name"):
+                                    st.session_state[_win_key] = m["away_name"]
+
+                    ko_winner = st.selectbox(
+                        "Winner",
+                        options=_opts,
+                        key=_win_key,
+                        disabled=not teams_known,
+                    )
+                    # Tied-score message
+                    if ko_winner == _SELECT_SENTINEL and is_tied:
+                        st.caption("Score is tied — select the team that advanced, likely after penalties.")
+                else:
+                    ko_winner = None
+                    st.caption("Winner TBD")
+
+                # Save / Reset buttons
+                _winner_chosen = (
+                    teams_known
+                    and ko_winner
+                    and ko_winner != _SELECT_SENTINEL
+                )
                 with btn_col:
                     st.markdown("&nbsp;", unsafe_allow_html=True)
-                    _winner_chosen = (
-                        teams_known
-                        and ko_winner
-                        and ko_winner != _SELECT_SENTINEL
-                    )
                     if _winner_chosen:
                         if st.button("✅ Save", key=f"ko_save_{mid}"):
                             _wconn = get_connection()
@@ -237,20 +270,26 @@ with tabs[1]:
                             ).fetchone()
                             _wconn.close()
                             if _wrow:
-                                save_knockout_result(mid, int(ko_hs), int(ko_as), _wrow[0])
+                                # Only save penalties when scores are tied and values entered
+                                _save_hp = int(ko_hp) if is_tied and ko_hp else None
+                                _save_ap = int(ko_ap) if is_tied and ko_ap else None
+                                save_knockout_result(
+                                    mid, int(ko_hs), int(ko_as), _wrow[0],
+                                    _save_hp, _save_ap,
+                                )
                                 st.success(f"Saved! {ko_winner} advances.")
                                 st.rerun()
                             else:
                                 st.error(f"Team '{ko_winner}' not found in DB.")
 
-                    if status == "completed":
-                        if st.button("↩️ Reset", key=f"ko_reset_{mid}"):
-                            ok, msg = reset_knockout_result(mid)
-                            if ok:
-                                st.success(msg)
-                                st.rerun()
-                            else:
-                                st.warning(msg)
+                if status == "completed":
+                    if st.button("↩️ Reset", key=f"ko_reset_{mid}"):
+                        ok, msg = reset_knockout_result(mid)
+                        if ok:
+                            st.success(msg)
+                            st.rerun()
+                        else:
+                            st.warning(msg)
 
 # ── All Matches ───────────────────────────────────────────────────────────────
 with tabs[2]:

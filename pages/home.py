@@ -175,33 +175,13 @@ _KO_RND_LABELS = {
 }
 
 
-def _supporter_side_html(pickers: list[dict], active_uid: int) -> str:
-    """Centered, wrapping avatar block for one side's supporters."""
-    if not pickers:
-        return "<div style='color:#4B5563;font-size:.75rem;padding:.5rem 0;min-height:1.8rem'>—</div>"
-    parts = []
-    for p in pickers:
-        if p["user_id"] == active_uid:
-            # Gold ring + slight size bump for the active user
-            style = (
-                "font-size:1.5rem;line-height:1;"
-                "display:inline-flex;align-items:center;justify-content:center;"
-                "border-radius:50%;padding:.15rem;"
-                "box-shadow:0 0 0 2px #F59E0B,0 0 8px rgba(245,158,11,.35);"
-            )
-        else:
-            style = "font-size:1.35rem;line-height:1;"
-        parts.append(f"<span style='{style}'>{p['avatar']}</span>")
-    return (
-        f"<div style='display:flex;flex-wrap:wrap;justify-content:center;"
-        f"gap:.3rem;padding:.2rem .1rem'>"
-        + "".join(parts)
-        + "</div>"
-    )
-
-
 def _today_ko_card(km: dict) -> None:
-    """Cinematic home-page card for one knockout match."""
+    """Cinematic home-page card for one knockout match.
+
+    Layout — TOP: round/pts badges | MIDDLE: team blocks flanking a gold vs badge
+    (or score) | BOTTOM: venue/kickoff. Supporters live inside each team block
+    so they visually belong to their side.
+    """
     mid        = km["id"]
     rnd        = km["round"]
     home_id    = km["home_team_id"]
@@ -217,51 +197,72 @@ def _today_ko_card(km: dict) -> None:
     is_done    = km["status"] == "completed"
     active_uid = st.session_state.get("active_user_id", 1)
 
-    # ── Supporter section ───────────────────────────────────────────────────
-    # Two-column layout: home supporters left, away supporters right.
-    # Only shown when both teams are known.
-    supporter_html = ""
+    # ── Picks ───────────────────────────────────────────────────────────────
+    home_pickers: list[dict] = []
+    away_pickers: list[dict] = []
     if home_id and away_id:
         ko_picks     = get_ko_picks_for_match(mid)
         home_pickers = [p for p in ko_picks if p["picked_team_id"] == home_id]
         away_pickers = [p for p in ko_picks if p["picked_team_id"] == away_id]
 
-        if ko_picks:
-            h_side = _supporter_side_html(home_pickers, active_uid)
-            a_side = _supporter_side_html(away_pickers, active_uid)
-            supporter_html = (
-                f"<div style='display:flex;align-items:flex-start;margin:.4rem 0 .3rem'>"
-                # Home side
-                f"<div style='flex:1;min-width:0'>{h_side}</div>"
-                # Thin divider
-                f"<div style='width:1px;background:rgba(255,255,255,.08);"
-                f"align-self:stretch;flex-shrink:0;margin:.1rem 0'></div>"
-                # Away side
-                f"<div style='flex:1;min-width:0'>{a_side}</div>"
-                f"</div>"
-            )
-        else:
-            supporter_html = (
-                "<div style='text-align:center;margin:.35rem 0;"
-                "font-size:.72rem;color:#4B5563'>🗳️ Picks Open</div>"
-            )
+    def _avatars(pickers: list[dict]) -> str:
+        parts = []
+        for p in pickers:
+            if p["user_id"] == active_uid:
+                style = (
+                    "font-size:1.4rem;line-height:1;"
+                    "display:inline-flex;align-items:center;justify-content:center;"
+                    "border-radius:50%;padding:.12rem;"
+                    "box-shadow:0 0 0 2.5px #F59E0B,0 0 8px rgba(245,158,11,.35);"
+                )
+            else:
+                style = "font-size:1.35rem;line-height:1;"
+            parts.append(f"<span style='{style}'>{p['avatar']}</span>")
+        return (
+            "<div style='display:flex;flex-wrap:wrap;justify-content:center;gap:.25rem'>"
+            + "".join(parts)
+            + "</div>"
+        )
 
-    # ── Score block or large flags ──────────────────────────────────────────
+    def _team_block(flag: str, name: str, pickers: list[dict]) -> str:
+        supporter_html = ""
+        if pickers:
+            supporter_html = (
+                "<div style='font-size:.6rem;color:#6B7280;margin:.35rem 0 .12rem;"
+                "letter-spacing:.04em;text-transform:uppercase;font-weight:600'>Picked by</div>"
+                + _avatars(pickers)
+            )
+        return (
+            "<div style='flex:1;min-width:0;text-align:center;padding:.05rem .2rem'>"
+            f"<div style='font-size:2.8rem;line-height:1.05'>{flag}</div>"
+            f"<div style='font-size:.95rem;font-weight:800;color:#F1F5F9;"
+            f"margin:.1rem 0 0;line-height:1.2'>{name}</div>"
+            + supporter_html
+            + "</div>"
+        )
+
+    # ── Center badge ────────────────────────────────────────────────────────
     if is_done and km.get("home_score") is not None:
         hs, as_ = int(km["home_score"]), int(km["away_score"])
-        score_block = (
-            f"<div style='font-size:1.7rem;font-weight:900;color:#FCD34D;line-height:1'>"
-            f"{home_flag}&nbsp;{hs}–{as_}&nbsp;{away_flag}</div>"
+        center_html = (
+            "<div style='flex-shrink:0;align-self:center;padding:0 .45rem;text-align:center'>"
+            f"<div style='color:#FCD34D;font-size:1.25rem;font-weight:900;"
+            f"line-height:1'>{hs}–{as_}</div>"
+            "</div>"
         )
         btn_label = "📊 View Result"
     else:
-        score_block = (
-            f"<div style='font-size:3.5rem;line-height:1.05;margin:.1rem 0'>"
-            f"{home_flag}&nbsp;&nbsp;{away_flag}</div>"
+        center_html = (
+            "<div style='flex-shrink:0;align-self:center;padding:0 .45rem;text-align:center'>"
+            "<span style='background:rgba(245,158,11,.12);color:#F59E0B;"
+            "border:1px solid rgba(245,158,11,.28);border-radius:20px;"
+            "padding:.2rem .55rem;font-size:.72rem;font-weight:900;"
+            "letter-spacing:.06em'>vs</span>"
+            "</div>"
         )
         btn_label = "⚽ Make Your Pick"
 
-    # ── Card wrapper (cinematic background or solid) ────────────────────────
+    # ── Card wrapper ────────────────────────────────────────────────────────
     home_uri = get_country_image_data_uri(home_name) or ""
     away_uri = get_country_image_data_uri(away_name) or ""
     if home_uri and away_uri:
@@ -275,37 +276,37 @@ def _today_ko_card(km: dict) -> None:
             f"filter:brightness(.18) blur(2px)'></div>"
             "<div style='position:absolute;inset:0;"
             "background:linear-gradient(135deg,rgba(30,58,95,.5),rgba(15,23,42,.4))'></div>"
-            "<div style='position:relative;z-index:1;padding:1rem 1rem .65rem;text-align:center'>"
+            "<div style='position:relative;z-index:1;padding:.85rem .75rem .65rem'>"
         )
     else:
         card_html = (
             f"<div style='background:linear-gradient(135deg,{bg_c},{bg_c}cc);"
-            f"border-radius:16px;padding:1rem 1rem .65rem;text-align:center;margin-bottom:.5rem'>"
+            f"border-radius:16px;padding:.85rem .75rem .65rem;margin-bottom:.5rem'>"
             "<div>"
         )
 
-    # ── Card body: round badge → flags → names → supporters → venue ─────────
     card_html += (
-        # Round badge + pts pill
-        f"<div style='margin-bottom:.3rem'>"
+        # TOP: badges (centered)
+        "<div style='text-align:center;margin-bottom:.5rem'>"
         f"<span style='background:{bg_c};color:{tx_c};border-radius:4px;"
         f"padding:.08rem .4rem;font-size:.7rem;font-weight:800;"
         f"letter-spacing:.04em'>{rnd_lbl}</span>"
         f"<span style='background:rgba(255,255,255,.12);color:#FCD34D;border-radius:4px;"
         f"padding:.08rem .35rem;font-size:.68rem;font-weight:800;"
         f"margin-left:.3rem'>+{pts_val} pts</span>"
-        f"</div>"
-        # Flags / score
-        + score_block
-        # Team names
-        + f"<div style='font-size:1.05rem;font-weight:900;color:#F1F5F9;margin:.15rem 0'>"
-        f"{home_name} <span style='opacity:.4;font-weight:300'>vs</span> {away_name}</div>"
-        # Supporter columns (sits between names and venue — feels connected to names)
-        + supporter_html
-        # Venue / kickoff
-        + f"<div style='font-size:.72rem;color:#94A3B8;margin-top:.1rem'>🕒 {time_str} · 🏟️ {km['venue']}</div>"
-        + f"<div style='font-size:.68rem;color:#64748B'>📍 {km['city']}, {km['host_country']}</div>"
-        + "</div></div>"
+        "</div>"
+        # MIDDLE: Team A block | vs badge | Team B block
+        "<div style='display:flex;align-items:flex-start'>"
+        + _team_block(home_flag, home_name, home_pickers)
+        + center_html
+        + _team_block(away_flag, away_name, away_pickers)
+        + "</div>"
+        # BOTTOM: kickoff + venue
+        "<div style='text-align:center;margin-top:.5rem'>"
+        f"<div style='font-size:.72rem;color:#94A3B8'>🕒 {time_str} · 🏟️ {km['venue']}</div>"
+        f"<div style='font-size:.68rem;color:#64748B'>📍 {km['city']}, {km['host_country']}</div>"
+        "</div>"
+        "</div></div>"
     )
     st.markdown(card_html, unsafe_allow_html=True)
     if st.button(btn_label, key=f"home_ko_{mid}", use_container_width=True):

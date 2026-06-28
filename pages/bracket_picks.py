@@ -420,7 +420,9 @@ def _family_comparison() -> None:
 # ── Page header & tabs ─────────────────────────────────────────────────────────
 
 st.markdown(
-    f"<h1 style='margin-bottom:0'>🎯 Bracket Picks</h1>",
+    "<h1 style='margin-bottom:.15rem'>📋 My Tournament Bracket</h1>"
+    "<p style='color:#94A3B8;margin-top:0;font-size:1rem'>"
+    "Fill out your complete knockout bracket before Admin locks it.</p>",
     unsafe_allow_html=True,
 )
 
@@ -429,6 +431,26 @@ st.markdown(
     f"<span style='color:#888;font-size:.95rem'>"
     f"Playing as: <strong>{user_avatar} {user_name}</strong> · {lock_status}"
     f"</span>",
+    unsafe_allow_html=True,
+)
+
+# Explainer box
+st.markdown(
+    "<div style='"
+    "background:rgba(255,255,255,.05);"
+    "border:1px solid rgba(255,255,255,.12);"
+    "border-radius:10px;"
+    "padding:.75rem 1.1rem;"
+    "margin:.75rem 0 .25rem;"
+    "font-size:.9rem;"
+    "line-height:1.7;"
+    "'>"
+    "<strong>Two ways to earn knockout points:</strong><br>"
+    "📋 <strong>Full Bracket</strong> — Pick the whole tournament once, before brackets lock. "
+    "Scored as knockout results come in. <em>You are here.</em><br>"
+    "⚽ <strong>Live Picks</strong> — Pick each match before it kicks off, just like the group stage. "
+    "<span style='color:#94A3B8'>Coming soon.</span>"
+    "</div>",
     unsafe_allow_html=True,
 )
 st.markdown("")

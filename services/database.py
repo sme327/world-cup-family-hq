@@ -147,38 +147,38 @@ def get_connection():
 
 
 def _seed_knockout_matches(cursor) -> None:
+    """Seed knockout_matches from CSV — metadata and routing only.
+
+    home_team_id / away_team_id are intentionally left NULL here.
+    R32 teams are filled automatically by _sync_r32_from_standings()
+    (called in services/knockout.py) based on actual group stage results.
+    R16+ teams are filled by the advancement logic when results are entered.
+    """
     csv_path = os.path.join(DATA_DIR, 'knockout_matches.csv')
     if not os.path.exists(csv_path):
         return
     df = pd.read_csv(csv_path, keep_default_na=False)
-
-    team_rows = cursor.execute("SELECT id, name FROM teams").fetchall()
-    team_map = {name: tid for tid, name in team_rows}
 
     def _int_or_none(val):
         s = str(val).strip()
         return int(s) if s else None
 
     for _, row in df.iterrows():
-        home_name = str(row.get('home_team', '')).strip()
-        away_name = str(row.get('away_team', '')).strip()
         w_slot = str(row.get('winner_to_slot', '')).strip() or None
         l_slot = str(row.get('loser_to_slot', '')).strip() or None
 
         cursor.execute("""
             INSERT OR IGNORE INTO knockout_matches
             (id, round, bracket_slot, match_number,
-             home_team_id, away_team_id, home_source, away_source,
+             home_source, away_source,
              match_date, kickoff_time_et, venue, city, host_country,
              winner_to_id, winner_to_slot, loser_to_id, loser_to_slot)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         """, (
             int(row['id']),
             str(row['round']),
             int(row['bracket_slot']),
             _int_or_none(row.get('match_number')),
-            team_map.get(home_name) if home_name else None,
-            team_map.get(away_name) if away_name else None,
             str(row.get('home_source', '')),
             str(row.get('away_source', '')),
             str(row.get('match_date', '')),

@@ -69,10 +69,10 @@ if not _adm_upcoming.empty:
             unsafe_allow_html=True,
         )
 
-tabs = st.tabs(["📥 Group Scores", "⚽ Knockout", "📋 Matches", "🌍 Teams", "👤 Users", "🏷️ Stamps", "🖼️ Card Images", "🛠️ Database", "💾 Backup"])
+tabs = st.tabs(["⚽ Knockout", "📥 Group Scores", "📋 Matches", "🌍 Teams", "👤 Users", "🏷️ Stamps", "🖼️ Card Images", "🛠️ Database", "💾 Backup"])
 
 # ── Enter Scores ──────────────────────────────────────────────────────────────
-with tabs[0]:
+with tabs[1]:
     st.markdown("### Enter Final Scores")
     matches = get_all_matches()
 
@@ -121,7 +121,7 @@ with tabs[0]:
                         st.rerun()
 
 # ── Knockout Score Entry ──────────────────────────────────────────────────────
-with tabs[1]:
+with tabs[0]:
     st.markdown("### ⚽ Knockout Stage Score Entry")
     st.caption("Enter scores for each knockout match. The winner advances automatically.")
 

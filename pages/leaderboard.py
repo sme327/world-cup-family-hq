@@ -27,12 +27,6 @@ with _tab_ko:
         _ko_any_pts = any(e["ko_live_pts"] > 0 for e in _ko_sorted)
         if not _ko_any_pts:
             st.info("No knockout matches scored yet — Knockout picks earn points when results are entered.")
-        else:
-            st.markdown(
-                "<div style='font-size:.85rem;color:#94A3B8;margin-bottom:.6rem'>"
-                "Points earned from live knockout picks (R32=2 · R16=3 · QF=4 · SF=5 · Final=8)</div>",
-                unsafe_allow_html=True,
-            )
 
         _ko_medals = ["🥇", "🥈", "🥉"]
         _ko_rank = 1

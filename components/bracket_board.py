@@ -1,16 +1,13 @@
 # components/bracket_board.py
 #
-# Phase 6A: Knockout bracket visual shell — left-to-right layout.
+# Phase 6B: Knockout bracket — renders real data from knockout_matches table.
 # Layout: R32 (16) → R16 (8) → QF (4) → SF (2) → Final + 3rd Place
 #
-# Data-driven: the bracket is rendered from a dict of match records.
-# Rendering is split into composable helpers so Phase 6B can swap in real data.
-#
-# Phase 6B hook: replace _placeholder_rounds() with _load_knockout_rounds()
 # Phase 6C hook: add family pick avatars to match cards / final column
 # Phase 6D hook: add click-to-expand match detail panel
 
 import streamlit as st
+from services.knockout import get_knockout_rounds
 
 # ── Dimensions ────────────────────────────────────────────────────────────────
 _BS   = 68    # base slot height for R32 (px)
@@ -61,16 +58,7 @@ def _make_match(match_id: str,
 
 
 def _placeholder_rounds() -> dict:
-    """Return all-TBD placeholder data for the Phase 6A bracket shell.
-
-    Phase 6B: replace with _load_knockout_rounds() that queries worldcup.db:
-        SELECT match_id, home_team, away_team, home_score, away_score, stage
-        FROM matches WHERE stage IN (
-            'Round of 32', 'Round of 16', 'Quarterfinal',
-            'Semifinal', 'Final', 'Third Place')
-        ORDER BY match_date
-    Then map rows to _make_match() records and bucket by stage into this dict.
-    """
+    """Fallback all-TBD data used if knockout_matches table is unavailable."""
     return {
         "r32":         [_make_match(f"r32_{i+1}")  for i in range(16)],
         "r16":         [_make_match(f"r16_{i+1}")  for i in range(8)],
@@ -514,19 +502,13 @@ def _css() -> str:
 def render_knockout_bracket_shell() -> None:
     """Render the full knockout bracket via st.markdown.
 
-    Phase 6A: all slots are TBD placeholders — no scoring or picks.
-
-    Phase 6B: replace _placeholder_rounds() with _load_knockout_rounds():
-        rounds = _load_knockout_rounds()   # queries worldcup.db
-        # then pass to the render functions below — no other changes needed
-
-    Phase 6C: render_match_card() has a commented pick-avatar hook.
-              render_final_column() may grow an avatar section for the Final.
-
-    Phase 6D: wire data-mid attribute to Streamlit component click handler.
+    Phase 6C hook: render_match_card() has a commented pick-avatar hook.
+    Phase 6D hook: wire data-mid attribute to Streamlit component click handler.
     """
-    # Phase 6B: swap this line for: rounds = _load_knockout_rounds()
-    rounds = _placeholder_rounds()
+    try:
+        rounds = get_knockout_rounds()
+    except Exception:
+        rounds = _placeholder_rounds()
 
     round_cols = (
         render_round_column("r32", rounds["r32"])

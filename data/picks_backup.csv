@@ -1,360 +1,360 @@
-user_name,user_id,match_id,home_team,away_team,match_date,picked_team
-Shawn,1,1,Mexico,South Africa,2026-06-11,Mexico
-Jennie,2,1,Mexico,South Africa,2026-06-11,South Africa
-Daphne,3,1,Mexico,South Africa,2026-06-11,South Africa
-Elliot,4,1,Mexico,South Africa,2026-06-11,Mexico
-Wyatt,5,1,Mexico,South Africa,2026-06-11,Mexico
-Grandpa By,6,1,Mexico,South Africa,2026-06-11,Mexico
-Grandma Cathy,7,1,Mexico,South Africa,2026-06-11,Mexico
-Shawn,1,2,South Korea,Czechia,2026-06-12,South Korea
-Jennie,2,2,South Korea,Czechia,2026-06-12,Czechia
-Daphne,3,2,South Korea,Czechia,2026-06-12,Czechia
-Elliot,4,2,South Korea,Czechia,2026-06-12,South Korea
-Wyatt,5,2,South Korea,Czechia,2026-06-12,South Korea
-Grandpa By,6,2,South Korea,Czechia,2026-06-12,South Korea
-Grandma Cathy,7,2,South Korea,Czechia,2026-06-12,Czechia
-Shawn,1,3,Canada,Bosnia and Herzegovina,2026-06-12,Canada
-Jennie,2,3,Canada,Bosnia and Herzegovina,2026-06-12,Canada
-Daphne,3,3,Canada,Bosnia and Herzegovina,2026-06-12,Canada
-Elliot,4,3,Canada,Bosnia and Herzegovina,2026-06-12,Canada
-Wyatt,5,3,Canada,Bosnia and Herzegovina,2026-06-12,Canada
-Grandpa By,6,3,Canada,Bosnia and Herzegovina,2026-06-12,Canada
-Grandma Cathy,7,3,Canada,Bosnia and Herzegovina,2026-06-12,Canada
-Shawn,1,4,USA,Paraguay,2026-06-12,USA
-Jennie,2,4,USA,Paraguay,2026-06-12,USA
-Daphne,3,4,USA,Paraguay,2026-06-12,USA
-Elliot,4,4,USA,Paraguay,2026-06-12,USA
-Wyatt,5,4,USA,Paraguay,2026-06-12,USA
-Grandpa By,6,4,USA,Paraguay,2026-06-12,USA
-Grandma Cathy,7,4,USA,Paraguay,2026-06-12,USA
-Shawn,1,5,Qatar,Switzerland,2026-06-13,Switzerland
-Jennie,2,5,Qatar,Switzerland,2026-06-13,Switzerland
-Daphne,3,5,Qatar,Switzerland,2026-06-13,Switzerland
-Elliot,4,5,Qatar,Switzerland,2026-06-13,Switzerland
-Wyatt,5,5,Qatar,Switzerland,2026-06-13,Switzerland
-Grandpa By,6,5,Qatar,Switzerland,2026-06-13,Switzerland
-Grandma Cathy,7,5,Qatar,Switzerland,2026-06-13,Qatar
-Shawn,1,6,Brazil,Morocco,2026-06-13,Brazil
-Jennie,2,6,Brazil,Morocco,2026-06-13,Brazil
-Daphne,3,6,Brazil,Morocco,2026-06-13,Brazil
-Elliot,4,6,Brazil,Morocco,2026-06-13,Brazil
-Wyatt,5,6,Brazil,Morocco,2026-06-13,Morocco
-Grandpa By,6,6,Brazil,Morocco,2026-06-13,Brazil
-Grandma Cathy,7,6,Brazil,Morocco,2026-06-13,Brazil
-Shawn,1,7,Haiti,Scotland,2026-06-13,Haiti
-Jennie,2,7,Haiti,Scotland,2026-06-13,Scotland
-Daphne,3,7,Haiti,Scotland,2026-06-13,Scotland
-Elliot,4,7,Haiti,Scotland,2026-06-13,Haiti
-Wyatt,5,7,Haiti,Scotland,2026-06-13,Scotland
-Grandpa By,6,7,Haiti,Scotland,2026-06-13,Haiti
-Grandma Cathy,7,7,Haiti,Scotland,2026-06-13,Scotland
-Shawn,1,8,Australia,Türkiye,2026-06-14,Türkiye
-Jennie,2,8,Australia,Türkiye,2026-06-14,Australia
-Daphne,3,8,Australia,Türkiye,2026-06-14,Australia
-Elliot,4,8,Australia,Türkiye,2026-06-14,Australia
-Wyatt,5,8,Australia,Türkiye,2026-06-14,Australia
-Grandpa By,6,8,Australia,Türkiye,2026-06-14,Australia
-Grandma Cathy,7,8,Australia,Türkiye,2026-06-14,Australia
-Shawn,1,9,Germany,Curaçao,2026-06-14,Germany
-Jennie,2,9,Germany,Curaçao,2026-06-14,Germany
-Daphne,3,9,Germany,Curaçao,2026-06-14,Germany
-Elliot,4,9,Germany,Curaçao,2026-06-14,Curaçao
-Wyatt,5,9,Germany,Curaçao,2026-06-14,Curaçao
-Grandpa By,6,9,Germany,Curaçao,2026-06-14,Germany
-Grandma Cathy,7,9,Germany,Curaçao,2026-06-14,Curaçao
-Shawn,1,10,Netherlands,Japan,2026-06-14,Japan
-Jennie,2,10,Netherlands,Japan,2026-06-14,Japan
-Daphne,3,10,Netherlands,Japan,2026-06-14,Japan
-Elliot,4,10,Netherlands,Japan,2026-06-14,Japan
-Wyatt,5,10,Netherlands,Japan,2026-06-14,Japan
-Grandpa By,6,10,Netherlands,Japan,2026-06-14,Netherlands
-Grandma Cathy,7,10,Netherlands,Japan,2026-06-14,Japan
-Shawn,1,11,Ivory Coast,Ecuador,2026-06-14,Ecuador
-Jennie,2,11,Ivory Coast,Ecuador,2026-06-14,Ecuador
-Daphne,3,11,Ivory Coast,Ecuador,2026-06-14,Ecuador
-Elliot,4,11,Ivory Coast,Ecuador,2026-06-14,Ecuador
-Wyatt,5,11,Ivory Coast,Ecuador,2026-06-14,Ecuador
-Grandpa By,6,11,Ivory Coast,Ecuador,2026-06-14,Ecuador
-Grandma Cathy,7,11,Ivory Coast,Ecuador,2026-06-14,Ecuador
-Shawn,1,12,Sweden,Tunisia,2026-06-14,Sweden
-Jennie,2,12,Sweden,Tunisia,2026-06-14,Sweden
-Daphne,3,12,Sweden,Tunisia,2026-06-14,Sweden
-Elliot,4,12,Sweden,Tunisia,2026-06-14,Sweden
-Wyatt,5,12,Sweden,Tunisia,2026-06-14,Tunisia
-Grandpa By,6,12,Sweden,Tunisia,2026-06-14,Sweden
-Grandma Cathy,7,12,Sweden,Tunisia,2026-06-14,Sweden
-Shawn,1,13,Spain,Cape Verde,2026-06-15,Spain
-Jennie,2,13,Spain,Cape Verde,2026-06-15,Cape Verde
-Daphne,3,13,Spain,Cape Verde,2026-06-15,Spain
-Elliot,4,13,Spain,Cape Verde,2026-06-15,Cape Verde
-Wyatt,5,13,Spain,Cape Verde,2026-06-15,Cape Verde
-Grandpa By,6,13,Spain,Cape Verde,2026-06-15,Spain
-Grandma Cathy,7,13,Spain,Cape Verde,2026-06-15,Spain
-Shawn,1,14,Belgium,Egypt,2026-06-15,Belgium
-Jennie,2,14,Belgium,Egypt,2026-06-15,Egypt
-Daphne,3,14,Belgium,Egypt,2026-06-15,Belgium
-Elliot,4,14,Belgium,Egypt,2026-06-15,Egypt
-Wyatt,5,14,Belgium,Egypt,2026-06-15,Egypt
-Grandpa By,6,14,Belgium,Egypt,2026-06-15,Belgium
-Grandma Cathy,7,14,Belgium,Egypt,2026-06-15,Egypt
-Shawn,1,15,Saudi Arabia,Uruguay,2026-06-15,Uruguay
-Jennie,2,15,Saudi Arabia,Uruguay,2026-06-15,Saudi Arabia
-Daphne,3,15,Saudi Arabia,Uruguay,2026-06-15,Uruguay
-Elliot,4,15,Saudi Arabia,Uruguay,2026-06-15,Uruguay
-Wyatt,5,15,Saudi Arabia,Uruguay,2026-06-15,Uruguay
-Grandpa By,6,15,Saudi Arabia,Uruguay,2026-06-15,Uruguay
-Grandma Cathy,7,15,Saudi Arabia,Uruguay,2026-06-15,Saudi Arabia
-Shawn,1,16,Iran,New Zealand,2026-06-15,Iran
-Jennie,2,16,Iran,New Zealand,2026-06-15,New Zealand
-Daphne,3,16,Iran,New Zealand,2026-06-15,New Zealand
-Elliot,4,16,Iran,New Zealand,2026-06-15,New Zealand
-Wyatt,5,16,Iran,New Zealand,2026-06-15,New Zealand
-Grandpa By,6,16,Iran,New Zealand,2026-06-15,New Zealand
-Grandma Cathy,7,16,Iran,New Zealand,2026-06-15,New Zealand
-Shawn,1,17,France,Senegal,2026-06-16,France
-Jennie,2,17,France,Senegal,2026-06-16,France
-Daphne,3,17,France,Senegal,2026-06-16,France
-Elliot,4,17,France,Senegal,2026-06-16,Senegal
-Wyatt,5,17,France,Senegal,2026-06-16,Senegal
-Grandpa By,6,17,France,Senegal,2026-06-16,France
-Grandma Cathy,7,17,France,Senegal,2026-06-16,Senegal
-Shawn,1,18,Iraq,Norway,2026-06-16,Norway
-Jennie,2,18,Iraq,Norway,2026-06-16,Iraq
-Daphne,3,18,Iraq,Norway,2026-06-16,Norway
-Elliot,4,18,Iraq,Norway,2026-06-16,Norway
-Wyatt,5,18,Iraq,Norway,2026-06-16,Norway
-Grandpa By,6,18,Iraq,Norway,2026-06-16,Norway
-Grandma Cathy,7,18,Iraq,Norway,2026-06-16,Iraq
-Shawn,1,19,Argentina,Algeria,2026-06-16,Argentina
-Jennie,2,19,Argentina,Algeria,2026-06-16,Argentina
-Daphne,3,19,Argentina,Algeria,2026-06-16,Argentina
-Elliot,4,19,Argentina,Algeria,2026-06-16,Argentina
-Wyatt,5,19,Argentina,Algeria,2026-06-16,Argentina
-Grandpa By,6,19,Argentina,Algeria,2026-06-16,Argentina
-Grandma Cathy,7,19,Argentina,Algeria,2026-06-16,Argentina
-Shawn,1,20,Austria,Jordan,2026-06-17,Austria
-Jennie,2,20,Austria,Jordan,2026-06-17,Austria
-Daphne,3,20,Austria,Jordan,2026-06-17,Austria
-Elliot,4,20,Austria,Jordan,2026-06-17,Austria
-Wyatt,5,20,Austria,Jordan,2026-06-17,Jordan
-Grandpa By,6,20,Austria,Jordan,2026-06-17,Austria
-Grandma Cathy,7,20,Austria,Jordan,2026-06-17,Austria
-Shawn,1,21,Portugal,DR Congo,2026-06-17,Portugal
-Jennie,2,21,Portugal,DR Congo,2026-06-17,Portugal
-Daphne,3,21,Portugal,DR Congo,2026-06-17,Portugal
-Elliot,4,21,Portugal,DR Congo,2026-06-17,DR Congo
-Wyatt,5,21,Portugal,DR Congo,2026-06-17,Portugal
-Grandpa By,6,21,Portugal,DR Congo,2026-06-17,Portugal
-Grandma Cathy,7,21,Portugal,DR Congo,2026-06-17,Portugal
-Shawn,1,22,England,Croatia,2026-06-17,England
-Jennie,2,22,England,Croatia,2026-06-17,Croatia
-Daphne,3,22,England,Croatia,2026-06-17,Croatia
-Elliot,4,22,England,Croatia,2026-06-17,England
-Wyatt,5,22,England,Croatia,2026-06-17,England
-Grandpa By,6,22,England,Croatia,2026-06-17,England
-Grandma Cathy,7,22,England,Croatia,2026-06-17,England
-Shawn,1,23,Ghana,Panama,2026-06-17,Ghana
-Jennie,2,23,Ghana,Panama,2026-06-17,Ghana
-Daphne,3,23,Ghana,Panama,2026-06-17,Ghana
-Elliot,4,23,Ghana,Panama,2026-06-17,Panama
-Wyatt,5,23,Ghana,Panama,2026-06-17,Ghana
-Grandpa By,6,23,Ghana,Panama,2026-06-17,Ghana
-Grandma Cathy,7,23,Ghana,Panama,2026-06-17,Panama
-Shawn,1,24,Uzbekistan,Colombia,2026-06-17,Colombia
-Jennie,2,24,Uzbekistan,Colombia,2026-06-17,Uzbekistan
-Daphne,3,24,Uzbekistan,Colombia,2026-06-17,Colombia
-Elliot,4,24,Uzbekistan,Colombia,2026-06-17,Uzbekistan
-Wyatt,5,24,Uzbekistan,Colombia,2026-06-17,Colombia
-Grandpa By,6,24,Uzbekistan,Colombia,2026-06-17,Colombia
-Grandma Cathy,7,24,Uzbekistan,Colombia,2026-06-17,Colombia
-Shawn,1,25,Czechia,South Africa,2026-06-18,Czechia
-Jennie,2,25,Czechia,South Africa,2026-06-18,South Africa
-Daphne,3,25,Czechia,South Africa,2026-06-18,South Africa
-Elliot,4,25,Czechia,South Africa,2026-06-18,South Africa
-Wyatt,5,25,Czechia,South Africa,2026-06-18,South Africa
-Grandpa By,6,25,Czechia,South Africa,2026-06-18,South Africa
-Grandma Cathy,7,25,Czechia,South Africa,2026-06-18,Czechia
-Shawn,1,26,Switzerland,Bosnia and Herzegovina,2026-06-18,Bosnia and Herzegovina
-Jennie,2,26,Switzerland,Bosnia and Herzegovina,2026-06-18,Switzerland
-Daphne,3,26,Switzerland,Bosnia and Herzegovina,2026-06-18,Switzerland
-Elliot,4,26,Switzerland,Bosnia and Herzegovina,2026-06-18,Switzerland
-Wyatt,5,26,Switzerland,Bosnia and Herzegovina,2026-06-18,Switzerland
-Grandpa By,6,26,Switzerland,Bosnia and Herzegovina,2026-06-18,Switzerland
-Grandma Cathy,7,26,Switzerland,Bosnia and Herzegovina,2026-06-18,Switzerland
-Shawn,1,27,Canada,Qatar,2026-06-18,Canada
-Jennie,2,27,Canada,Qatar,2026-06-18,Canada
-Daphne,3,27,Canada,Qatar,2026-06-18,Canada
-Elliot,4,27,Canada,Qatar,2026-06-18,Canada
-Wyatt,5,27,Canada,Qatar,2026-06-18,Canada
-Grandpa By,6,27,Canada,Qatar,2026-06-18,Canada
-Grandma Cathy,7,27,Canada,Qatar,2026-06-18,Canada
-Shawn,1,28,Mexico,South Korea,2026-06-18,Mexico
-Jennie,2,28,Mexico,South Korea,2026-06-18,Mexico
-Daphne,3,28,Mexico,South Korea,2026-06-18,Mexico
-Elliot,4,28,Mexico,South Korea,2026-06-18,Mexico
-Wyatt,5,28,Mexico,South Korea,2026-06-18,Mexico
-Grandpa By,6,28,Mexico,South Korea,2026-06-18,Mexico
-Grandma Cathy,7,28,Mexico,South Korea,2026-06-18,Mexico
-Shawn,1,29,USA,Australia,2026-06-19,USA
-Jennie,2,29,USA,Australia,2026-06-19,USA
-Daphne,3,29,USA,Australia,2026-06-19,USA
-Elliot,4,29,USA,Australia,2026-06-19,USA
-Wyatt,5,29,USA,Australia,2026-06-19,USA
-Grandpa By,6,29,USA,Australia,2026-06-19,USA
-Grandma Cathy,7,29,USA,Australia,2026-06-19,USA
-Shawn,1,30,Scotland,Morocco,2026-06-19,Morocco
-Jennie,2,30,Scotland,Morocco,2026-06-19,Scotland
-Daphne,3,30,Scotland,Morocco,2026-06-19,Scotland
-Elliot,4,30,Scotland,Morocco,2026-06-19,Scotland
-Wyatt,5,30,Scotland,Morocco,2026-06-19,Scotland
-Grandpa By,6,30,Scotland,Morocco,2026-06-19,Scotland
-Grandma Cathy,7,30,Scotland,Morocco,2026-06-19,Scotland
-Shawn,1,31,Brazil,Haiti,2026-06-19,Brazil
-Jennie,2,31,Brazil,Haiti,2026-06-19,Brazil
-Daphne,3,31,Brazil,Haiti,2026-06-19,Brazil
-Elliot,4,31,Brazil,Haiti,2026-06-19,Brazil
-Wyatt,5,31,Brazil,Haiti,2026-06-19,Brazil
-Grandpa By,6,31,Brazil,Haiti,2026-06-19,Haiti
-Grandma Cathy,7,31,Brazil,Haiti,2026-06-19,Brazil
-Shawn,1,32,Türkiye,Paraguay,2026-06-20,Türkiye
-Jennie,2,32,Türkiye,Paraguay,2026-06-20,Paraguay
-Daphne,3,32,Türkiye,Paraguay,2026-06-20,Paraguay
-Elliot,4,32,Türkiye,Paraguay,2026-06-20,Paraguay
-Wyatt,5,32,Türkiye,Paraguay,2026-06-20,Türkiye
-Grandpa By,6,32,Türkiye,Paraguay,2026-06-20,Paraguay
-Grandma Cathy,7,32,Türkiye,Paraguay,2026-06-20,Paraguay
-Shawn,1,33,Netherlands,Sweden,2026-06-20,Netherlands
-Jennie,2,33,Netherlands,Sweden,2026-06-20,Netherlands
-Daphne,3,33,Netherlands,Sweden,2026-06-20,Netherlands
-Elliot,4,33,Netherlands,Sweden,2026-06-20,Netherlands
-Wyatt,5,33,Netherlands,Sweden,2026-06-20,Sweden
-Grandpa By,6,33,Netherlands,Sweden,2026-06-20,Netherlands
-Grandma Cathy,7,33,Netherlands,Sweden,2026-06-20,Sweden
-Shawn,1,34,Germany,Ivory Coast,2026-06-20,Germany
-Jennie,2,34,Germany,Ivory Coast,2026-06-20,Germany
-Daphne,3,34,Germany,Ivory Coast,2026-06-20,Germany
-Elliot,4,34,Germany,Ivory Coast,2026-06-20,Germany
-Wyatt,5,34,Germany,Ivory Coast,2026-06-20,Germany
-Grandpa By,6,34,Germany,Ivory Coast,2026-06-20,Germany
-Grandma Cathy,7,34,Germany,Ivory Coast,2026-06-20,Germany
-Shawn,1,35,Ecuador,Curaçao,2026-06-20,Ecuador
-Jennie,2,35,Ecuador,Curaçao,2026-06-20,Ecuador
-Daphne,3,35,Ecuador,Curaçao,2026-06-20,Ecuador
-Elliot,4,35,Ecuador,Curaçao,2026-06-20,Ecuador
-Wyatt,5,35,Ecuador,Curaçao,2026-06-20,Ecuador
-Grandpa By,6,35,Ecuador,Curaçao,2026-06-20,Ecuador
-Grandma Cathy,7,35,Ecuador,Curaçao,2026-06-20,Ecuador
-Shawn,1,36,Tunisia,Japan,2026-06-21,Japan
-Jennie,2,36,Tunisia,Japan,2026-06-21,Japan
-Daphne,3,36,Tunisia,Japan,2026-06-21,Japan
-Elliot,4,36,Tunisia,Japan,2026-06-21,Japan
-Wyatt,5,36,Tunisia,Japan,2026-06-21,Japan
-Grandpa By,6,36,Tunisia,Japan,2026-06-21,Japan
-Grandma Cathy,7,36,Tunisia,Japan,2026-06-21,Japan
-Shawn,1,37,Spain,Saudi Arabia,2026-06-21,Spain
-Jennie,2,37,Spain,Saudi Arabia,2026-06-21,Spain
-Daphne,3,37,Spain,Saudi Arabia,2026-06-21,Spain
-Elliot,4,37,Spain,Saudi Arabia,2026-06-21,Spain
-Wyatt,5,37,Spain,Saudi Arabia,2026-06-21,Spain
-Grandpa By,6,37,Spain,Saudi Arabia,2026-06-21,Spain
-Grandma Cathy,7,37,Spain,Saudi Arabia,2026-06-21,Spain
-Shawn,1,38,Belgium,Iran,2026-06-21,Belgium
-Jennie,2,38,Belgium,Iran,2026-06-21,Belgium
-Daphne,3,38,Belgium,Iran,2026-06-21,Belgium
-Elliot,4,38,Belgium,Iran,2026-06-21,Belgium
-Wyatt,5,38,Belgium,Iran,2026-06-21,Belgium
-Grandpa By,6,38,Belgium,Iran,2026-06-21,Belgium
-Grandma Cathy,7,38,Belgium,Iran,2026-06-21,Belgium
-Shawn,1,39,Uruguay,Cape Verde,2026-06-21,Uruguay
-Jennie,2,39,Uruguay,Cape Verde,2026-06-21,Cape Verde
-Daphne,3,39,Uruguay,Cape Verde,2026-06-21,Uruguay
-Elliot,4,39,Uruguay,Cape Verde,2026-06-21,Cape Verde
-Wyatt,5,39,Uruguay,Cape Verde,2026-06-21,Uruguay
-Grandpa By,6,39,Uruguay,Cape Verde,2026-06-21,Uruguay
-Grandma Cathy,7,39,Uruguay,Cape Verde,2026-06-21,Cape Verde
-Shawn,1,40,New Zealand,Egypt,2026-06-21,Egypt
-Jennie,2,40,New Zealand,Egypt,2026-06-21,New Zealand
-Daphne,3,40,New Zealand,Egypt,2026-06-21,New Zealand
-Elliot,4,40,New Zealand,Egypt,2026-06-21,New Zealand
-Wyatt,5,40,New Zealand,Egypt,2026-06-21,Egypt
-Grandpa By,6,40,New Zealand,Egypt,2026-06-21,New Zealand
-Grandma Cathy,7,40,New Zealand,Egypt,2026-06-21,Egypt
-Shawn,1,41,Argentina,Austria,2026-06-22,Argentina
-Jennie,2,41,Argentina,Austria,2026-06-22,Argentina
-Daphne,3,41,Argentina,Austria,2026-06-22,Argentina
-Shawn,1,42,France,Iraq,2026-06-22,France
-Jennie,2,42,France,Iraq,2026-06-22,France
-Daphne,3,42,France,Iraq,2026-06-22,France
-Jennie,2,43,Norway,Senegal,2026-06-22,Senegal
-Daphne,3,43,Norway,Senegal,2026-06-22,Norway
-Shawn,1,44,Jordan,Algeria,2026-06-22,Algeria
-Jennie,2,44,Jordan,Algeria,2026-06-22,Algeria
-Daphne,3,44,Jordan,Algeria,2026-06-22,Algeria
-Shawn,1,45,Portugal,Uzbekistan,2026-06-23,Portugal
-Jennie,2,45,Portugal,Uzbekistan,2026-06-23,Portugal
-Daphne,3,45,Portugal,Uzbekistan,2026-06-23,Portugal
-Shawn,1,46,England,Ghana,2026-06-23,England
-Jennie,2,46,England,Ghana,2026-06-23,England
-Daphne,3,46,England,Ghana,2026-06-23,England
-Shawn,1,47,Panama,Croatia,2026-06-23,Croatia
-Jennie,2,47,Panama,Croatia,2026-06-23,Croatia
-Daphne,3,47,Panama,Croatia,2026-06-23,Panama
-Shawn,1,48,Colombia,DR Congo,2026-06-23,Colombia
-Jennie,2,48,Colombia,DR Congo,2026-06-23,Colombia
-Daphne,3,48,Colombia,DR Congo,2026-06-23,Colombia
-Shawn,1,49,Switzerland,Canada,2026-06-24,Switzerland
-Jennie,2,49,Switzerland,Canada,2026-06-24,Canada
-Daphne,3,49,Switzerland,Canada,2026-06-24,Canada
-Shawn,1,50,Bosnia and Herzegovina,Qatar,2026-06-24,Bosnia and Herzegovina
-Jennie,2,50,Bosnia and Herzegovina,Qatar,2026-06-24,Qatar
-Daphne,3,50,Bosnia and Herzegovina,Qatar,2026-06-24,Bosnia and Herzegovina
-Shawn,1,51,Scotland,Brazil,2026-06-24,Brazil
-Jennie,2,51,Scotland,Brazil,2026-06-24,Brazil
-Daphne,3,51,Scotland,Brazil,2026-06-24,Brazil
-Shawn,1,52,Morocco,Haiti,2026-06-24,Morocco
-Jennie,2,52,Morocco,Haiti,2026-06-24,Haiti
-Daphne,3,52,Morocco,Haiti,2026-06-24,Haiti
-Shawn,1,53,Czechia,Mexico,2026-06-24,Mexico
-Jennie,2,53,Czechia,Mexico,2026-06-24,Mexico
-Daphne,3,53,Czechia,Mexico,2026-06-24,Mexico
-Shawn,1,54,South Africa,South Korea,2026-06-24,South Korea
-Jennie,2,54,South Africa,South Korea,2026-06-24,South Africa
-Daphne,3,54,South Africa,South Korea,2026-06-24,South Africa
-Shawn,1,55,Ecuador,Germany,2026-06-25,Ecuador
-Jennie,2,55,Ecuador,Germany,2026-06-25,Ecuador
-Daphne,3,55,Ecuador,Germany,2026-06-25,Ecuador
-Shawn,1,56,Curaçao,Ivory Coast,2026-06-25,Curaçao
-Jennie,2,56,Curaçao,Ivory Coast,2026-06-25,Ivory Coast
-Daphne,3,56,Curaçao,Ivory Coast,2026-06-25,Ivory Coast
-Shawn,1,57,Japan,Sweden,2026-06-25,Japan
-Jennie,2,57,Japan,Sweden,2026-06-25,Japan
-Daphne,3,57,Japan,Sweden,2026-06-25,Japan
-Shawn,1,58,Tunisia,Netherlands,2026-06-25,Netherlands
-Jennie,2,58,Tunisia,Netherlands,2026-06-25,Netherlands
-Daphne,3,58,Tunisia,Netherlands,2026-06-25,Netherlands
-Shawn,1,59,Türkiye,USA,2026-06-25,USA
-Jennie,2,59,Türkiye,USA,2026-06-25,USA
-Daphne,3,59,Türkiye,USA,2026-06-25,USA
-Shawn,1,60,Paraguay,Australia,2026-06-25,Paraguay
-Jennie,2,60,Paraguay,Australia,2026-06-25,Australia
-Daphne,3,60,Paraguay,Australia,2026-06-25,Paraguay
-Shawn,1,61,Norway,France,2026-06-26,France
-Daphne,3,61,Norway,France,2026-06-26,France
-Shawn,1,62,Senegal,Iraq,2026-06-26,Senegal
-Daphne,3,62,Senegal,Iraq,2026-06-26,Senegal
-Shawn,1,63,Cape Verde,Saudi Arabia,2026-06-26,Saudi Arabia
-Daphne,3,63,Cape Verde,Saudi Arabia,2026-06-26,Saudi Arabia
-Shawn,1,64,Uruguay,Spain,2026-06-26,Uruguay
-Daphne,3,64,Uruguay,Spain,2026-06-26,Uruguay
-Shawn,1,65,Egypt,Iran,2026-06-26,Egypt
-Daphne,3,65,Egypt,Iran,2026-06-26,Egypt
-Shawn,1,66,New Zealand,Belgium,2026-06-26,Belgium
-Daphne,3,66,New Zealand,Belgium,2026-06-26,Belgium
-Shawn,1,67,Panama,England,2026-06-27,England
-Daphne,3,67,Panama,England,2026-06-27,England
-Shawn,1,68,Croatia,Ghana,2026-06-27,Croatia
-Daphne,3,68,Croatia,Ghana,2026-06-27,Croatia
-Shawn,1,69,Colombia,Portugal,2026-06-27,Colombia
-Shawn,1,70,DR Congo,Uzbekistan,2026-06-27,DR Congo
-Shawn,1,71,Algeria,Austria,2026-06-27,Austria
-Shawn,1,72,Jordan,Argentina,2026-06-27,Argentina
+id,user_name,user_id,match_id,home_team,away_team,match_date,picked_team,created_at
+1,Shawn,1,1,Mexico,South Africa,2026-06-11,Mexico,2026-06-28 16:32:59
+2,Jennie,2,1,Mexico,South Africa,2026-06-11,South Africa,2026-06-28 16:32:59
+3,Daphne,3,1,Mexico,South Africa,2026-06-11,South Africa,2026-06-28 16:32:59
+4,Elliot,4,1,Mexico,South Africa,2026-06-11,Mexico,2026-06-28 16:32:59
+5,Wyatt,5,1,Mexico,South Africa,2026-06-11,Mexico,2026-06-28 16:32:59
+6,Grandpa By,6,1,Mexico,South Africa,2026-06-11,Mexico,2026-06-28 16:32:59
+7,Grandma Cathy,7,1,Mexico,South Africa,2026-06-11,Mexico,2026-06-28 16:32:59
+8,Shawn,1,2,South Korea,Czechia,2026-06-12,South Korea,2026-06-28 16:32:59
+9,Jennie,2,2,South Korea,Czechia,2026-06-12,Czechia,2026-06-28 16:32:59
+10,Daphne,3,2,South Korea,Czechia,2026-06-12,Czechia,2026-06-28 16:32:59
+11,Elliot,4,2,South Korea,Czechia,2026-06-12,South Korea,2026-06-28 16:32:59
+12,Wyatt,5,2,South Korea,Czechia,2026-06-12,South Korea,2026-06-28 16:32:59
+13,Grandpa By,6,2,South Korea,Czechia,2026-06-12,South Korea,2026-06-28 16:32:59
+14,Grandma Cathy,7,2,South Korea,Czechia,2026-06-12,Czechia,2026-06-28 16:32:59
+15,Shawn,1,3,Canada,Bosnia and Herzegovina,2026-06-12,Canada,2026-06-28 16:32:59
+16,Jennie,2,3,Canada,Bosnia and Herzegovina,2026-06-12,Canada,2026-06-28 16:32:59
+17,Daphne,3,3,Canada,Bosnia and Herzegovina,2026-06-12,Canada,2026-06-28 16:32:59
+18,Elliot,4,3,Canada,Bosnia and Herzegovina,2026-06-12,Canada,2026-06-28 16:32:59
+19,Wyatt,5,3,Canada,Bosnia and Herzegovina,2026-06-12,Canada,2026-06-28 16:32:59
+20,Grandpa By,6,3,Canada,Bosnia and Herzegovina,2026-06-12,Canada,2026-06-28 16:32:59
+21,Grandma Cathy,7,3,Canada,Bosnia and Herzegovina,2026-06-12,Canada,2026-06-28 16:32:59
+22,Shawn,1,4,USA,Paraguay,2026-06-12,USA,2026-06-28 16:32:59
+23,Jennie,2,4,USA,Paraguay,2026-06-12,USA,2026-06-28 16:32:59
+24,Daphne,3,4,USA,Paraguay,2026-06-12,USA,2026-06-28 16:32:59
+25,Elliot,4,4,USA,Paraguay,2026-06-12,USA,2026-06-28 16:32:59
+26,Wyatt,5,4,USA,Paraguay,2026-06-12,USA,2026-06-28 16:32:59
+27,Grandpa By,6,4,USA,Paraguay,2026-06-12,USA,2026-06-28 16:32:59
+28,Grandma Cathy,7,4,USA,Paraguay,2026-06-12,USA,2026-06-28 16:32:59
+29,Shawn,1,5,Qatar,Switzerland,2026-06-13,Switzerland,2026-06-28 16:32:59
+30,Jennie,2,5,Qatar,Switzerland,2026-06-13,Switzerland,2026-06-28 16:32:59
+31,Daphne,3,5,Qatar,Switzerland,2026-06-13,Switzerland,2026-06-28 16:32:59
+32,Elliot,4,5,Qatar,Switzerland,2026-06-13,Switzerland,2026-06-28 16:32:59
+33,Wyatt,5,5,Qatar,Switzerland,2026-06-13,Switzerland,2026-06-28 16:32:59
+34,Grandpa By,6,5,Qatar,Switzerland,2026-06-13,Switzerland,2026-06-28 16:32:59
+35,Grandma Cathy,7,5,Qatar,Switzerland,2026-06-13,Qatar,2026-06-28 16:32:59
+36,Shawn,1,6,Brazil,Morocco,2026-06-13,Brazil,2026-06-28 16:32:59
+37,Jennie,2,6,Brazil,Morocco,2026-06-13,Brazil,2026-06-28 16:32:59
+38,Daphne,3,6,Brazil,Morocco,2026-06-13,Brazil,2026-06-28 16:32:59
+39,Elliot,4,6,Brazil,Morocco,2026-06-13,Brazil,2026-06-28 16:32:59
+40,Wyatt,5,6,Brazil,Morocco,2026-06-13,Morocco,2026-06-28 16:32:59
+41,Grandpa By,6,6,Brazil,Morocco,2026-06-13,Brazil,2026-06-28 16:32:59
+42,Grandma Cathy,7,6,Brazil,Morocco,2026-06-13,Brazil,2026-06-28 16:32:59
+43,Shawn,1,7,Haiti,Scotland,2026-06-13,Haiti,2026-06-28 16:32:59
+44,Jennie,2,7,Haiti,Scotland,2026-06-13,Scotland,2026-06-28 16:32:59
+45,Daphne,3,7,Haiti,Scotland,2026-06-13,Scotland,2026-06-28 16:32:59
+46,Elliot,4,7,Haiti,Scotland,2026-06-13,Haiti,2026-06-28 16:32:59
+47,Wyatt,5,7,Haiti,Scotland,2026-06-13,Scotland,2026-06-28 16:32:59
+48,Grandpa By,6,7,Haiti,Scotland,2026-06-13,Haiti,2026-06-28 16:32:59
+49,Grandma Cathy,7,7,Haiti,Scotland,2026-06-13,Scotland,2026-06-28 16:32:59
+50,Shawn,1,8,Australia,Türkiye,2026-06-14,Türkiye,2026-06-28 16:32:59
+51,Jennie,2,8,Australia,Türkiye,2026-06-14,Australia,2026-06-28 16:32:59
+52,Daphne,3,8,Australia,Türkiye,2026-06-14,Australia,2026-06-28 16:32:59
+53,Elliot,4,8,Australia,Türkiye,2026-06-14,Australia,2026-06-28 16:32:59
+54,Wyatt,5,8,Australia,Türkiye,2026-06-14,Australia,2026-06-28 16:32:59
+55,Grandpa By,6,8,Australia,Türkiye,2026-06-14,Australia,2026-06-28 16:32:59
+56,Grandma Cathy,7,8,Australia,Türkiye,2026-06-14,Australia,2026-06-28 16:32:59
+57,Shawn,1,9,Germany,Curaçao,2026-06-14,Germany,2026-06-28 16:32:59
+58,Jennie,2,9,Germany,Curaçao,2026-06-14,Germany,2026-06-28 16:32:59
+59,Daphne,3,9,Germany,Curaçao,2026-06-14,Germany,2026-06-28 16:32:59
+60,Elliot,4,9,Germany,Curaçao,2026-06-14,Curaçao,2026-06-28 16:32:59
+61,Wyatt,5,9,Germany,Curaçao,2026-06-14,Curaçao,2026-06-28 16:32:59
+62,Grandpa By,6,9,Germany,Curaçao,2026-06-14,Germany,2026-06-28 16:32:59
+63,Grandma Cathy,7,9,Germany,Curaçao,2026-06-14,Curaçao,2026-06-28 16:32:59
+64,Shawn,1,10,Netherlands,Japan,2026-06-14,Japan,2026-06-28 16:32:59
+65,Jennie,2,10,Netherlands,Japan,2026-06-14,Japan,2026-06-28 16:32:59
+66,Daphne,3,10,Netherlands,Japan,2026-06-14,Japan,2026-06-28 16:32:59
+67,Elliot,4,10,Netherlands,Japan,2026-06-14,Japan,2026-06-28 16:32:59
+68,Wyatt,5,10,Netherlands,Japan,2026-06-14,Japan,2026-06-28 16:32:59
+69,Grandpa By,6,10,Netherlands,Japan,2026-06-14,Netherlands,2026-06-28 16:32:59
+70,Grandma Cathy,7,10,Netherlands,Japan,2026-06-14,Japan,2026-06-28 16:32:59
+71,Shawn,1,11,Ivory Coast,Ecuador,2026-06-14,Ecuador,2026-06-28 16:32:59
+72,Jennie,2,11,Ivory Coast,Ecuador,2026-06-14,Ecuador,2026-06-28 16:32:59
+73,Daphne,3,11,Ivory Coast,Ecuador,2026-06-14,Ecuador,2026-06-28 16:32:59
+74,Elliot,4,11,Ivory Coast,Ecuador,2026-06-14,Ecuador,2026-06-28 16:32:59
+75,Wyatt,5,11,Ivory Coast,Ecuador,2026-06-14,Ecuador,2026-06-28 16:32:59
+76,Grandpa By,6,11,Ivory Coast,Ecuador,2026-06-14,Ecuador,2026-06-28 16:32:59
+77,Grandma Cathy,7,11,Ivory Coast,Ecuador,2026-06-14,Ecuador,2026-06-28 16:32:59
+78,Shawn,1,12,Sweden,Tunisia,2026-06-14,Sweden,2026-06-28 16:32:59
+79,Jennie,2,12,Sweden,Tunisia,2026-06-14,Sweden,2026-06-28 16:32:59
+80,Daphne,3,12,Sweden,Tunisia,2026-06-14,Sweden,2026-06-28 16:32:59
+81,Elliot,4,12,Sweden,Tunisia,2026-06-14,Sweden,2026-06-28 16:32:59
+82,Wyatt,5,12,Sweden,Tunisia,2026-06-14,Tunisia,2026-06-28 16:32:59
+83,Grandpa By,6,12,Sweden,Tunisia,2026-06-14,Sweden,2026-06-28 16:32:59
+84,Grandma Cathy,7,12,Sweden,Tunisia,2026-06-14,Sweden,2026-06-28 16:32:59
+85,Shawn,1,13,Spain,Cape Verde,2026-06-15,Spain,2026-06-28 16:32:59
+86,Jennie,2,13,Spain,Cape Verde,2026-06-15,Cape Verde,2026-06-28 16:32:59
+87,Daphne,3,13,Spain,Cape Verde,2026-06-15,Spain,2026-06-28 16:32:59
+88,Elliot,4,13,Spain,Cape Verde,2026-06-15,Cape Verde,2026-06-28 16:32:59
+89,Wyatt,5,13,Spain,Cape Verde,2026-06-15,Cape Verde,2026-06-28 16:32:59
+90,Grandpa By,6,13,Spain,Cape Verde,2026-06-15,Spain,2026-06-28 16:32:59
+91,Grandma Cathy,7,13,Spain,Cape Verde,2026-06-15,Spain,2026-06-28 16:32:59
+92,Shawn,1,14,Belgium,Egypt,2026-06-15,Belgium,2026-06-28 16:32:59
+93,Jennie,2,14,Belgium,Egypt,2026-06-15,Egypt,2026-06-28 16:32:59
+94,Daphne,3,14,Belgium,Egypt,2026-06-15,Belgium,2026-06-28 16:32:59
+95,Elliot,4,14,Belgium,Egypt,2026-06-15,Egypt,2026-06-28 16:32:59
+96,Wyatt,5,14,Belgium,Egypt,2026-06-15,Egypt,2026-06-28 16:32:59
+97,Grandpa By,6,14,Belgium,Egypt,2026-06-15,Belgium,2026-06-28 16:32:59
+98,Grandma Cathy,7,14,Belgium,Egypt,2026-06-15,Egypt,2026-06-28 16:32:59
+99,Shawn,1,15,Saudi Arabia,Uruguay,2026-06-15,Uruguay,2026-06-28 16:32:59
+100,Jennie,2,15,Saudi Arabia,Uruguay,2026-06-15,Saudi Arabia,2026-06-28 16:32:59
+101,Daphne,3,15,Saudi Arabia,Uruguay,2026-06-15,Uruguay,2026-06-28 16:32:59
+102,Elliot,4,15,Saudi Arabia,Uruguay,2026-06-15,Uruguay,2026-06-28 16:32:59
+103,Wyatt,5,15,Saudi Arabia,Uruguay,2026-06-15,Uruguay,2026-06-28 16:32:59
+104,Grandpa By,6,15,Saudi Arabia,Uruguay,2026-06-15,Uruguay,2026-06-28 16:32:59
+105,Grandma Cathy,7,15,Saudi Arabia,Uruguay,2026-06-15,Saudi Arabia,2026-06-28 16:32:59
+106,Shawn,1,16,Iran,New Zealand,2026-06-15,Iran,2026-06-28 16:32:59
+107,Jennie,2,16,Iran,New Zealand,2026-06-15,New Zealand,2026-06-28 16:32:59
+108,Daphne,3,16,Iran,New Zealand,2026-06-15,New Zealand,2026-06-28 16:32:59
+109,Elliot,4,16,Iran,New Zealand,2026-06-15,New Zealand,2026-06-28 16:32:59
+110,Wyatt,5,16,Iran,New Zealand,2026-06-15,New Zealand,2026-06-28 16:32:59
+111,Grandpa By,6,16,Iran,New Zealand,2026-06-15,New Zealand,2026-06-28 16:32:59
+112,Grandma Cathy,7,16,Iran,New Zealand,2026-06-15,New Zealand,2026-06-28 16:32:59
+113,Shawn,1,17,France,Senegal,2026-06-16,France,2026-06-28 16:32:59
+114,Jennie,2,17,France,Senegal,2026-06-16,France,2026-06-28 16:32:59
+115,Daphne,3,17,France,Senegal,2026-06-16,France,2026-06-28 16:32:59
+116,Elliot,4,17,France,Senegal,2026-06-16,Senegal,2026-06-28 16:32:59
+117,Wyatt,5,17,France,Senegal,2026-06-16,Senegal,2026-06-28 16:32:59
+118,Grandpa By,6,17,France,Senegal,2026-06-16,France,2026-06-28 16:32:59
+119,Grandma Cathy,7,17,France,Senegal,2026-06-16,Senegal,2026-06-28 16:32:59
+120,Shawn,1,18,Iraq,Norway,2026-06-16,Norway,2026-06-28 16:32:59
+121,Jennie,2,18,Iraq,Norway,2026-06-16,Iraq,2026-06-28 16:32:59
+122,Daphne,3,18,Iraq,Norway,2026-06-16,Norway,2026-06-28 16:32:59
+123,Elliot,4,18,Iraq,Norway,2026-06-16,Norway,2026-06-28 16:32:59
+124,Wyatt,5,18,Iraq,Norway,2026-06-16,Norway,2026-06-28 16:32:59
+125,Grandpa By,6,18,Iraq,Norway,2026-06-16,Norway,2026-06-28 16:32:59
+126,Grandma Cathy,7,18,Iraq,Norway,2026-06-16,Iraq,2026-06-28 16:32:59
+127,Shawn,1,19,Argentina,Algeria,2026-06-16,Argentina,2026-06-28 16:32:59
+128,Jennie,2,19,Argentina,Algeria,2026-06-16,Argentina,2026-06-28 16:32:59
+129,Daphne,3,19,Argentina,Algeria,2026-06-16,Argentina,2026-06-28 16:32:59
+130,Elliot,4,19,Argentina,Algeria,2026-06-16,Argentina,2026-06-28 16:32:59
+131,Wyatt,5,19,Argentina,Algeria,2026-06-16,Argentina,2026-06-28 16:32:59
+132,Grandpa By,6,19,Argentina,Algeria,2026-06-16,Argentina,2026-06-28 16:32:59
+133,Grandma Cathy,7,19,Argentina,Algeria,2026-06-16,Argentina,2026-06-28 16:32:59
+134,Shawn,1,20,Austria,Jordan,2026-06-17,Austria,2026-06-28 16:32:59
+135,Jennie,2,20,Austria,Jordan,2026-06-17,Austria,2026-06-28 16:32:59
+136,Daphne,3,20,Austria,Jordan,2026-06-17,Austria,2026-06-28 16:32:59
+137,Elliot,4,20,Austria,Jordan,2026-06-17,Austria,2026-06-28 16:32:59
+138,Wyatt,5,20,Austria,Jordan,2026-06-17,Jordan,2026-06-28 16:32:59
+139,Grandpa By,6,20,Austria,Jordan,2026-06-17,Austria,2026-06-28 16:32:59
+140,Grandma Cathy,7,20,Austria,Jordan,2026-06-17,Austria,2026-06-28 16:32:59
+141,Shawn,1,21,Portugal,DR Congo,2026-06-17,Portugal,2026-06-28 16:32:59
+142,Jennie,2,21,Portugal,DR Congo,2026-06-17,Portugal,2026-06-28 16:32:59
+143,Daphne,3,21,Portugal,DR Congo,2026-06-17,Portugal,2026-06-28 16:32:59
+144,Elliot,4,21,Portugal,DR Congo,2026-06-17,DR Congo,2026-06-28 16:32:59
+145,Wyatt,5,21,Portugal,DR Congo,2026-06-17,Portugal,2026-06-28 16:32:59
+146,Grandpa By,6,21,Portugal,DR Congo,2026-06-17,Portugal,2026-06-28 16:32:59
+147,Grandma Cathy,7,21,Portugal,DR Congo,2026-06-17,Portugal,2026-06-28 16:32:59
+148,Shawn,1,22,England,Croatia,2026-06-17,England,2026-06-28 16:32:59
+149,Jennie,2,22,England,Croatia,2026-06-17,Croatia,2026-06-28 16:32:59
+150,Daphne,3,22,England,Croatia,2026-06-17,Croatia,2026-06-28 16:32:59
+151,Elliot,4,22,England,Croatia,2026-06-17,England,2026-06-28 16:32:59
+152,Wyatt,5,22,England,Croatia,2026-06-17,England,2026-06-28 16:32:59
+153,Grandpa By,6,22,England,Croatia,2026-06-17,England,2026-06-28 16:32:59
+154,Grandma Cathy,7,22,England,Croatia,2026-06-17,England,2026-06-28 16:32:59
+155,Shawn,1,23,Ghana,Panama,2026-06-17,Ghana,2026-06-28 16:32:59
+156,Jennie,2,23,Ghana,Panama,2026-06-17,Ghana,2026-06-28 16:32:59
+157,Daphne,3,23,Ghana,Panama,2026-06-17,Ghana,2026-06-28 16:32:59
+158,Elliot,4,23,Ghana,Panama,2026-06-17,Panama,2026-06-28 16:32:59
+159,Wyatt,5,23,Ghana,Panama,2026-06-17,Ghana,2026-06-28 16:32:59
+160,Grandpa By,6,23,Ghana,Panama,2026-06-17,Ghana,2026-06-28 16:32:59
+161,Grandma Cathy,7,23,Ghana,Panama,2026-06-17,Panama,2026-06-28 16:32:59
+162,Shawn,1,24,Uzbekistan,Colombia,2026-06-17,Colombia,2026-06-28 16:32:59
+163,Jennie,2,24,Uzbekistan,Colombia,2026-06-17,Uzbekistan,2026-06-28 16:32:59
+164,Daphne,3,24,Uzbekistan,Colombia,2026-06-17,Colombia,2026-06-28 16:32:59
+165,Elliot,4,24,Uzbekistan,Colombia,2026-06-17,Uzbekistan,2026-06-28 16:32:59
+166,Wyatt,5,24,Uzbekistan,Colombia,2026-06-17,Colombia,2026-06-28 16:32:59
+167,Grandpa By,6,24,Uzbekistan,Colombia,2026-06-17,Colombia,2026-06-28 16:32:59
+168,Grandma Cathy,7,24,Uzbekistan,Colombia,2026-06-17,Colombia,2026-06-28 16:32:59
+169,Shawn,1,25,Czechia,South Africa,2026-06-18,Czechia,2026-06-28 16:32:59
+170,Jennie,2,25,Czechia,South Africa,2026-06-18,South Africa,2026-06-28 16:32:59
+171,Daphne,3,25,Czechia,South Africa,2026-06-18,South Africa,2026-06-28 16:32:59
+172,Elliot,4,25,Czechia,South Africa,2026-06-18,South Africa,2026-06-28 16:32:59
+173,Wyatt,5,25,Czechia,South Africa,2026-06-18,South Africa,2026-06-28 16:32:59
+174,Grandpa By,6,25,Czechia,South Africa,2026-06-18,South Africa,2026-06-28 16:32:59
+175,Grandma Cathy,7,25,Czechia,South Africa,2026-06-18,Czechia,2026-06-28 16:32:59
+176,Shawn,1,26,Switzerland,Bosnia and Herzegovina,2026-06-18,Bosnia and Herzegovina,2026-06-28 16:32:59
+177,Jennie,2,26,Switzerland,Bosnia and Herzegovina,2026-06-18,Switzerland,2026-06-28 16:32:59
+178,Daphne,3,26,Switzerland,Bosnia and Herzegovina,2026-06-18,Switzerland,2026-06-28 16:32:59
+179,Elliot,4,26,Switzerland,Bosnia and Herzegovina,2026-06-18,Switzerland,2026-06-28 16:32:59
+180,Wyatt,5,26,Switzerland,Bosnia and Herzegovina,2026-06-18,Switzerland,2026-06-28 16:32:59
+181,Grandpa By,6,26,Switzerland,Bosnia and Herzegovina,2026-06-18,Switzerland,2026-06-28 16:32:59
+182,Grandma Cathy,7,26,Switzerland,Bosnia and Herzegovina,2026-06-18,Switzerland,2026-06-28 16:32:59
+183,Shawn,1,27,Canada,Qatar,2026-06-18,Canada,2026-06-28 16:32:59
+184,Jennie,2,27,Canada,Qatar,2026-06-18,Canada,2026-06-28 16:32:59
+185,Daphne,3,27,Canada,Qatar,2026-06-18,Canada,2026-06-28 16:32:59
+186,Elliot,4,27,Canada,Qatar,2026-06-18,Canada,2026-06-28 16:32:59
+187,Wyatt,5,27,Canada,Qatar,2026-06-18,Canada,2026-06-28 16:32:59
+188,Grandpa By,6,27,Canada,Qatar,2026-06-18,Canada,2026-06-28 16:32:59
+189,Grandma Cathy,7,27,Canada,Qatar,2026-06-18,Canada,2026-06-28 16:32:59
+190,Shawn,1,28,Mexico,South Korea,2026-06-18,Mexico,2026-06-28 16:32:59
+191,Jennie,2,28,Mexico,South Korea,2026-06-18,Mexico,2026-06-28 16:32:59
+192,Daphne,3,28,Mexico,South Korea,2026-06-18,Mexico,2026-06-28 16:32:59
+193,Elliot,4,28,Mexico,South Korea,2026-06-18,Mexico,2026-06-28 16:32:59
+194,Wyatt,5,28,Mexico,South Korea,2026-06-18,Mexico,2026-06-28 16:32:59
+195,Grandpa By,6,28,Mexico,South Korea,2026-06-18,Mexico,2026-06-28 16:32:59
+196,Grandma Cathy,7,28,Mexico,South Korea,2026-06-18,Mexico,2026-06-28 16:32:59
+197,Shawn,1,29,USA,Australia,2026-06-19,USA,2026-06-28 16:32:59
+198,Jennie,2,29,USA,Australia,2026-06-19,USA,2026-06-28 16:32:59
+199,Daphne,3,29,USA,Australia,2026-06-19,USA,2026-06-28 16:32:59
+200,Elliot,4,29,USA,Australia,2026-06-19,USA,2026-06-28 16:32:59
+201,Wyatt,5,29,USA,Australia,2026-06-19,USA,2026-06-28 16:32:59
+202,Grandpa By,6,29,USA,Australia,2026-06-19,USA,2026-06-28 16:32:59
+203,Grandma Cathy,7,29,USA,Australia,2026-06-19,USA,2026-06-28 16:32:59
+204,Shawn,1,30,Scotland,Morocco,2026-06-19,Morocco,2026-06-28 16:32:59
+205,Jennie,2,30,Scotland,Morocco,2026-06-19,Scotland,2026-06-28 16:32:59
+206,Daphne,3,30,Scotland,Morocco,2026-06-19,Scotland,2026-06-28 16:32:59
+207,Elliot,4,30,Scotland,Morocco,2026-06-19,Scotland,2026-06-28 16:32:59
+208,Wyatt,5,30,Scotland,Morocco,2026-06-19,Scotland,2026-06-28 16:32:59
+209,Grandpa By,6,30,Scotland,Morocco,2026-06-19,Scotland,2026-06-28 16:32:59
+210,Grandma Cathy,7,30,Scotland,Morocco,2026-06-19,Scotland,2026-06-28 16:32:59
+211,Shawn,1,31,Brazil,Haiti,2026-06-19,Brazil,2026-06-28 16:32:59
+212,Jennie,2,31,Brazil,Haiti,2026-06-19,Brazil,2026-06-28 16:32:59
+213,Daphne,3,31,Brazil,Haiti,2026-06-19,Brazil,2026-06-28 16:32:59
+214,Elliot,4,31,Brazil,Haiti,2026-06-19,Brazil,2026-06-28 16:32:59
+215,Wyatt,5,31,Brazil,Haiti,2026-06-19,Brazil,2026-06-28 16:32:59
+216,Grandpa By,6,31,Brazil,Haiti,2026-06-19,Haiti,2026-06-28 16:32:59
+217,Grandma Cathy,7,31,Brazil,Haiti,2026-06-19,Brazil,2026-06-28 16:32:59
+218,Shawn,1,32,Türkiye,Paraguay,2026-06-20,Türkiye,2026-06-28 16:32:59
+219,Jennie,2,32,Türkiye,Paraguay,2026-06-20,Paraguay,2026-06-28 16:32:59
+220,Daphne,3,32,Türkiye,Paraguay,2026-06-20,Paraguay,2026-06-28 16:32:59
+221,Elliot,4,32,Türkiye,Paraguay,2026-06-20,Paraguay,2026-06-28 16:32:59
+222,Wyatt,5,32,Türkiye,Paraguay,2026-06-20,Türkiye,2026-06-28 16:32:59
+223,Grandpa By,6,32,Türkiye,Paraguay,2026-06-20,Paraguay,2026-06-28 16:32:59
+224,Grandma Cathy,7,32,Türkiye,Paraguay,2026-06-20,Paraguay,2026-06-28 16:32:59
+225,Shawn,1,33,Netherlands,Sweden,2026-06-20,Netherlands,2026-06-28 16:32:59
+226,Jennie,2,33,Netherlands,Sweden,2026-06-20,Netherlands,2026-06-28 16:32:59
+227,Daphne,3,33,Netherlands,Sweden,2026-06-20,Netherlands,2026-06-28 16:32:59
+228,Elliot,4,33,Netherlands,Sweden,2026-06-20,Netherlands,2026-06-28 16:32:59
+229,Wyatt,5,33,Netherlands,Sweden,2026-06-20,Sweden,2026-06-28 16:32:59
+230,Grandpa By,6,33,Netherlands,Sweden,2026-06-20,Netherlands,2026-06-28 16:32:59
+231,Grandma Cathy,7,33,Netherlands,Sweden,2026-06-20,Sweden,2026-06-28 16:32:59
+232,Shawn,1,34,Germany,Ivory Coast,2026-06-20,Germany,2026-06-28 16:32:59
+233,Jennie,2,34,Germany,Ivory Coast,2026-06-20,Germany,2026-06-28 16:32:59
+234,Daphne,3,34,Germany,Ivory Coast,2026-06-20,Germany,2026-06-28 16:32:59
+235,Elliot,4,34,Germany,Ivory Coast,2026-06-20,Germany,2026-06-28 16:32:59
+236,Wyatt,5,34,Germany,Ivory Coast,2026-06-20,Germany,2026-06-28 16:32:59
+237,Grandpa By,6,34,Germany,Ivory Coast,2026-06-20,Germany,2026-06-28 16:32:59
+238,Grandma Cathy,7,34,Germany,Ivory Coast,2026-06-20,Germany,2026-06-28 16:32:59
+239,Shawn,1,35,Ecuador,Curaçao,2026-06-20,Ecuador,2026-06-28 16:32:59
+240,Jennie,2,35,Ecuador,Curaçao,2026-06-20,Ecuador,2026-06-28 16:32:59
+241,Daphne,3,35,Ecuador,Curaçao,2026-06-20,Ecuador,2026-06-28 16:32:59
+242,Elliot,4,35,Ecuador,Curaçao,2026-06-20,Ecuador,2026-06-28 16:32:59
+243,Wyatt,5,35,Ecuador,Curaçao,2026-06-20,Ecuador,2026-06-28 16:32:59
+244,Grandpa By,6,35,Ecuador,Curaçao,2026-06-20,Ecuador,2026-06-28 16:32:59
+245,Grandma Cathy,7,35,Ecuador,Curaçao,2026-06-20,Ecuador,2026-06-28 16:32:59
+246,Shawn,1,36,Tunisia,Japan,2026-06-21,Japan,2026-06-28 16:32:59
+247,Jennie,2,36,Tunisia,Japan,2026-06-21,Japan,2026-06-28 16:32:59
+248,Daphne,3,36,Tunisia,Japan,2026-06-21,Japan,2026-06-28 16:32:59
+249,Elliot,4,36,Tunisia,Japan,2026-06-21,Japan,2026-06-28 16:32:59
+250,Wyatt,5,36,Tunisia,Japan,2026-06-21,Japan,2026-06-28 16:32:59
+251,Grandpa By,6,36,Tunisia,Japan,2026-06-21,Japan,2026-06-28 16:32:59
+252,Grandma Cathy,7,36,Tunisia,Japan,2026-06-21,Japan,2026-06-28 16:32:59
+253,Shawn,1,37,Spain,Saudi Arabia,2026-06-21,Spain,2026-06-28 16:32:59
+254,Jennie,2,37,Spain,Saudi Arabia,2026-06-21,Spain,2026-06-28 16:32:59
+255,Daphne,3,37,Spain,Saudi Arabia,2026-06-21,Spain,2026-06-28 16:32:59
+256,Elliot,4,37,Spain,Saudi Arabia,2026-06-21,Spain,2026-06-28 16:32:59
+257,Wyatt,5,37,Spain,Saudi Arabia,2026-06-21,Spain,2026-06-28 16:32:59
+258,Grandpa By,6,37,Spain,Saudi Arabia,2026-06-21,Spain,2026-06-28 16:32:59
+259,Grandma Cathy,7,37,Spain,Saudi Arabia,2026-06-21,Spain,2026-06-28 16:32:59
+260,Shawn,1,38,Belgium,Iran,2026-06-21,Belgium,2026-06-28 16:32:59
+261,Jennie,2,38,Belgium,Iran,2026-06-21,Belgium,2026-06-28 16:32:59
+262,Daphne,3,38,Belgium,Iran,2026-06-21,Belgium,2026-06-28 16:32:59
+263,Elliot,4,38,Belgium,Iran,2026-06-21,Belgium,2026-06-28 16:32:59
+264,Wyatt,5,38,Belgium,Iran,2026-06-21,Belgium,2026-06-28 16:32:59
+265,Grandpa By,6,38,Belgium,Iran,2026-06-21,Belgium,2026-06-28 16:32:59
+266,Grandma Cathy,7,38,Belgium,Iran,2026-06-21,Belgium,2026-06-28 16:32:59
+267,Shawn,1,39,Uruguay,Cape Verde,2026-06-21,Uruguay,2026-06-28 16:32:59
+268,Jennie,2,39,Uruguay,Cape Verde,2026-06-21,Cape Verde,2026-06-28 16:32:59
+269,Daphne,3,39,Uruguay,Cape Verde,2026-06-21,Uruguay,2026-06-28 16:32:59
+270,Elliot,4,39,Uruguay,Cape Verde,2026-06-21,Cape Verde,2026-06-28 16:32:59
+271,Wyatt,5,39,Uruguay,Cape Verde,2026-06-21,Uruguay,2026-06-28 16:32:59
+272,Grandpa By,6,39,Uruguay,Cape Verde,2026-06-21,Uruguay,2026-06-28 16:32:59
+273,Grandma Cathy,7,39,Uruguay,Cape Verde,2026-06-21,Cape Verde,2026-06-28 16:32:59
+274,Shawn,1,40,New Zealand,Egypt,2026-06-21,Egypt,2026-06-28 16:32:59
+275,Jennie,2,40,New Zealand,Egypt,2026-06-21,New Zealand,2026-06-28 16:32:59
+276,Daphne,3,40,New Zealand,Egypt,2026-06-21,New Zealand,2026-06-28 16:32:59
+277,Elliot,4,40,New Zealand,Egypt,2026-06-21,New Zealand,2026-06-28 16:32:59
+278,Wyatt,5,40,New Zealand,Egypt,2026-06-21,Egypt,2026-06-28 16:32:59
+279,Grandpa By,6,40,New Zealand,Egypt,2026-06-21,New Zealand,2026-06-28 16:32:59
+280,Grandma Cathy,7,40,New Zealand,Egypt,2026-06-21,Egypt,2026-06-28 16:32:59
+281,Shawn,1,41,Argentina,Austria,2026-06-22,Argentina,2026-06-28 16:32:59
+282,Jennie,2,41,Argentina,Austria,2026-06-22,Argentina,2026-06-28 16:32:59
+283,Daphne,3,41,Argentina,Austria,2026-06-22,Argentina,2026-06-28 16:32:59
+284,Shawn,1,42,France,Iraq,2026-06-22,France,2026-06-28 16:32:59
+285,Jennie,2,42,France,Iraq,2026-06-22,France,2026-06-28 16:32:59
+286,Daphne,3,42,France,Iraq,2026-06-22,France,2026-06-28 16:32:59
+287,Jennie,2,43,Norway,Senegal,2026-06-22,Senegal,2026-06-28 16:32:59
+288,Daphne,3,43,Norway,Senegal,2026-06-22,Norway,2026-06-28 16:32:59
+289,Shawn,1,44,Jordan,Algeria,2026-06-22,Algeria,2026-06-28 16:32:59
+290,Jennie,2,44,Jordan,Algeria,2026-06-22,Algeria,2026-06-28 16:32:59
+291,Daphne,3,44,Jordan,Algeria,2026-06-22,Algeria,2026-06-28 16:32:59
+292,Shawn,1,45,Portugal,Uzbekistan,2026-06-23,Portugal,2026-06-28 16:32:59
+293,Jennie,2,45,Portugal,Uzbekistan,2026-06-23,Portugal,2026-06-28 16:32:59
+294,Daphne,3,45,Portugal,Uzbekistan,2026-06-23,Portugal,2026-06-28 16:32:59
+295,Shawn,1,46,England,Ghana,2026-06-23,England,2026-06-28 16:32:59
+296,Jennie,2,46,England,Ghana,2026-06-23,England,2026-06-28 16:32:59
+297,Daphne,3,46,England,Ghana,2026-06-23,England,2026-06-28 16:32:59
+298,Shawn,1,47,Panama,Croatia,2026-06-23,Croatia,2026-06-28 16:32:59
+299,Jennie,2,47,Panama,Croatia,2026-06-23,Croatia,2026-06-28 16:32:59
+300,Daphne,3,47,Panama,Croatia,2026-06-23,Panama,2026-06-28 16:32:59
+301,Shawn,1,48,Colombia,DR Congo,2026-06-23,Colombia,2026-06-28 16:32:59
+302,Jennie,2,48,Colombia,DR Congo,2026-06-23,Colombia,2026-06-28 16:32:59
+303,Daphne,3,48,Colombia,DR Congo,2026-06-23,Colombia,2026-06-28 16:32:59
+304,Shawn,1,49,Switzerland,Canada,2026-06-24,Switzerland,2026-06-28 16:32:59
+305,Jennie,2,49,Switzerland,Canada,2026-06-24,Canada,2026-06-28 16:32:59
+306,Daphne,3,49,Switzerland,Canada,2026-06-24,Canada,2026-06-28 16:32:59
+307,Shawn,1,50,Bosnia and Herzegovina,Qatar,2026-06-24,Bosnia and Herzegovina,2026-06-28 16:32:59
+308,Jennie,2,50,Bosnia and Herzegovina,Qatar,2026-06-24,Qatar,2026-06-28 16:32:59
+309,Daphne,3,50,Bosnia and Herzegovina,Qatar,2026-06-24,Bosnia and Herzegovina,2026-06-28 16:32:59
+310,Shawn,1,51,Scotland,Brazil,2026-06-24,Brazil,2026-06-28 16:32:59
+311,Jennie,2,51,Scotland,Brazil,2026-06-24,Brazil,2026-06-28 16:32:59
+312,Daphne,3,51,Scotland,Brazil,2026-06-24,Brazil,2026-06-28 16:32:59
+313,Shawn,1,52,Morocco,Haiti,2026-06-24,Morocco,2026-06-28 16:32:59
+314,Jennie,2,52,Morocco,Haiti,2026-06-24,Haiti,2026-06-28 16:32:59
+315,Daphne,3,52,Morocco,Haiti,2026-06-24,Haiti,2026-06-28 16:32:59
+316,Shawn,1,53,Czechia,Mexico,2026-06-24,Mexico,2026-06-28 16:32:59
+317,Jennie,2,53,Czechia,Mexico,2026-06-24,Mexico,2026-06-28 16:32:59
+318,Daphne,3,53,Czechia,Mexico,2026-06-24,Mexico,2026-06-28 16:32:59
+319,Shawn,1,54,South Africa,South Korea,2026-06-24,South Korea,2026-06-28 16:32:59
+320,Jennie,2,54,South Africa,South Korea,2026-06-24,South Africa,2026-06-28 16:32:59
+321,Daphne,3,54,South Africa,South Korea,2026-06-24,South Africa,2026-06-28 16:32:59
+322,Shawn,1,55,Ecuador,Germany,2026-06-25,Ecuador,2026-06-28 16:32:59
+323,Jennie,2,55,Ecuador,Germany,2026-06-25,Ecuador,2026-06-28 16:32:59
+324,Daphne,3,55,Ecuador,Germany,2026-06-25,Ecuador,2026-06-28 16:32:59
+325,Shawn,1,56,Curaçao,Ivory Coast,2026-06-25,Curaçao,2026-06-28 16:32:59
+326,Jennie,2,56,Curaçao,Ivory Coast,2026-06-25,Ivory Coast,2026-06-28 16:32:59
+327,Daphne,3,56,Curaçao,Ivory Coast,2026-06-25,Ivory Coast,2026-06-28 16:32:59
+328,Shawn,1,57,Japan,Sweden,2026-06-25,Japan,2026-06-28 16:32:59
+329,Jennie,2,57,Japan,Sweden,2026-06-25,Japan,2026-06-28 16:32:59
+330,Daphne,3,57,Japan,Sweden,2026-06-25,Japan,2026-06-28 16:32:59
+331,Shawn,1,58,Tunisia,Netherlands,2026-06-25,Netherlands,2026-06-28 16:32:59
+332,Jennie,2,58,Tunisia,Netherlands,2026-06-25,Netherlands,2026-06-28 16:32:59
+333,Daphne,3,58,Tunisia,Netherlands,2026-06-25,Netherlands,2026-06-28 16:32:59
+334,Shawn,1,59,Türkiye,USA,2026-06-25,USA,2026-06-28 16:32:59
+335,Jennie,2,59,Türkiye,USA,2026-06-25,USA,2026-06-28 16:32:59
+336,Daphne,3,59,Türkiye,USA,2026-06-25,USA,2026-06-28 16:32:59
+337,Shawn,1,60,Paraguay,Australia,2026-06-25,Paraguay,2026-06-28 16:32:59
+338,Jennie,2,60,Paraguay,Australia,2026-06-25,Australia,2026-06-28 16:32:59
+339,Daphne,3,60,Paraguay,Australia,2026-06-25,Paraguay,2026-06-28 16:32:59
+340,Shawn,1,61,Norway,France,2026-06-26,France,2026-06-28 16:32:59
+341,Daphne,3,61,Norway,France,2026-06-26,France,2026-06-28 16:32:59
+342,Shawn,1,62,Senegal,Iraq,2026-06-26,Senegal,2026-06-28 16:32:59
+343,Daphne,3,62,Senegal,Iraq,2026-06-26,Senegal,2026-06-28 16:32:59
+344,Shawn,1,63,Cape Verde,Saudi Arabia,2026-06-26,Saudi Arabia,2026-06-28 16:32:59
+345,Daphne,3,63,Cape Verde,Saudi Arabia,2026-06-26,Saudi Arabia,2026-06-28 16:32:59
+346,Shawn,1,64,Uruguay,Spain,2026-06-26,Uruguay,2026-06-28 16:32:59
+347,Daphne,3,64,Uruguay,Spain,2026-06-26,Uruguay,2026-06-28 16:32:59
+348,Shawn,1,65,Egypt,Iran,2026-06-26,Egypt,2026-06-28 16:32:59
+349,Daphne,3,65,Egypt,Iran,2026-06-26,Egypt,2026-06-28 16:32:59
+350,Shawn,1,66,New Zealand,Belgium,2026-06-26,Belgium,2026-06-28 16:32:59
+351,Daphne,3,66,New Zealand,Belgium,2026-06-26,Belgium,2026-06-28 16:32:59
+352,Shawn,1,67,Panama,England,2026-06-27,England,2026-06-28 16:32:59
+353,Daphne,3,67,Panama,England,2026-06-27,England,2026-06-28 16:32:59
+354,Shawn,1,68,Croatia,Ghana,2026-06-27,Croatia,2026-06-28 16:32:59
+355,Daphne,3,68,Croatia,Ghana,2026-06-27,Croatia,2026-06-28 16:32:59
+356,Shawn,1,69,Colombia,Portugal,2026-06-27,Colombia,2026-06-28 16:32:59
+357,Shawn,1,70,DR Congo,Uzbekistan,2026-06-27,DR Congo,2026-06-28 16:32:59
+358,Shawn,1,71,Algeria,Austria,2026-06-27,Austria,2026-06-28 16:32:59
+359,Shawn,1,72,Jordan,Argentina,2026-06-27,Argentina,2026-06-28 16:32:59

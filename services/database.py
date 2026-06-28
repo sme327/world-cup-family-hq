@@ -115,11 +115,82 @@ CREATE TABLE IF NOT EXISTS player_discoveries (
     FOREIGN KEY (user_id) REFERENCES users(id),
     UNIQUE(user_id, player_slug)
 );
+
+CREATE TABLE IF NOT EXISTS knockout_matches (
+    id              INTEGER PRIMARY KEY,
+    round           TEXT NOT NULL,
+    bracket_slot    INTEGER NOT NULL,
+    match_number    INTEGER,
+    home_team_id    INTEGER REFERENCES teams(id),
+    away_team_id    INTEGER REFERENCES teams(id),
+    home_source     TEXT,
+    away_source     TEXT,
+    match_date      TEXT,
+    kickoff_time_et TEXT,
+    venue           TEXT,
+    city            TEXT,
+    host_country    TEXT,
+    home_score      INTEGER,
+    away_score      INTEGER,
+    winner_team_id  INTEGER REFERENCES teams(id),
+    status          TEXT DEFAULT 'scheduled',
+    winner_to_id    INTEGER REFERENCES knockout_matches(id),
+    winner_to_slot  TEXT,
+    loser_to_id     INTEGER REFERENCES knockout_matches(id),
+    loser_to_slot   TEXT
+);
 """
 
 
 def get_connection():
     return sqlite3.connect(os.path.abspath(DB_PATH))
+
+
+def _seed_knockout_matches(cursor) -> None:
+    csv_path = os.path.join(DATA_DIR, 'knockout_matches.csv')
+    if not os.path.exists(csv_path):
+        return
+    df = pd.read_csv(csv_path, keep_default_na=False)
+
+    team_rows = cursor.execute("SELECT id, name FROM teams").fetchall()
+    team_map = {name: tid for tid, name in team_rows}
+
+    def _int_or_none(val):
+        s = str(val).strip()
+        return int(s) if s else None
+
+    for _, row in df.iterrows():
+        home_name = str(row.get('home_team', '')).strip()
+        away_name = str(row.get('away_team', '')).strip()
+        w_slot = str(row.get('winner_to_slot', '')).strip() or None
+        l_slot = str(row.get('loser_to_slot', '')).strip() or None
+
+        cursor.execute("""
+            INSERT OR IGNORE INTO knockout_matches
+            (id, round, bracket_slot, match_number,
+             home_team_id, away_team_id, home_source, away_source,
+             match_date, kickoff_time_et, venue, city, host_country,
+             winner_to_id, winner_to_slot, loser_to_id, loser_to_slot)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        """, (
+            int(row['id']),
+            str(row['round']),
+            int(row['bracket_slot']),
+            _int_or_none(row.get('match_number')),
+            team_map.get(home_name) if home_name else None,
+            team_map.get(away_name) if away_name else None,
+            str(row.get('home_source', '')),
+            str(row.get('away_source', '')),
+            str(row.get('match_date', '')),
+            str(row.get('kickoff_time_et', '')),
+            str(row.get('venue', '')),
+            str(row.get('city', '')),
+            str(row.get('host_country', '')),
+            _int_or_none(row.get('winner_to_id')),
+            w_slot,
+            _int_or_none(row.get('loser_to_id')),
+            l_slot,
+        ))
 
 
 def _restore_from_backup(cursor) -> tuple[int, int]:
@@ -220,6 +291,9 @@ def init_db():
         if os.path.exists(picks_path):
             n_picks, n_scores = _restore_from_backup(cursor)
             conn.commit()
+
+    if cursor.execute("SELECT COUNT(*) FROM knockout_matches").fetchone()[0] == 0:
+        _seed_knockout_matches(cursor)
 
     conn.commit()
     conn.close()

@@ -5,6 +5,7 @@ from services.teams import get_all_teams
 from services.picks import get_all_users, get_all_picks
 from services.passport import get_country_metadata
 from services.database import get_connection
+from services.knockout import get_knockout_admin_data, save_knockout_result, reset_knockout_result
 
 st.markdown("## 🔧 Admin — Data Review & Score Entry")
 st.caption("Shawn's tools for entering scores and reviewing data.")
@@ -68,7 +69,7 @@ if not _adm_upcoming.empty:
             unsafe_allow_html=True,
         )
 
-tabs = st.tabs(["📥 Enter Scores", "📋 Matches", "🌍 Teams", "👤 Users", "🏷️ Stamps", "🖼️ Card Images", "🛠️ Database", "💾 Backup"])
+tabs = st.tabs(["📥 Group Scores", "⚽ Knockout", "📋 Matches", "🌍 Teams", "👤 Users", "🏷️ Stamps", "🖼️ Card Images", "🛠️ Database", "💾 Backup"])
 
 # ── Enter Scores ──────────────────────────────────────────────────────────────
 with tabs[0]:
@@ -119,8 +120,124 @@ with tabs[0]:
                         reset_match(mid)
                         st.rerun()
 
-# ── All Matches ───────────────────────────────────────────────────────────────
+# ── Knockout Score Entry ──────────────────────────────────────────────────────
 with tabs[1]:
+    st.markdown("### ⚽ Knockout Stage Score Entry")
+    st.caption("Enter scores for each knockout match. The winner advances automatically.")
+
+    _KO_ROUND_LABELS = {
+        "r32": "Round of 32", "r16": "Round of 16",
+        "qf": "Quarterfinals", "sf": "Semifinals",
+        "final": "Final", "third_place": "3rd Place",
+    }
+    ko_round = st.radio(
+        "Round",
+        options=["r32", "r16", "qf", "sf", "final", "third_place"],
+        format_func=lambda r: _KO_ROUND_LABELS[r],
+        horizontal=True,
+        key="ko_round_sel",
+    )
+
+    try:
+        ko_matches = get_knockout_admin_data(ko_round)
+    except Exception as e:
+        st.error(f"Could not load knockout data: {e}. Run `python scripts/reset_db.py` to initialize the table.")
+        ko_matches = []
+
+    if not ko_matches:
+        st.info("No knockout matches found. Make sure the database has been reset/initialized after today's update.")
+    else:
+        for m in ko_matches:
+            mid    = int(m["id"])
+            h_name = m.get("home_name") or m.get("home_source") or "TBD"
+            a_name = m.get("away_name") or m.get("away_source") or "TBD"
+            h_flag = m.get("home_flag") or ""
+            a_flag = m.get("away_flag") or ""
+            status = m.get("status", "scheduled")
+            h_src  = m.get("home_source", "")
+            a_src  = m.get("away_source", "")
+            mdate  = m.get("match_date", "")
+            venue  = m.get("venue", "")
+            mnum   = m.get("match_number", "")
+
+            label  = f"M{mnum} | {mdate} | {h_flag}{h_name} vs {a_flag}{a_name} [{status}]"
+
+            with st.expander(label):
+                teams_known = m.get("home_team_id") is not None and m.get("away_team_id") is not None
+                if not teams_known:
+                    st.caption(f"⏳ Teams TBD — {h_src} vs {a_src}")
+                else:
+                    st.caption(f"📍 {venue}")
+
+                sc1, sc2, w_col, btn_col = st.columns([2, 2, 3, 2])
+
+                with sc1:
+                    ko_hs = st.number_input(
+                        f"{h_flag} {h_name}",
+                        min_value=0, max_value=30,
+                        value=int(m["home_score"]) if m.get("home_score") is not None else 0,
+                        disabled=not teams_known,
+                        key=f"ko_hs_{mid}",
+                    )
+                with sc2:
+                    ko_as = st.number_input(
+                        f"{a_flag} {a_name}",
+                        min_value=0, max_value=30,
+                        value=int(m["away_score"]) if m.get("away_score") is not None else 0,
+                        disabled=not teams_known,
+                        key=f"ko_as_{mid}",
+                    )
+                with w_col:
+                    winner_options = []
+                    if m.get("home_name"):
+                        winner_options.append(m["home_name"])
+                    if m.get("away_name"):
+                        winner_options.append(m["away_name"])
+
+                    cur_winner_name = m.get("winner_name")
+                    default_idx = 0
+                    if cur_winner_name and cur_winner_name in winner_options:
+                        default_idx = winner_options.index(cur_winner_name)
+
+                    if winner_options:
+                        ko_winner = st.selectbox(
+                            "Winner (req'd — handles ET/penalties)",
+                            options=winner_options,
+                            index=default_idx,
+                            disabled=not teams_known,
+                            key=f"ko_win_{mid}",
+                        )
+                    else:
+                        ko_winner = None
+                        st.caption("Winner TBD")
+
+                with btn_col:
+                    st.markdown("&nbsp;", unsafe_allow_html=True)
+                    if teams_known and ko_winner:
+                        if st.button("✅ Save", key=f"ko_save_{mid}"):
+                            _wconn = get_connection()
+                            _wrow = _wconn.execute(
+                                "SELECT id FROM teams WHERE name=?", (ko_winner,)
+                            ).fetchone()
+                            _wconn.close()
+                            if _wrow:
+                                save_knockout_result(mid, int(ko_hs), int(ko_as), _wrow[0])
+                                st.success(f"Saved! {ko_winner} advances.")
+                                st.rerun()
+                            else:
+                                st.error(f"Team '{ko_winner}' not found in DB.")
+
+                    if status == "completed":
+                        if st.button("↩️ Reset", key=f"ko_reset_{mid}"):
+                            ok, msg = reset_knockout_result(mid)
+                            if ok:
+                                st.success(msg)
+                                st.rerun()
+                            else:
+                                st.warning(msg)
+
+# ── All Matches ───────────────────────────────────────────────────────────────
+with tabs[2]:
     st.markdown("### All 72 Group Stage Matches")
     matches = get_all_matches()
     st.dataframe(
@@ -132,7 +249,7 @@ with tabs[1]:
     st.caption(f"Total matches: {len(matches)} | Completed: {(matches['status']=='completed').sum()}")
 
 # ── Teams ─────────────────────────────────────────────────────────────────────
-with tabs[2]:
+with tabs[3]:
     st.markdown("### All 48 Teams")
     teams = get_all_teams()
     view_cols = ['name', 'flag_emoji', 'group_letter', 'confederation',
@@ -141,7 +258,7 @@ with tabs[2]:
     st.caption(f"Total teams: {len(teams)} | Groups: {teams['group_letter'].nunique()}")
 
 # ── Users ─────────────────────────────────────────────────────────────────────
-with tabs[3]:
+with tabs[4]:
     st.markdown("### Family Members")
     users = get_all_users()
     for _, u in users.iterrows():
@@ -154,14 +271,14 @@ with tabs[3]:
                         unsafe_allow_html=True)
 
 # ── Country Metadata ──────────────────────────────────────────────────────────
-with tabs[4]:
+with tabs[5]:
     st.markdown("### Country Stamps & Metadata")
     meta = get_country_metadata()
     st.dataframe(meta, use_container_width=True, hide_index=True)
     st.caption(f"Total countries: {len(meta)} | Continents: {meta['continent'].nunique()}")
 
 # ── Card Images Review ────────────────────────────────────────────────────────
-with tabs[5]:
+with tabs[6]:
     st.markdown("### 🖼️ Country Card Images")
     st.caption(
         "Images are downloaded by `scripts/download_country_card_images.py`. "
@@ -224,7 +341,7 @@ with tabs[5]:
             st.code("# Re-download everything from scratch\npython scripts/download_country_card_images.py --overwrite")
 
 # ── Database ──────────────────────────────────────────────────────────────────
-with tabs[6]:
+with tabs[7]:
     import os as _os
     from services.database import _restore_from_backup, DATA_DIR
 
@@ -287,7 +404,7 @@ with tabs[6]:
     st.caption("⚠️ reset_db.py now auto-backs up picks before wiping. Use --wipe to skip.")
 
 # ── Backup & Restore ──────────────────────────────────────────────────────────
-with tabs[7]:
+with tabs[8]:
     st.markdown("### 💾 Backup Picks")
     st.markdown(
         "Download the current picks and scores so they survive code deployments. "

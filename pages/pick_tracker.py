@@ -563,7 +563,7 @@ with tab_ko:
                     + (_board_html if _ko_picks else
                        "<div style='font-size:.72rem;color:#4B5563;margin-top:.15rem'>🗳️ No picks yet</div>")
                     + f"<div style='text-align:right;margin-top:.2rem'>"
-                    f"<a href='/ko_matchup?match_id={_ko_mid}&u={_uid_qp_ko}' target='_self' "
+                    f"<a href='/matchup?match_id={_ko_mid}&u={_uid_qp_ko}' target='_self' "
                     f"style='font-size:.65rem;color:#60A5FA;text-decoration:none'>"
                     f"🏟️ Matchup →</a></div>"
                     + "</div>"

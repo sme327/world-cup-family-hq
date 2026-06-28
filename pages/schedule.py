@@ -287,7 +287,7 @@ def _render_ko_card(km: dict) -> None:
         _uid_qp = st.session_state.get("active_user_id", "")
         st.markdown(
             f"<div style='text-align:center;margin-top:.2rem'>"
-            f"<a href='/ko_matchup?match_id={mid}&u={_uid_qp}' target='_self' "
+            f"<a href='/matchup?match_id={mid}&u={_uid_qp}' target='_self' "
             f"style='font-size:.75rem;color:#60A5FA;text-decoration:none'>"
             f"🏟️ View Matchup →</a></div>",
             unsafe_allow_html=True,

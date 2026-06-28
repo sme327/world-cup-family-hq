@@ -200,17 +200,23 @@ def _today_ko_card(km: dict) -> None:
     # ── Picks ───────────────────────────────────────────────────────────────
     home_pickers: list[dict] = []
     away_pickers: list[dict] = []
+    active_pick_id: int | None = None
     if home_id and away_id:
         ko_picks     = get_ko_picks_for_match(mid)
         home_pickers = [p for p in ko_picks if p["picked_team_id"] == home_id]
         away_pickers = [p for p in ko_picks if p["picked_team_id"] == away_id]
+        for p in ko_picks:
+            if p["user_id"] == active_uid:
+                active_pick_id = p["picked_team_id"]
+                break
 
     def _avatars(pickers: list[dict]) -> str:
         parts = []
         for p in pickers:
             if p["user_id"] == active_uid:
+                # Larger + gold ring for the active user
                 style = (
-                    "font-size:1.4rem;line-height:1;"
+                    "font-size:1.55rem;line-height:1;"
                     "display:inline-flex;align-items:center;justify-content:center;"
                     "border-radius:50%;padding:.12rem;"
                     "box-shadow:0 0 0 2.5px #F59E0B,0 0 8px rgba(245,158,11,.35);"
@@ -224,19 +230,30 @@ def _today_ko_card(km: dict) -> None:
             + "</div>"
         )
 
-    def _team_block(flag: str, name: str, pickers: list[dict]) -> str:
+    def _team_block(flag: str, name: str, pickers: list[dict], team_id: int | None) -> str:
+        # Subtle gold underline on name if this is the active user's pick
+        is_my_pick = bool(team_id and active_pick_id and team_id == active_pick_id)
+        if is_my_pick:
+            name_inner = (
+                f"<span style='border-bottom:2px solid rgba(245,158,11,.6);"
+                f"padding-bottom:.12rem'>{name}</span>"
+            )
+        else:
+            name_inner = name
+
         supporter_html = ""
         if pickers:
             supporter_html = (
-                "<div style='font-size:.6rem;color:#6B7280;margin:.35rem 0 .12rem;"
-                "letter-spacing:.04em;text-transform:uppercase;font-weight:600'>Picked by</div>"
+                # Slightly more space between name and label, label more muted (no uppercase)
+                "<div style='font-size:.6rem;color:#6B7280;margin:.5rem 0 .15rem;"
+                "letter-spacing:.02em;font-weight:500'>Supporters</div>"
                 + _avatars(pickers)
             )
         return (
             "<div style='flex:1;min-width:0;text-align:center;padding:.05rem .2rem'>"
             f"<div style='font-size:2.8rem;line-height:1.05'>{flag}</div>"
             f"<div style='font-size:.95rem;font-weight:800;color:#F1F5F9;"
-            f"margin:.1rem 0 0;line-height:1.2'>{name}</div>"
+            f"margin:.2rem 0 0;line-height:1.2'>{name_inner}</div>"
             + supporter_html
             + "</div>"
         )
@@ -245,7 +262,7 @@ def _today_ko_card(km: dict) -> None:
     if is_done and km.get("home_score") is not None:
         hs, as_ = int(km["home_score"]), int(km["away_score"])
         center_html = (
-            "<div style='flex-shrink:0;align-self:center;padding:0 .45rem;text-align:center'>"
+            "<div style='flex-shrink:0;align-self:center;padding:0 .4rem;text-align:center'>"
             f"<div style='color:#FCD34D;font-size:1.25rem;font-weight:900;"
             f"line-height:1'>{hs}–{as_}</div>"
             "</div>"
@@ -253,10 +270,10 @@ def _today_ko_card(km: dict) -> None:
         btn_label = "📊 View Result"
     else:
         center_html = (
-            "<div style='flex-shrink:0;align-self:center;padding:0 .45rem;text-align:center'>"
+            "<div style='flex-shrink:0;align-self:center;padding:0 .4rem;text-align:center'>"
             "<span style='background:rgba(245,158,11,.12);color:#F59E0B;"
             "border:1px solid rgba(245,158,11,.28);border-radius:20px;"
-            "padding:.2rem .55rem;font-size:.72rem;font-weight:900;"
+            "padding:.17rem .48rem;font-size:.63rem;font-weight:900;"
             "letter-spacing:.06em'>vs</span>"
             "</div>"
         )
@@ -297,9 +314,9 @@ def _today_ko_card(km: dict) -> None:
         "</div>"
         # MIDDLE: Team A block | vs badge | Team B block
         "<div style='display:flex;align-items:flex-start'>"
-        + _team_block(home_flag, home_name, home_pickers)
+        + _team_block(home_flag, home_name, home_pickers, home_id)
         + center_html
-        + _team_block(away_flag, away_name, away_pickers)
+        + _team_block(away_flag, away_name, away_pickers, away_id)
         + "</div>"
         # BOTTOM: kickoff + venue
         "<div style='text-align:center;margin-top:.5rem'>"
@@ -472,10 +489,13 @@ if cotd_hero:
     )
 
 day_label   = f"⚽ Day {day_num}" if in_tournament and day_num else "⚽ FIFA World Cup 2026"
-match_label = (
-    f"🗓 {n_today} Match{'es' if n_today != 1 else ''} Today"
-    if n_today > 0 else "🗓 No matches today"
-)
+if n_today > 0:
+    match_label = f"🗓 {n_today} Match{'es' if n_today != 1 else ''} Today"
+elif today_ko:
+    _nko = len(today_ko)
+    match_label = f"🏆 {_nko} Knockout Match{'es' if _nko != 1 else ''} Today"
+else:
+    match_label = "🗓 No matches today"
 
 st.markdown(
     "<div style='background:linear-gradient(135deg,#1E3A5F 0%,#1e40af 60%,#1E293B 100%);"

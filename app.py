@@ -303,6 +303,7 @@ pg = st.navigation(
             st.Page("pages/admin.py",         title="Admin",         icon="🔧"),
             st.Page("pages/achievements.py",  title="Achievements",  icon="🏅"),
             st.Page("pages/discovery_race.py",title="Discovery Race",icon="🌎"),
+            st.Page("pages/ko_matchup.py",    title="KO Matchup",    icon="🏆"),
         ],
     },
     position="hidden",
@@ -325,6 +326,7 @@ else:
         "host_cities": "explore", "world_cup_history": "explore",
         "passport_individual": "passport", "passport_family": "passport",
         "achievements": "passport", "discovery_race": "passport",
+        "ko_matchup": "play",
         "admin": "admin",
     }
     _url = pg.url_path

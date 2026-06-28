@@ -214,13 +214,7 @@ def _today_ko_card(km: dict) -> None:
         parts = []
         for p in pickers:
             if p["user_id"] == active_uid:
-                # Larger + gold ring for the active user
-                style = (
-                    "font-size:1.55rem;line-height:1;"
-                    "display:inline-flex;align-items:center;justify-content:center;"
-                    "border-radius:50%;padding:.12rem;"
-                    "box-shadow:0 0 0 2.5px #F59E0B,0 0 8px rgba(245,158,11,.35);"
-                )
+                style = "font-size:1.55rem;line-height:1;"  # slightly larger, no ring
             else:
                 style = "font-size:1.35rem;line-height:1;"
             parts.append(f"<span style='{style}'>{p['avatar']}</span>")

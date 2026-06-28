@@ -10,7 +10,7 @@ from services.achievements import get_user_achievements
 st.markdown("## 🏆 Leaderboard")
 st.caption("FIFA World Cup 2026 · Family standings")
 
-_tab_group, _tab_combined = st.tabs(["⚽ Group Stage", "📊 Full Breakdown"])
+_tab_combined, _tab_group = st.tabs(["📊 Full Breakdown", "⚽ Group Stage"])
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ⚽ GROUP STAGE TAB
@@ -87,16 +87,17 @@ with _tab_group:
         n_losses = n_done - int(row['correct_picks']) - int(row['draw_points'])
         perfect  = n_done > 0 and n_losses == 0
 
-        # Recent picks (last 8, newest first)
-        recent: list[str] = []
-        for _, pk in done.head(8).iterrows():
-            pts  = pick_result(
+        # Best picks: top 4 teams by total points earned in group stage
+        from collections import defaultdict
+        _team_pts: dict[str, float] = defaultdict(float)
+        for _, pk in done.iterrows():
+            pts = pick_result(
                 pk['picked_team'], pk['home_team'], pk['away_team'],
                 pk['home_score'], pk['away_score'],
             )
-            flag = get_flag(pk['picked_team'])
-            icon = "✅" if pts == 1.0 else "🤝" if pts == 0.5 else "❌"
-            recent.append(f"{flag}&thinsp;{icon}")
+            if pts is not None and pts > 0:
+                _team_pts[pk['picked_team']] += pts
+        best_picks = [t for t, _ in sorted(_team_pts.items(), key=lambda x: -x[1])[:4]]
 
         # Favorite country
         favs    = get_top_favorites(uid, 1)
@@ -113,7 +114,7 @@ with _tab_group:
         return {
             'streak': streak,
             'perfect': perfect,
-            'recent': recent,
+            'best_picks': best_picks,
             'fav_str': fav_str,
             'n_done': n_done,
             'n_discovered': n_discovered,
@@ -207,17 +208,16 @@ with _tab_group:
             f"</div>"
         )
 
-        if ex['recent']:
-            picks_items = " ".join(
-                f"<span style='display:inline-block;font-size:.82rem'>{p}</span>"
-                for p in ex['recent']
+        if ex['best_picks']:
+            best_items = " · ".join(
+                f"{get_flag(t)}&thinsp;{t}" for t in ex['best_picks']
             )
             recent_row = (
                 f"<div style='margin-top:.4rem;padding-top:.35rem;"
-                f"border-top:1px solid rgba(148,163,184,.12);"
-                f"display:flex;align-items:center;gap:.4rem;flex-wrap:wrap'>"
-                f"<span style='font-size:.6rem;font-weight:800;color:#475569;text-transform:uppercase;"
-                f"letter-spacing:.05em'>Recent:</span>{picks_items}</div>"
+                f"border-top:1px solid rgba(148,163,184,.12);font-size:.78rem;color:#94A3B8'>"
+                f"<span style='font-size:.6rem;font-weight:800;color:#475569;"
+                f"text-transform:uppercase;letter-spacing:.05em'>Best picks: </span>"
+                f"{best_items}</div>"
             )
         else:
             recent_row = ""
@@ -358,7 +358,7 @@ with _tab_combined:
                 f"<div style='font-size:1.05rem;font-weight:900;color:#F1F5F9'>{p_name}</div>"
                 f"<div style='display:flex;gap:.6rem;margin-top:.25rem;flex-wrap:wrap'>"
                 f"<span style='font-size:.75rem;color:#86EFAC'>⚽ Group: <b>{grp:.1f}</b></span>"
-                f"<span style='font-size:.75rem;color:#7DD3FC'>🎯 KO Live: <b>{ko:.0f}</b></span>"
+                f"<span style='font-size:.75rem;color:#7DD3FC'>🎯 Knockout: <b>{ko:.0f}</b></span>"
                 f"</div>"
                 f"</div>"
 

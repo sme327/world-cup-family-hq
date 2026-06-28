@@ -187,6 +187,7 @@ with tabs[1]:
                         disabled=not teams_known,
                         key=f"ko_as_{mid}",
                     )
+                _SELECT_SENTINEL = "— select winner —"
                 with w_col:
                     winner_options = []
                     if m.get("home_name"):
@@ -195,25 +196,40 @@ with tabs[1]:
                         winner_options.append(m["away_name"])
 
                     cur_winner_name = m.get("winner_name")
-                    default_idx = 0
-                    if cur_winner_name and cur_winner_name in winner_options:
-                        default_idx = winner_options.index(cur_winner_name)
 
                     if winner_options:
+                        if cur_winner_name and cur_winner_name in winner_options:
+                            # Already saved — show known winner as default, no sentinel
+                            _opts = winner_options
+                            default_idx = winner_options.index(cur_winner_name)
+                        else:
+                            # Not yet saved — force explicit choice via sentinel
+                            _opts = [_SELECT_SENTINEL] + winner_options
+                            default_idx = 0
                         ko_winner = st.selectbox(
-                            "Winner (req'd — handles ET/penalties)",
-                            options=winner_options,
+                            "Winner — must select (handles ET/penalties)",
+                            options=_opts,
                             index=default_idx,
                             disabled=not teams_known,
                             key=f"ko_win_{mid}",
                         )
+                        # Score-based hint when sentinel is selected
+                        if ko_winner == _SELECT_SENTINEL and ko_hs != ko_as:
+                            _hint = m.get("home_name") if ko_hs > ko_as else m.get("away_name")
+                            if _hint:
+                                st.caption(f"💡 Score suggests: {_hint}")
                     else:
                         ko_winner = None
                         st.caption("Winner TBD")
 
                 with btn_col:
                     st.markdown("&nbsp;", unsafe_allow_html=True)
-                    if teams_known and ko_winner:
+                    _winner_chosen = (
+                        teams_known
+                        and ko_winner
+                        and ko_winner != _SELECT_SENTINEL
+                    )
+                    if _winner_chosen:
                         if st.button("✅ Save", key=f"ko_save_{mid}"):
                             _wconn = get_connection()
                             _wrow = _wconn.execute(

@@ -372,29 +372,7 @@ def _build_storylines(combined: list[dict], active_uid: int) -> list[str]:
     except Exception:
         pass
 
-    # 3. Active user's Full Bracket teams still alive (R16 and beyond)
-    try:
-        conn = get_connection()
-        alive_count = conn.execute("""
-            SELECT COUNT(*) FROM bracket_picks bp
-            JOIN knockout_matches km ON bp.knockout_match_id = km.id
-            WHERE bp.user_id = ?
-              AND km.status != 'completed'
-              AND km.round IN ('r16','qf','sf','final')
-        """, (active_uid,)).fetchone()
-        conn.close()
-        if alive_count and alive_count[0] > 0:
-            user_info = next((u for u in combined if u["user_id"] == active_uid), None)
-            if user_info:
-                n = alive_count[0]
-                stories.append(
-                    f"{user_info['avatar']} **{user_info['name']}'s** Full Bracket still has "
-                    f"**{n} team{'s' if n != 1 else ''}** alive"
-                )
-    except Exception:
-        pass
-
-    # 4. Closest chaser (last place's gap to leader)
+    # 3. Closest chaser (last place's gap to leader)
     if len(combined) >= 3:
         leader = combined[0]
         chaser = combined[-1]
@@ -652,12 +630,10 @@ with lb_col:
     for i, entry in enumerate(combined):
         color = entry.get("theme_color") or "#E2E8F0"
         grp   = entry["group_pts"]
-        bkt   = entry["bracket_pts"]
         ko    = entry["ko_live_pts"]
         tot   = entry["total_pts"]
         chips = (
             f"<span style='font-size:.65rem;color:#86EFAC'>⚽{grp:.1f}</span>"
-            f"<span style='font-size:.65rem;color:#C4B5FD'>📋{bkt:.0f}</span>"
             f"<span style='font-size:.65rem;color:#7DD3FC'>🎯{ko:.0f}</span>"
         )
         st.markdown(

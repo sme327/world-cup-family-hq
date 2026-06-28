@@ -216,33 +216,30 @@ def classify_group_statuses(group_rows: list[dict]) -> list[dict]:
 
 
 def get_combined_leaderboard() -> list[dict]:
-    """Merge group / Full Bracket / KO Live scores into one sorted list.
+    """Merge group stage + KO Live scores into one sorted list.
 
     Columns per user: user_id, name, avatar, theme_color,
-                      group_pts, bracket_pts, ko_live_pts, total_pts, rank
+                      group_pts, ko_live_pts, total_pts, rank
+    Total = group_pts + ko_live_pts (Full Bracket excluded from display).
     """
     from services.ko_picks import get_ko_live_leaderboard
-    from services.bracket_picks import score_bracket
 
     group_board = get_leaderboard()
-
     ko_map = {s["user_id"]: s for s in get_ko_live_leaderboard()}
 
     result = []
     for _, row in group_board.iterrows():
-        uid  = int(row["id"])
-        grp  = float(row["total_points"])
-        bkt  = float(score_bracket(uid)["total"])
-        ko   = float(ko_map.get(uid, {}).get("total", 0.0))
+        uid = int(row["id"])
+        grp = float(row["total_points"])
+        ko  = float(ko_map.get(uid, {}).get("total", 0.0))
         result.append({
             "user_id":     uid,
             "name":        str(row["name"]),
             "avatar":      str(row["avatar"]),
             "theme_color": str(row.get("theme_color", "")),
             "group_pts":   grp,
-            "bracket_pts": bkt,
             "ko_live_pts": ko,
-            "total_pts":   grp + bkt + ko,
+            "total_pts":   grp + ko,
         })
 
     result.sort(key=lambda x: (-x["total_pts"], x["name"]))

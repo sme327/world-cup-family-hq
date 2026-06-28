@@ -296,7 +296,7 @@ with _tab_combined:
         # Header blurb
         st.markdown(
             "<div style='font-size:.85rem;color:#94A3B8;margin-bottom:.75rem'>"
-            "Total = Group Stage picks + Full Bracket + Live KO picks"
+            "Total = Group Stage picks + Live KO picks"
             "</div>",
             unsafe_allow_html=True,
         )
@@ -308,7 +308,6 @@ with _tab_combined:
             rank  = entry["rank"]
             medal = medals[rank - 1] if rank <= 3 else f"#{rank}"
             grp   = entry["group_pts"]
-            bkt   = entry["bracket_pts"]
             ko    = entry["ko_live_pts"]
             total = entry["total_pts"]
 
@@ -359,7 +358,6 @@ with _tab_combined:
                 f"<div style='font-size:1.05rem;font-weight:900;color:#F1F5F9'>{p_name}</div>"
                 f"<div style='display:flex;gap:.6rem;margin-top:.25rem;flex-wrap:wrap'>"
                 f"<span style='font-size:.75rem;color:#86EFAC'>⚽ Group: <b>{grp:.1f}</b></span>"
-                f"<span style='font-size:.75rem;color:#C4B5FD'>📋 Bracket: <b>{bkt:.0f}</b></span>"
                 f"<span style='font-size:.75rem;color:#7DD3FC'>🎯 KO Live: <b>{ko:.0f}</b></span>"
                 f"</div>"
                 f"</div>"
@@ -385,7 +383,6 @@ with _tab_combined:
             "text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem'>Scoring breakdown</div>"
             "<div style='font-size:.8rem;color:#94A3B8;display:flex;gap:1.2rem;flex-wrap:wrap'>"
             "<span>⚽ <b style='color:#86EFAC'>Group</b>: 1 pt/win, ½ draw</span>"
-            "<span>📋 <b style='color:#C4B5FD'>Bracket</b>: 1/correct, +2 QF, +5 champion (max 44)</span>"
             "<span>🎯 <b style='color:#7DD3FC'>KO Live</b>: R32=2 · R16=3 · QF=4 · SF=5 · Final=8</span>"
             "</div></div>",
             unsafe_allow_html=True,

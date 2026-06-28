@@ -69,7 +69,7 @@ if not _adm_upcoming.empty:
             unsafe_allow_html=True,
         )
 
-tabs = st.tabs(["📥 Group Scores", "⚽ Knockout", "🎯 Brackets", "📋 Matches", "🌍 Teams", "👤 Users", "🏷️ Stamps", "🖼️ Card Images", "🛠️ Database", "💾 Backup"])
+tabs = st.tabs(["📥 Group Scores", "⚽ Knockout", "📋 Matches", "🌍 Teams", "👤 Users", "🏷️ Stamps", "🖼️ Card Images", "🛠️ Database", "💾 Backup"])
 
 # ── Enter Scores ──────────────────────────────────────────────────────────────
 with tabs[0]:
@@ -236,79 +236,8 @@ with tabs[1]:
                             else:
                                 st.warning(msg)
 
-# ── Brackets Admin ───────────────────────────────────────────────────────────
-with tabs[2]:
-    from services.bracket_picks import (
-        get_bracket_lock as _get_bl, set_bracket_lock as _set_bl,
-        get_bracket_status_all_users as _get_bs, get_bracket_picks as _get_bp,
-        FINAL_MATCH_ID as _FINAL_MID, REQUIRED_PICKS as _REQ_PICKS,
-    )
-    from services.bracket_picks import get_team_map as _get_tm
-
-    st.markdown("### 🎯 Bracket Picks Management")
-
-    _bl  = _get_bl()
-    _bss = _get_bs()
-    _btm = _get_tm()
-
-    not_submitted = [s for s in _bss if s["status"] != "submitted"]
-
-    if _bl["is_locked"]:
-        locked_ts = _bl["locked_at"][:16] if _bl["locked_at"] else "unknown"
-        st.error(f"🔒 **Brackets LOCKED** — locked {locked_ts} by {_bl['locked_by'] or 'Admin'}")
-        if st.button("🔓 Unlock Brackets", key="adm_unlock_brackets"):
-            _set_bl(False, locked_by=st.session_state.get("active_user_name", "Admin"))
-            st.success("Brackets unlocked — users can edit again.")
-            st.rerun()
-    else:
-        st.success("🔓 **Brackets OPEN** — users can make and edit picks.")
-        if not_submitted:
-            st.warning(
-                f"⚠️ {len(not_submitted)} user(s) not yet submitted: "
-                + ", ".join(f"{s['avatar']} {s['name']}" for s in not_submitted)
-            )
-        if st.button("🔒 Lock All Brackets", type="primary", key="adm_lock_brackets"):
-            _set_bl(True, locked_by=st.session_state.get("active_user_name", "Admin"))
-            st.success("🔒 Brackets locked! No further edits allowed.")
-            st.rerun()
-
-    st.divider()
-    st.markdown("#### Submission Status")
-
-    _status_icons = {
-        "submitted":   "✅ Submitted",
-        "complete":    "📋 Complete (not submitted)",
-        "in_progress": "⏳ In progress",
-        "not_started": "🔴 Not started",
-    }
-    for _bs in _bss:
-        with st.container(border=True):
-            _bc1, _bc2, _bc3 = st.columns([1, 3, 2])
-            _bc1.markdown(f"<span style='font-size:2rem'>{_bs['avatar']}</span>", unsafe_allow_html=True)
-            _bc2.markdown(
-                f"**{_bs['name']}**  \n{_status_icons.get(_bs['status'], _bs['status'])}"
-            )
-            _bc3.markdown(f"**{_bs['pick_count']} / {_REQ_PICKS}** picks")
-
-    # Champion picks preview (submitted users only)
-    _submitted = [s for s in _bss if s["is_submitted"]]
-    if _submitted:
-        st.divider()
-        st.markdown("#### Champion Picks Preview")
-        _champ_groups: dict = {}
-        for _s in _submitted:
-            _up = _get_bp(_s["user_id"])
-            _cid = _up.get(_FINAL_MID)
-            if _cid:
-                _ct = _btm.get(_cid, {})
-                _key = _ct.get("name", "Unknown")
-                _champ_groups.setdefault(_key, {"flag": _ct.get("flag", ""), "users": []})
-                _champ_groups[_key]["users"].append(f"{_s['avatar']} {_s['name']}")
-        for _tn, _td in sorted(_champ_groups.items()):
-            st.markdown(f"**{_td['flag']} {_tn}** — {', '.join(_td['users'])}")
-
 # ── All Matches ───────────────────────────────────────────────────────────────
-with tabs[3]:
+with tabs[2]:
     st.markdown("### All 72 Group Stage Matches")
     matches = get_all_matches()
     st.dataframe(
@@ -320,7 +249,7 @@ with tabs[3]:
     st.caption(f"Total matches: {len(matches)} | Completed: {(matches['status']=='completed').sum()}")
 
 # ── Teams ─────────────────────────────────────────────────────────────────────
-with tabs[4]:
+with tabs[3]:
     st.markdown("### All 48 Teams")
     teams = get_all_teams()
     view_cols = ['name', 'flag_emoji', 'group_letter', 'confederation',
@@ -329,7 +258,7 @@ with tabs[4]:
     st.caption(f"Total teams: {len(teams)} | Groups: {teams['group_letter'].nunique()}")
 
 # ── Users ─────────────────────────────────────────────────────────────────────
-with tabs[5]:
+with tabs[4]:
     st.markdown("### Family Members")
     users = get_all_users()
     for _, u in users.iterrows():
@@ -342,14 +271,14 @@ with tabs[5]:
                         unsafe_allow_html=True)
 
 # ── Country Metadata ──────────────────────────────────────────────────────────
-with tabs[6]:
+with tabs[5]:
     st.markdown("### Country Stamps & Metadata")
     meta = get_country_metadata()
     st.dataframe(meta, use_container_width=True, hide_index=True)
     st.caption(f"Total countries: {len(meta)} | Continents: {meta['continent'].nunique()}")
 
 # ── Card Images Review ────────────────────────────────────────────────────────
-with tabs[7]:
+with tabs[6]:
     st.markdown("### 🖼️ Country Card Images")
     st.caption(
         "Images are downloaded by `scripts/download_country_card_images.py`. "
@@ -412,7 +341,7 @@ with tabs[7]:
             st.code("# Re-download everything from scratch\npython scripts/download_country_card_images.py --overwrite")
 
 # ── Database ──────────────────────────────────────────────────────────────────
-with tabs[8]:
+with tabs[7]:
     import os as _os
     from services.database import _restore_from_backup, DATA_DIR
 
@@ -475,7 +404,7 @@ with tabs[8]:
     st.caption("⚠️ reset_db.py now auto-backs up picks before wiping. Use --wipe to skip.")
 
 # ── Backup & Restore ──────────────────────────────────────────────────────────
-with tabs[9]:
+with tabs[8]:
     st.markdown("### 💾 Backup Picks")
     st.markdown(
         "Download the current picks and scores so they survive code deployments. "

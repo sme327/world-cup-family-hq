@@ -284,7 +284,6 @@ pg = st.navigation(
             st.Page("pages/schedule.py",     title="Schedule",     icon="📅"),
             st.Page("pages/matchup.py",      title="Matchups",     icon="🏟️"),
             st.Page("pages/bracket.py",        title="Bracket",        icon="🗂️"),
-            st.Page("pages/bracket_picks.py", title="Full Bracket",   icon="📋"),
             st.Page("pages/pick_tracker.py",  title="Family Picks",   icon="🃏"),
             st.Page("pages/standings.py",    title="Standings",    icon="📊"),
             st.Page("pages/leaderboard.py",  title="Leaderboard",  icon="🏆"),
@@ -320,7 +319,7 @@ else:
     _SECTION_MAP = {
         "": "home", "home": "home",
         "schedule": "play", "matchup": "play", "bracket": "play",
-        "bracket_picks": "play", "pick_tracker": "play",
+        "pick_tracker": "play",
         "standings": "play", "leaderboard": "play",
         "country_profile": "explore", "map": "explore",
         "host_cities": "explore", "world_cup_history": "explore",
@@ -352,7 +351,6 @@ else:
         <a href='/schedule?u={_uid_qp}' class='{_pi("schedule")}' target='_self'>📅 Schedule</a>
         <a href='/matchup?u={_uid_qp}' class='{_pi("matchup")}' target='_self'>🏟️ Matchups</a>
         <a href='/bracket?u={_uid_qp}' class='{_pi("bracket")}' target='_self'>🗂️ Bracket</a>
-        <a href='/bracket_picks?u={_uid_qp}' class='{_pi("bracket_picks")}' target='_self'>📋 Full Bracket</a>
         <a href='/pick_tracker?u={_uid_qp}' class='{_pi("pick_tracker")}' target='_self'>🃏 Family Picks</a>
         <a href='/standings?u={_uid_qp}' class='{_pi("standings")}' target='_self'>📊 Standings</a>
         <a href='/leaderboard?u={_uid_qp}' class='{_pi("leaderboard")}' target='_self'>🏆 Leaderboard</a>

@@ -215,6 +215,42 @@ def classify_group_statuses(group_rows: list[dict]) -> list[dict]:
     return group_rows
 
 
+def get_combined_leaderboard() -> list[dict]:
+    """Merge group / Full Bracket / KO Live scores into one sorted list.
+
+    Columns per user: user_id, name, avatar, theme_color,
+                      group_pts, bracket_pts, ko_live_pts, total_pts, rank
+    """
+    from services.ko_picks import get_ko_live_leaderboard
+    from services.bracket_picks import score_bracket
+
+    group_board = get_leaderboard()
+
+    ko_map = {s["user_id"]: s for s in get_ko_live_leaderboard()}
+
+    result = []
+    for _, row in group_board.iterrows():
+        uid  = int(row["id"])
+        grp  = float(row["total_points"])
+        bkt  = float(score_bracket(uid)["total"])
+        ko   = float(ko_map.get(uid, {}).get("total", 0.0))
+        result.append({
+            "user_id":     uid,
+            "name":        str(row["name"]),
+            "avatar":      str(row["avatar"]),
+            "theme_color": str(row.get("theme_color", "")),
+            "group_pts":   grp,
+            "bracket_pts": bkt,
+            "ko_live_pts": ko,
+            "total_pts":   grp + bkt + ko,
+        })
+
+    result.sort(key=lambda x: (-x["total_pts"], x["name"]))
+    for i, r in enumerate(result):
+        r["rank"] = i + 1
+    return result
+
+
 def get_team_group_status(team: str, group_letter: str) -> dict:
     """Return a kid-friendly status dict for a team in the group stage.
     2026 format: top-2 from each group advance automatically."""

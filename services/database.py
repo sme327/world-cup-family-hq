@@ -163,6 +163,16 @@ CREATE TABLE IF NOT EXISTS bracket_lock (
     locked_at   TEXT,
     locked_by   TEXT
 );
+
+CREATE TABLE IF NOT EXISTS knockout_live_picks (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id             INTEGER NOT NULL REFERENCES users(id),
+    knockout_match_id   INTEGER NOT NULL REFERENCES knockout_matches(id),
+    picked_team_id      INTEGER NOT NULL REFERENCES teams(id),
+    created_at          TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at          TEXT DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, knockout_match_id)
+);
 """
 
 

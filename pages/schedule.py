@@ -5,6 +5,14 @@ from services.matches import get_all_matches
 from services.teams import get_all_teams, get_all_group_letters, get_flag
 from services.picks import get_all_picks, get_all_users, save_pick
 from services.time_utils import fmt_match_time, fmt_date, pt_date_str, et_to_pt
+from services.ko_picks import (
+    get_all_ko_matches_display,
+    get_ko_pick,
+    get_ko_picks_for_match,
+    save_ko_pick,
+    KO_ROUND_LABELS,
+    KO_ROUND_POINTS,
+)
 
 # ── Page CSS ───────────────────────────────────────────────────────────────────
 st.markdown("""<style>
@@ -553,3 +561,183 @@ if not completed_df.empty:
                              use_container_width=True):
                     st.session_state["_nav_match_id"] = mid
                     st.switch_page("pages/matchup.py")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ⚽ KNOCKOUT STAGE
+# ══════════════════════════════════════════════════════════════════════════════
+
+_KO_ROUND_COLOR = {
+    "r32":         "#1E3A5F",
+    "r16":         "#14532D",
+    "qf":          "#3B1A6B",
+    "sf":          "#7C2D12",
+    "third_place": "#374151",
+    "final":       "#78350F",
+}
+_KO_ROUND_TEXT = {
+    "r32":         "#BAE6FD",
+    "r16":         "#BBF7D0",
+    "qf":          "#DDD6FE",
+    "sf":          "#FED7AA",
+    "third_place": "#CBD5E1",
+    "final":       "#FDE68A",
+}
+
+
+def _ko_round_badge(rnd: str) -> str:
+    bg  = _KO_ROUND_COLOR.get(rnd, "#374151")
+    col = _KO_ROUND_TEXT.get(rnd, "#E2E8F0")
+    lbl = KO_ROUND_LABELS.get(rnd, rnd)
+    pts = KO_ROUND_POINTS.get(rnd, 0)
+    return (
+        f"<span style='background:{bg};color:{col};border-radius:4px;"
+        f"padding:.07rem .35rem;font-size:.68rem;font-weight:800;"
+        f"letter-spacing:.04em'>{lbl}</span>"
+        f"<span style='font-size:.65rem;color:#64748B;margin-left:.35rem'>+{pts} pts</span>"
+    )
+
+
+def _ko_sticker_block(team_id: int | None, team_name: str, team_flag: str, picks: list[dict]) -> str:
+    pickers = [p for p in picks if p["picked_team_id"] == team_id] if team_id else []
+    avs = "".join(
+        f"<span style='font-size:1.3rem'>{p['avatar']}</span>"
+        for p in pickers
+    )
+    if not avs:
+        avs = "<span style='color:#374151;font-size:.8rem'>—</span>"
+    short = (team_name or "TBD")[:12] + ("…" if len(team_name or "TBD") > 12 else "")
+    flag  = team_flag or "⬜"
+    return (
+        f"<div style='text-align:center;min-width:80px'>"
+        f"<div style='font-size:.7rem;color:#64748B;margin-bottom:.15rem'>{flag} {short}</div>"
+        f"<div style='line-height:1.3'>{avs}</div>"
+        f"</div>"
+    )
+
+
+def _render_ko_card(km: dict) -> None:
+    mid       = km["id"]
+    rnd       = km["round"]
+    home_id   = km["home_team_id"]
+    away_id   = km["away_team_id"]
+    home_name = km["home_name"] or "TBD"
+    away_name = km["away_name"] or "TBD"
+    home_flag = km["home_flag"] or "⬜"
+    away_flag = km["away_flag"] or "⬜"
+    status    = km["status"]
+    time_str  = fmt_match_time(km["match_date"], km["kickoff_time_et"])
+
+    # What the active user has picked
+    user_ko_pick = get_ko_pick(active_user_id, mid) if (home_id and away_id) else None
+
+    # Family picks
+    ko_family_picks = get_ko_picks_for_match(mid) if (home_id and away_id) else []
+
+    both_known = bool(home_id and away_id)
+    is_done    = (status == "completed")
+    can_pick   = both_known and not is_done
+
+    sticker = (
+        f"<div style='display:flex;justify-content:center;gap:1.5rem;margin:.2rem 0'>"
+        f"{_ko_sticker_block(home_id, home_name, home_flag, ko_family_picks)}"
+        f"{_ko_sticker_block(away_id, away_name, away_flag, ko_family_picks)}"
+        f"</div>"
+        if ko_family_picks else
+        f"<div style='text-align:center;margin:.2rem 0;font-size:.72rem;color:#374151'>"
+        + ("🗳️ Picks Open" if can_pick else ("⏳ Teams TBD" if not both_known else ""))
+        + "</div>"
+    )
+
+    # Completed score line
+    if is_done and km.get("home_score") is not None:
+        score_line = (
+            f"<div style='font-size:.82rem;color:#FCD34D;font-weight:700;margin:.1rem 0'>"
+            f"{int(km['home_score'])} – {int(km['away_score'])}"
+            f"{'  🏆 ' + (km.get('winner_name') or '') if km.get('winner_name') else ''}"
+            f"</div>"
+        )
+    else:
+        score_line = ""
+
+    with st.container(border=True):
+        st.markdown(
+            f"<div style='text-align:center;padding:.1rem 0'>"
+            f"<div style='margin-bottom:.15rem'>{_ko_round_badge(rnd)}</div>"
+            f"<div style='font-size:2.6rem;line-height:1.05'>{home_flag}&nbsp;&nbsp;{away_flag}</div>"
+            f"<div style='font-size:1rem;font-weight:900;color:#F1F5F9;margin:.15rem 0'>"
+            f"{home_name} &nbsp;<span style='opacity:.4;font-weight:300'>vs</span>&nbsp; {away_name}"
+            f"</div>"
+            f"{score_line}"
+            f"<div style='font-size:.73rem;color:#94A3B8'>🕒 {time_str} &nbsp;·&nbsp; 🏟️ {km['venue']}</div>"
+            f"<div style='font-size:.68rem;color:#64748B'>📍 {km['city']}, {km['host_country']}</div>"
+            f"</div>"
+            f"{sticker}"
+            f"<hr style='border:none;border-top:1px solid rgba(148,163,184,.15);margin:.35rem 0'>",
+            unsafe_allow_html=True,
+        )
+
+        b1, b2 = st.columns(2)
+        with b1:
+            h_picked = user_ko_pick == home_id
+            h_label  = f"✅ {home_name}" if h_picked else home_name
+            if st.button(h_label, key=f"ko_{mid}_h", use_container_width=True, disabled=not can_pick):
+                if can_pick and not h_picked:
+                    try:
+                        save_ko_pick(active_user_id, mid, home_id)
+                        st.rerun()
+                    except ValueError as e:
+                        st.error(str(e))
+        with b2:
+            a_picked = user_ko_pick == away_id
+            a_label  = f"✅ {away_name}" if a_picked else away_name
+            if st.button(a_label, key=f"ko_{mid}_a", use_container_width=True, disabled=not can_pick):
+                if can_pick and not a_picked:
+                    try:
+                        save_ko_pick(active_user_id, mid, away_id)
+                        st.rerun()
+                    except ValueError as e:
+                        st.error(str(e))
+
+
+# Load and render KO matches
+_ko_matches = get_all_ko_matches_display()
+
+# Exclude 3rd place from schedule display (match 131)
+_ko_matches = [km for km in _ko_matches if km["id"] != 131]
+
+if _ko_matches:
+    st.markdown(
+        "<div id='sched-knockout' class='sect-hdr sect-upcoming' "
+        "style='background:linear-gradient(90deg,#1B2A4A,#3B1A6B)'>⚽ Knockout Stage</div>",
+        unsafe_allow_html=True,
+    )
+
+    # Group by round in display order
+    _ko_round_order = ["r32", "r16", "qf", "sf", "final"]
+    for _rnd in _ko_round_order:
+        _rnd_matches = [km for km in _ko_matches if km["round"] == _rnd]
+        if not _rnd_matches:
+            continue
+
+        _rnd_lbl = KO_ROUND_LABELS.get(_rnd, _rnd)
+        st.markdown(
+            f"<div style='font-size:.82rem;color:#64748B;font-weight:700;"
+            f"letter-spacing:.03em;margin:.5rem 0 .15rem'>🏆 {_rnd_lbl}</div>",
+            unsafe_allow_html=True,
+        )
+
+        for _i in range(0, len(_rnd_matches), 2):
+            if _i + 1 < len(_rnd_matches):
+                _ka, _kb = st.columns(2, gap="medium")
+                with _ka:
+                    _render_ko_card(_rnd_matches[_i])
+                with _kb:
+                    _render_ko_card(_rnd_matches[_i + 1])
+            else:
+                if _rnd == "final":
+                    _, _fc, _ = st.columns([1, 2, 1])
+                    with _fc:
+                        _render_ko_card(_rnd_matches[_i])
+                else:
+                    _render_ko_card(_rnd_matches[_i])

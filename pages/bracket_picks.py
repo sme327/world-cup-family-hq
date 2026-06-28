@@ -449,7 +449,7 @@ st.markdown(
     "📋 <strong>Full Bracket</strong> — Pick the whole tournament once, before brackets lock. "
     "Scored as knockout results come in. <em>You are here.</em><br>"
     "⚽ <strong>Live Picks</strong> — Pick each match before it kicks off, just like the group stage. "
-    "<span style='color:#94A3B8'>Coming soon.</span>"
+    "Find them on the <a href='/schedule' style='color:#93C5FD'>Schedule page</a>."
     "</div>",
     unsafe_allow_html=True,
 )

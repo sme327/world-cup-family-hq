@@ -1,26 +1,26 @@
 # components/bracket_board.py
 #
-# Phase 6A: Knockout bracket visual shell — left-to-right compact layout.
+# Phase 6A: Knockout bracket visual shell — left-to-right layout.
+# Layout: R32 (16) → R16 (8) → QF (4) → SF (2) → Final + 3rd Place
 #
-# Layout: R32 (16 matches) → R16 (8) → QF (4) → SF (2) → Final + 3rd Place
+# Data-driven: the bracket is rendered from a dict of match records.
+# Rendering is split into composable helpers so Phase 6B can swap in real data.
 #
-# Phase 6B TODO: replace _placeholder_data() with _load_knockout_data()
-#   querying matches WHERE stage IN ('Round of 32','Round of 16',
-#   'Quarterfinal','Semifinal','Final','Third Place')
-# Phase 6C TODO: wire family picks (avatars under each team row)
-# Phase 6D TODO: click-to-expand match detail panel
+# Phase 6B hook: replace _placeholder_rounds() with _load_knockout_rounds()
+# Phase 6C hook: add family pick avatars to match cards / final column
+# Phase 6D hook: add click-to-expand match detail panel
 
 import streamlit as st
 
 # ── Dimensions ────────────────────────────────────────────────────────────────
-_CW   = 138   # card width (px)
-_BS   = 52    # base slot height for R32; doubles each round
-_GAP  = 16    # gap between columns (px); connector stubs span exactly this
-_STUB = _GAP + 2   # stub length is slightly longer than gap for clean overlap
-_CONN = '#9C8B6E'  # connector line colour (warm brown)
-_TOTAL_H = 16 * _BS  # total bracket height = 832 px (16 R32 slots)
+_BS   = 68    # base slot height for R32 (px)
+_GAP  = 22    # gap between columns (px)
+_STUB = _GAP + 2   # outgoing connector stub — crosses the gap by 2px into next col
+_CONN = '#9C8B6E'  # connector colour (warm brown)
+_TOTAL_H = 16 * _BS  # total bracket height = 1088px
 
-# Slot height per round
+# Slot heights double each round so a pair in round N
+# occupies the same vertical space as one slot in round N+1
 _SH = {
     'r32': _BS,
     'r16': _BS * 2,
@@ -29,90 +29,213 @@ _SH = {
 }
 
 
-# ── Data helpers ──────────────────────────────────────────────────────────────
+# ── Match data model ──────────────────────────────────────────────────────────
 
-def _empty():
-    return {'home': '', 'away': '', 'hf': '', 'af': '',
-            'hs': None, 'as_': None, 'status': 'scheduled', 'id': None}
+def _make_match(match_id: str,
+                team1=None, team2=None,
+                flag1=None, flag2=None,
+                score1=None, score2=None,
+                winner=None) -> dict:
+    """Create a single match record.
 
+    Fields:
+        match_id  — stable identifier used as a data- attribute on the card HTML
+        team1/2   — display name (str) or None for TBD
+        flag1/2   — flag emoji (str) or None
+        score1/2  — integer score or None (None = match not yet played)
+        winner    — "team1" | "team2" | "draw" | None
 
-def _placeholder_data():
-    """All-empty bracket dicts for the Phase 6A shell.
-    Phase 6B: replace this with a real DB query.
+    Phase 6B: populate team, flag, score, and winner from the knockout matches
+              table in worldcup.db (queried via services/matches.py).
     """
     return {
-        'r32':   [_empty() for _ in range(16)],
-        'r16':   [_empty() for _ in range(8)],
-        'qf':    [_empty() for _ in range(4)],
-        'sf':    [_empty() for _ in range(2)],
-        'final': _empty(),
-        'third': _empty(),
+        "match_id": match_id,
+        "team1":    team1,
+        "team2":    team2,
+        "flag1":    flag1,
+        "flag2":    flag2,
+        "score1":   score1,
+        "score2":   score2,
+        "winner":   winner,   # explicit — set at DB load time after scores entered
     }
 
 
-# ── HTML card builders ────────────────────────────────────────────────────────
+def _placeholder_rounds() -> dict:
+    """Return all-TBD placeholder data for the Phase 6A bracket shell.
 
-def _team_row(flag: str, name: str, score, cls: str = '') -> str:
+    Phase 6B: replace with _load_knockout_rounds() that queries worldcup.db:
+        SELECT match_id, home_team, away_team, home_score, away_score, stage
+        FROM matches WHERE stage IN (
+            'Round of 32', 'Round of 16', 'Quarterfinal',
+            'Semifinal', 'Final', 'Third Place')
+        ORDER BY match_date
+    Then map rows to _make_match() records and bucket by stage into this dict.
+    """
+    return {
+        "r32":         [_make_match(f"r32_{i+1}")  for i in range(16)],
+        "r16":         [_make_match(f"r16_{i+1}")  for i in range(8)],
+        "qf":          [_make_match(f"qf_{i+1}")   for i in range(4)],
+        "sf":          [_make_match(f"sf_{i+1}")   for i in range(2)],
+        "final":       [_make_match("final_1")],
+        "third_place": [_make_match("third_1")],
+    }
+
+
+# ── Rendering helpers ─────────────────────────────────────────────────────────
+
+def render_team_row(team, flag, score, is_winner=False, is_loser=False) -> str:
+    """Render one team row (flag + name + score) inside a match card.
+
+    Phase 6B: is_winner/is_loser are derived from completed match scores.
+    Phase 6C: add a small pick indicator (avatar dot) when a family member
+              picked this team — insert after score_h.
+    """
+    row_cls = "bk-win" if is_winner else ("bk-lose" if is_loser else "")
     flag_h  = f'<span class="bk-fl">{flag}</span>' if flag \
               else '<span class="bk-fl bk-fl-e">·</span>'
-    name_h  = f'<span class="bk-nm">{name}</span>' if name \
+    name_h  = f'<span class="bk-nm">{team}</span>' if team \
               else '<span class="bk-nm bk-nm-tbd">TBD</span>'
     score_h = f'<span class="bk-sc">{score}</span>' if score is not None \
               else '<span class="bk-sc bk-sc-e"></span>'
-    return f'<div class="bk-tr {cls}">{flag_h}{name_h}{score_h}</div>'
+    return f'<div class="bk-tr {row_cls}">{flag_h}{name_h}{score_h}</div>'
 
 
-def _card(m: dict, extra: str = '') -> str:
-    h,  a   = m.get('home', ''),  m.get('away', '')
-    hf, af  = m.get('hf', ''),   m.get('af', '')
-    hs, as_ = m.get('hs'),        m.get('as_')
-    done    = m.get('status') == 'completed' and hs is not None and as_ is not None
+def render_match_card(match: dict, extra_class: str = "") -> str:
+    """Render a match card from a match dict.
 
-    if done:
-        hi, ai = int(hs), int(as_)
-        hc = 'bk-win' if hi > ai else ('bk-lose' if hi < ai else '')
-        ac = 'bk-win' if ai > hi else ('bk-lose' if ai < hi else '')
-        cc = 'bk-card bk-done'
+    Handles three display states:
+      - Empty/TBD:   both teams None, dashed border, muted styling
+      - Scheduled:   teams known, no scores yet
+      - Completed:   scores present, winner/loser rows highlighted
+
+    Phase 6B: completed-state styling activates automatically when
+              score1/score2 are populated (or winner field is set).
+    Phase 6C: add family pick avatar strip below the two team rows.
+              Insert a <div class="bk-picks">...</div> before the closing </div>.
+    Phase 6D: wire data-mid attribute to a click handler that opens
+              a match detail panel via st.session_state.
+    """
+    team1  = match.get("team1")
+    team2  = match.get("team2")
+    flag1  = match.get("flag1")
+    flag2  = match.get("flag2")
+    score1 = match.get("score1")
+    score2 = match.get("score2")
+    winner = match.get("winner")   # explicit winner field from DB
+
+    is_complete = score1 is not None and score2 is not None
+
+    # Resolve winner/loser booleans
+    # Phase 6B: winner field is set by admin score entry; fallback to score comparison
+    if winner == "team1":
+        w1, l1, w2, l2 = True, False, False, True
+    elif winner == "team2":
+        w1, l1, w2, l2 = False, True, True, False
+    elif winner == "draw":
+        w1, l1, w2, l2 = False, False, False, False
+    elif is_complete:
+        if score1 > score2:
+            w1, l1, w2, l2 = True, False, False, True
+        elif score2 > score1:
+            w1, l1, w2, l2 = False, True, True, False
+        else:
+            w1, l1, w2, l2 = False, False, False, False
     else:
-        hc = ac = ''
-        cc = 'bk-card' + (' bk-empty-card' if not h and not a else '')
+        w1, l1, w2, l2 = False, False, False, False
 
-    return (f'<div class="{cc} {extra}" data-mid="{m.get("id","")}">'
-            f'{_team_row(hf, h, hs if done else None, hc)}'
-            f'<div class="bk-sep"></div>'
-            f'{_team_row(af, a, as_ if done else None, ac)}'
-            f'</div>')
+    # Card CSS class
+    is_empty = not team1 and not team2
+    base_cls = "bk-card"
+    if is_empty:
+        base_cls += " bk-empty-card"
+    elif is_complete:
+        base_cls += " bk-done"
+    if extra_class:
+        base_cls += f" {extra_class}"
+
+    displayed_score1 = score1 if is_complete else None
+    displayed_score2 = score2 if is_complete else None
+
+    row1 = render_team_row(team1, flag1, displayed_score1, w1, l1)
+    row2 = render_team_row(team2, flag2, displayed_score2, w2, l2)
+
+    return (
+        f'<div class="{base_cls}" data-mid="{match.get("match_id", "")}">'
+        f'{row1}'
+        f'<div class="bk-sep"></div>'
+        f'{row2}'
+        # Phase 6C: insert family pick avatars here
+        # f'<div class="bk-picks">{pick_avatars_html}</div>'
+        f'</div>'
+    )
 
 
-# ── Column builders ───────────────────────────────────────────────────────────
+def render_round_column(round_id: str, matches: list) -> str:
+    """Render one bracket column (r32, r16, qf, sf).
 
-def _round_col(matches: list, rnd: str) -> str:
-    """One bracket column: pairs of match slots with connector bracket lines."""
-    sh = _SH[rnd]
-    pairs = ''
+    Matches are processed as consecutive pairs: matches[0]+[1] feed
+    into r16[0], matches[2]+[3] feed into r16[1], etc.
+
+    Phase 6B: advancement logic populates team/flag in the next round's
+              match records at data-load time (not here in the renderer).
+    Phase 6D: add id to each .bk-slot for connector-line positioning if
+              switching to SVG-based connectors.
+    """
+    sh = _SH[round_id]
+    pairs = ""
     for i in range(0, len(matches), 2):
         m1 = matches[i]
-        m2 = matches[i + 1] if i + 1 < len(matches) else _empty()
+        m2 = matches[i + 1] if i + 1 < len(matches) else _make_match(f"bye_{i}")
         pairs += (
             f'<div class="bk-pair">'
-            f'<div class="bk-slot" style="height:{sh}px">{_card(m1)}</div>'
-            f'<div class="bk-slot" style="height:{sh}px">{_card(m2)}</div>'
+            f'  <div class="bk-slot" style="height:{sh}px">{render_match_card(m1)}</div>'
+            f'  <div class="bk-slot" style="height:{sh}px">{render_match_card(m2)}</div>'
             f'</div>'
         )
-    return f'<div class="bk-col" id="bk-{rnd}">{pairs}</div>'
+    return f'<div class="bk-col" id="bk-{round_id}">{pairs}</div>'
 
 
-def _final_col(final: dict, third: dict) -> str:
-    """Final column: trophy icon, Final card, 3rd Place card — vertically centred."""
+def render_final_column(final_match: dict, third_match: dict) -> str:
+    """Render the rightmost column: Final card + 3rd Place card.
+
+    The Final card centre is anchored at 50% of the bracket height so it
+    aligns with the SF outgoing connector stub (which also fires at 50%).
+
+    Vertical math for #bk-champ-area top:
+        trophy  ≈ 38px  (font-size 2.4rem, line-height 1)
+        gap          7px
+        FINAL label ≈ 14px  (font-size 0.72rem)
+        gap          7px
+        card centre ≈ 25px  (card ~50px tall)
+        ─────────────────
+        total above card centre ≈ 91px
+    → top = calc(50% − 91px) places card centre at bracket midpoint.
+
+    Phase 6B: final_match and third_match come from _placeholder_rounds()["final"][0]
+              and ["third_place"][0], swapped for real DB records.
+    Phase 6C: family pick avatars for the Final appear inside render_match_card().
+    Phase 6D: click handler on bk-final-card opens match detail panel.
+    """
+    total_h = _TOTAL_H
     return (
-        f'<div class="bk-col" id="bk-final-col" style="min-height:{_TOTAL_H}px">'
-        f'  <div id="bk-final-inner">'
+        f'<div class="bk-col" id="bk-final-col" style="height:{total_h}px">'
+
+        # ── Champion block ─────────────────────────────────────────────────────
+        f'  <div id="bk-champ-area">'
         f'    <div class="bk-trophy">🏆</div>'
         f'    <div class="bk-final-lbl">FINAL</div>'
-        f'    {_card(final, "bk-final-card")}'
-        f'    <div class="bk-third-lbl">3rd Place</div>'
-        f'    {_card(third, "bk-third-card")}'
+        f'    {render_match_card(final_match, "bk-final-card")}'
         f'  </div>'
+
+        # ── 3rd Place block ────────────────────────────────────────────────────
+        # Anchored well below the Final so it reads as secondary/bonus.
+        # top: calc(50% + 175px) gives ~84px of clear space below the Final card bottom.
+        f'  <div id="bk-third-area">'
+        f'    <div class="bk-third-sep"></div>'
+        f'    <div class="bk-third-lbl">🥉 3rd Place</div>'
+        f'    {render_match_card(third_match, "bk-third-card")}'
+        f'  </div>'
+
         f'</div>'
     )
 
@@ -120,24 +243,24 @@ def _final_col(final: dict, third: dict) -> str:
 # ── CSS ───────────────────────────────────────────────────────────────────────
 
 def _css() -> str:
-    cw, gap, stub, conn = _CW, _GAP, _STUB, _CONN
+    gap, stub, conn = _GAP, _STUB, _CONN
     total_h = _TOTAL_H
     return f"""
 <style>
-/* ── scroll wrapper ── */
+/* ── scroll wrapper — horizontal scroll fallback for narrow screens ── */
 #bk-outer {{
     width: 100%;
     overflow-x: auto;
-    padding: 20px 0 32px;
+    padding: 20px 0 36px;
     -webkit-overflow-scrolling: touch;
 }}
 
 /* ── board (parchment poster) ── */
 #bk-board {{
     position: relative;
-    /* min-width keeps bracket from collapsing; allow growth */
-    min-width: 820px;
-    max-width: 960px;
+    width: 100%;
+    max-width: 1400px;
+    box-sizing: border-box;
     background: #F6F0E4;
     background-image:
         repeating-linear-gradient(0deg, transparent, transparent 29px, rgba(160,140,110,.055) 30px),
@@ -145,11 +268,10 @@ def _css() -> str:
     border-radius: 10px;
     border: 1px solid #C8B89A;
     box-shadow: 0 8px 36px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.7);
-    padding: 42px 34px 50px;
+    padding: 42px 28px 50px;
     margin: 0 auto;
     font-family: Georgia, 'Times New Roman', serif;
     color: #241608;
-    box-sizing: border-box;
 }}
 
 /* ── tape corners ── */
@@ -169,17 +291,17 @@ def _css() -> str:
 /* ── sticky note ── */
 #bk-sticky {{
     position: absolute;
-    bottom: 28px;
-    right: 50px;
+    top: 52px;
+    left: 50px;
     background: #FEFCB2;
     border: 1px solid #DACC5A;
     padding: 7px 10px;
-    font-size: .69rem;
+    font-size: .67rem;
     line-height: 1.55;
     color: #5A3E08;
-    transform: rotate(2.5deg);
+    transform: rotate(-2.2deg);
     box-shadow: 2px 3px 9px rgba(0,0,0,.15);
-    max-width: 120px;
+    max-width: 110px;
     z-index: 20;
 }}
 
@@ -200,15 +322,16 @@ def _css() -> str:
     margin-top: 3px;
 }}
 
-/* ── round labels row ── */
+/* ── round labels: same flex structure as the columns below ── */
 #bk-labels {{
     display: flex;
     gap: {gap}px;
-    align-items: flex-end;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     overflow: visible;
 }}
 .bk-lbl {{
+    flex: 1;
+    min-width: 80px;
     font-size: .65rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -216,10 +339,7 @@ def _css() -> str:
     color: #8A7A60;
     text-align: center;
     white-space: nowrap;
-    flex-shrink: 0;
-    width: {cw}px;
 }}
-.bk-lbl-final {{ flex: 1; min-width: {cw}px; }}
 
 /* ── bracket row ── */
 #bk-rounds {{
@@ -229,24 +349,35 @@ def _css() -> str:
     overflow: visible;
 }}
 
-/* ── columns ── */
+/* ── columns: flex:1 distributes board width equally across all 5 columns.
+   Cards are width:100% so connector right edges always land at card edges. ── */
 .bk-col {{
+    flex: 1;
+    min-width: 90px;
     display: flex;
     flex-direction: column;
     overflow: visible;
-    flex-shrink: 0;
-    width: {cw}px;
 }}
 
-/* ── pairs: bracket vertical line + outgoing stub ── */
+/* ── pairs: LOCAL connector lines only ──────────────────────────────────────
+   ::before  — vertical line spanning only card-centre to card-centre (25%→75%)
+   ::after   — short outgoing stub pointing toward the next column
+   ── */
 .bk-pair {{
     position: relative;
     display: flex;
     flex-direction: column;
     overflow: visible;
-    border-right: 2px solid {conn};
 }}
-/* Outgoing horizontal stub from pair midpoint → next column */
+.bk-pair::before {{
+    content: '';
+    position: absolute;
+    top: 25%;       /* = centre of first slot */
+    height: 50%;    /* = distance between the two card centres */
+    right: 0;       /* = right edge of card (pair fills column width) */
+    width: 2px;
+    background: {conn};
+}}
 .bk-pair::after {{
     content: '';
     position: absolute;
@@ -258,7 +389,7 @@ def _css() -> str:
     transform: translateY(-1px);
 }}
 
-/* ── slots: fixed-height cell, centres the card vertically ── */
+/* ── slots ── */
 .bk-slot {{
     display: flex;
     align-items: center;
@@ -267,9 +398,10 @@ def _css() -> str:
     flex-shrink: 0;
 }}
 
-/* ── match cards ── */
+/* ── match cards: fill their column ── */
 .bk-card {{
-    width: {cw}px;
+    width: 100%;
+    box-sizing: border-box;
     background: #FFFDF6;
     border: 1.5px solid #C8B890;
     border-radius: 5px;
@@ -277,76 +409,101 @@ def _css() -> str:
     cursor: pointer;
     box-shadow: 0 1px 4px rgba(0,0,0,.1);
     transition: box-shadow .15s, transform .12s;
-    flex-shrink: 0;
-    box-sizing: border-box;
 }}
 .bk-card:hover {{
     box-shadow: 0 4px 14px rgba(0,0,0,.2);
     transform: translateY(-1px);
 }}
-.bk-empty-card {{
-    background: #F2EBE0;
-    border-style: dashed;
-    border-color: #BCA882;
-    opacity: .72;
-}}
-.bk-done {{ border-color: #9EBC98; }}
-.bk-final-card {{ border-width: 2px; border-color: #B08030; box-shadow: 0 2px 8px rgba(0,0,0,.15); }}
-.bk-third-card {{ opacity: .88; }}
+.bk-empty-card  {{ background: #F2EBE0; border-style: dashed; border-color: #BCA882; opacity: .72; }}
+.bk-done        {{ border-color: #9EBC98; }}
+.bk-final-card  {{ border-width: 2px; border-color: #B08030; box-shadow: 0 3px 12px rgba(0,0,0,.18); }}
+.bk-third-card  {{ opacity: .85; }}
 
 /* ── team rows ── */
-.bk-tr {{
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 6px;
-    font-size: .74rem;
-}}
-.bk-fl       {{ font-size: 1rem; flex-shrink: 0; }}
-.bk-fl-e     {{ color: #C0AA88; font-size: .7rem; }}
-.bk-nm       {{ flex: 1; font-weight: 600; color: #241608; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 82px; }}
-.bk-nm-tbd   {{ color: #B0A080; font-weight: 400; font-style: italic; font-size: .69rem; }}
-.bk-sc       {{ font-weight: 700; font-size: .84rem; color: #241608; min-width: 13px; text-align: right; flex-shrink: 0; }}
-.bk-sc-e     {{ min-width: 13px; }}
-.bk-sep      {{ height: 1px; background: #E4DBCE; margin: 0 5px; }}
+.bk-tr     {{ display: flex; align-items: center; gap: 4px; padding: 4px 6px; font-size: .74rem; }}
+.bk-fl     {{ font-size: 1rem; flex-shrink: 0; }}
+.bk-fl-e   {{ color: #C0AA88; font-size: .7rem; }}
+.bk-nm     {{ flex: 1; font-weight: 600; color: #241608; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+.bk-nm-tbd {{ color: #B0A080; font-weight: 400; font-style: italic; font-size: .69rem; }}
+.bk-sc     {{ font-weight: 700; font-size: .84rem; color: #241608; min-width: 14px; text-align: right; flex-shrink: 0; }}
+.bk-sc-e   {{ min-width: 14px; }}
+.bk-sep    {{ height: 1px; background: #E4DBCE; margin: 0 5px; }}
 
-/* winner / loser styling */
+/* ── winner / loser row highlights ── */
 .bk-win          {{ background: rgba(175,228,175,.22); }}
 .bk-win .bk-nm   {{ color: #185018; font-weight: 700; }}
 .bk-lose .bk-fl  {{ opacity: .4; }}
 .bk-lose .bk-nm  {{ color: #A09080; font-weight: 400; text-decoration: line-through; }}
 .bk-lose .bk-sc  {{ color: #A09080; }}
 
-/* ── final column ── */
+/* ── final column: block layout for absolute-positioned inner sections ── */
 #bk-final-col {{
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex: 1 !important;
-    width: auto !important;
+    position: relative;
+    display: block !important;   /* override .bk-col flex layout so absolute children work */
+    overflow: visible;
+    /* inherits flex:1 + min-width:90px from .bk-col */
 }}
-#bk-final-inner {{
+
+/* Champion block: top = 50% − 91px → Final card centre lands at bracket midpoint
+   (the SF pair's ::after stub fires at top:50% of the pair, which equals 50%
+   of the total bracket height since there is only one SF pair) */
+#bk-champ-area {{
+    position: absolute;
+    top: calc(50% - 91px);
+    left: 0;
+    right: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 7px;
-    padding: 0 8px;
+    padding: 0 6px;
+    box-sizing: border-box;
 }}
-.bk-trophy     {{ font-size: 2.2rem; line-height: 1; }}
-.bk-final-lbl  {{
+.bk-trophy    {{ font-size: 2.4rem; line-height: 1; }}
+.bk-final-lbl {{
     font-size: .72rem;
     font-weight: 700;
     letter-spacing: .18em;
     color: #B07828;
     text-transform: uppercase;
 }}
-.bk-third-lbl  {{
-    font-size: .65rem;
+
+/* 3rd Place: top = 50% + 175px → ~84px of clear space below the Final card bottom
+   (Final card bottom ≈ 50% + 25px card-half + 7px gap = ~50% + 91px) */
+#bk-third-area {{
+    position: absolute;
+    top: calc(50% + 175px);
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 0 6px;
+    box-sizing: border-box;
+}}
+.bk-third-sep {{
+    width: 55%;
+    height: 1px;
+    background: rgba(160,140,110,.45);
+    margin-bottom: 6px;
+}}
+.bk-third-lbl {{
+    font-size: .64rem;
     font-weight: 700;
-    letter-spacing: .13em;
+    letter-spacing: .12em;
     color: #8A7A60;
     text-transform: uppercase;
-    margin-top: 16px;
+}}
+
+/* Phase 6C: family pick avatar strip (hidden until 6C wires it) */
+.bk-picks {{
+    display: flex;
+    gap: 2px;
+    justify-content: center;
+    padding: 3px 6px 2px;
+    border-top: 1px solid #E4DBCE;
+    font-size: .85rem;
 }}
 </style>
 """
@@ -355,27 +512,36 @@ def _css() -> str:
 # ── Public entry point ────────────────────────────────────────────────────────
 
 def render_knockout_bracket_shell() -> None:
-    """Render the full knockout bracket shell via st.markdown.
+    """Render the full knockout bracket via st.markdown.
 
-    Layout: R32 → R16 → QF → SF → Final (left-to-right, compact).
-    Phase 6A: all slots are placeholder/empty — no scoring or pick logic.
+    Phase 6A: all slots are TBD placeholders — no scoring or picks.
+
+    Phase 6B: replace _placeholder_rounds() with _load_knockout_rounds():
+        rounds = _load_knockout_rounds()   # queries worldcup.db
+        # then pass to the render functions below — no other changes needed
+
+    Phase 6C: render_match_card() has a commented pick-avatar hook.
+              render_final_column() may grow an avatar section for the Final.
+
+    Phase 6D: wire data-mid attribute to Streamlit component click handler.
     """
-    data = _placeholder_data()
+    # Phase 6B: swap this line for: rounds = _load_knockout_rounds()
+    rounds = _placeholder_rounds()
 
     round_cols = (
-        _round_col(data['r32'], 'r32')
-        + _round_col(data['r16'], 'r16')
-        + _round_col(data['qf'],  'qf')
-        + _round_col(data['sf'],  'sf')
-        + _final_col(data['final'], data['third'])
+        render_round_column("r32", rounds["r32"])
+        + render_round_column("r16", rounds["r16"])
+        + render_round_column("qf",  rounds["qf"])
+        + render_round_column("sf",  rounds["sf"])
+        + render_final_column(rounds["final"][0], rounds["third_place"][0])
     )
 
     labels = (
-        f'<div class="bk-lbl">Round of 32</div>'
-        f'<div class="bk-lbl">Round of 16</div>'
-        f'<div class="bk-lbl">Quarterfinals</div>'
-        f'<div class="bk-lbl">Semifinals</div>'
-        f'<div class="bk-lbl bk-lbl-final">🏆 Final</div>'
+        '<div class="bk-lbl">Round of 32</div>'
+        '<div class="bk-lbl">Round of 16</div>'
+        '<div class="bk-lbl">Quarterfinals</div>'
+        '<div class="bk-lbl">Semifinals</div>'
+        '<div class="bk-lbl">Final</div>'
     )
 
     html = f"""

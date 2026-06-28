@@ -504,13 +504,10 @@ if today_ko:
             _today_ko_card(_km)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 3. TODAY'S MATCHES — 3-col grid for 5-6, 4-col otherwise
+# 3. TODAY'S GROUP MATCHES (only rendered when group matches exist today)
 # ─────────────────────────────────────────────────────────────────────────────
-st.markdown('<div class="section-head">🗓️ Today\'s Matches</div>', unsafe_allow_html=True)
-
-if today_matches.empty:
-    st.info("No matches today — check the Schedule for upcoming matches!")
-else:
+if not today_matches.empty:
+    st.markdown('<div class="section-head">🗓️ Today\'s Matches</div>', unsafe_allow_html=True)
     _n = len(today_matches)
     n_cols = 3 if _n >= 5 else min(_n, 4)
     _cols  = st.columns(n_cols)
@@ -867,7 +864,13 @@ try:
     _map_cheered = set(get_cheered_for(_active_uid))
     _map_won     = set(get_won_with(_active_uid))
     _map_favs    = get_family_top_favorites(n=5)
-    _map_today   = set(today_matches["home_team"].tolist() + today_matches["away_team"].tolist())
+    # Include both group-stage and KO match teams in the "playing today" highlight
+    _map_today = set(today_matches["home_team"].tolist() + today_matches["away_team"].tolist())
+    for _ktm in today_ko:
+        if _ktm.get("home_name"):
+            _map_today.add(_ktm["home_name"])
+        if _ktm.get("away_name"):
+            _map_today.add(_ktm["away_name"])
 
     _mini_fig = build_atlas_figure(
         layer="today", teams_df=_map_teams,
@@ -889,7 +892,8 @@ try:
             for n in sorted(_map_today)
             if not _map_teams.loc[_map_teams["name"] == n, "flag_emoji"].empty
         )
-        st.caption(f"⚡ Playing today: {_today_flags}  ·  📍 Blue = USA · Red = Canada · Green = Mexico")
+        _today_lbl = "⚽ Playing today" if today_ko else "🗓 Playing today"
+        st.caption(f"{_today_lbl}: {_today_flags}  ·  📍 Blue = USA · Red = Canada · Green = Mexico")
     else:
         st.caption("📍 Blue = USA · Red = Canada · Green = Mexico")
 except Exception:

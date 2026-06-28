@@ -449,24 +449,36 @@ def get_featured_player_of_day() -> dict | None:
 
     curated_slugs = set(_ONE_THING.keys())
 
-    # Get today's scheduled teams
+    # Collect today's teams — knockout matches take priority, then group stage
     conn = _gc()
-    today_matches = pd.read_sql(
+    ko_today = conn.execute("""
+        SELECT th.name, ta.name
+        FROM knockout_matches km
+        LEFT JOIN teams th ON km.home_team_id = th.id
+        LEFT JOIN teams ta ON km.away_team_id = ta.id
+        WHERE km.match_date = ? AND km.status = 'scheduled' AND km.id != 131
+    """, (today.isoformat(),)).fetchall()
+    grp_today = pd.read_sql(
         "SELECT home_team, away_team FROM matches WHERE match_date=? AND status='scheduled'",
         conn, params=(today.isoformat(),),
     )
     conn.close()
 
-    if not today_matches.empty:
-        today_teams: list[str] = []
-        for _, m in today_matches.iterrows():
+    today_teams: list[str] = []
+    for ht, at in ko_today:
+        if ht:
+            today_teams.append(ht)
+        if at:
+            today_teams.append(at)
+    if not today_teams and not grp_today.empty:
+        for _, m in grp_today.iterrows():
             today_teams += [m['home_team'], m['away_team']]
-        roster_names = {_roster_name(t) for t in today_teams}
 
+    if today_teams:
+        roster_names = {_roster_name(t) for t in today_teams}
         # Prefer curated players from today's teams
         pool = df[df['team'].isin(roster_names) & df['player_slug'].isin(curated_slugs)]
         if pool.empty:
-            # Fall back: any player from today's teams
             pool = df[df['team'].isin(roster_names)]
         if pool.empty:
             pool = df

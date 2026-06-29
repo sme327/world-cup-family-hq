@@ -3,10 +3,9 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
+from components.radial_bracket import render_radial_bracket
 from components.bracket_board import render_knockout_bracket_shell
 
-# Bracket page: override Streamlit's default container padding so the board
-# can use nearly the full viewport width (layout="wide" is already set in app.py).
 st.markdown("""
 <style>
 [data-testid="stMainBlockContainer"] {
@@ -18,4 +17,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-render_knockout_bracket_shell()
+tab_radial, tab_paper = st.tabs(["🌐 Radial Bracket", "📋 Wall Bracket"])
+
+with tab_radial:
+    render_radial_bracket()
+
+with tab_paper:
+    render_knockout_bracket_shell()

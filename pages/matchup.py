@@ -280,26 +280,6 @@ with tab_ko:
         st.query_params["match_id"] = str(_ko_chosen)
         st.rerun()
 
-    # ── Bracket / Match view toggle ───────────────────────────────────────────
-    _view_l, _view_r = st.columns([6, 2])
-    with _view_r:
-        _ko_view = st.radio(
-            "View",
-            ["🎯 Radial Bracket", "🃏 Match Cards"],
-            horizontal=False,
-            label_visibility="collapsed",
-            key="ko_view_mode",
-        )
-
-    if _ko_view == "🎯 Radial Bracket":
-        from components.radial_bracket import render_radial_bracket
-        render_radial_bracket()
-        st.divider()
-    else:
-        from components.bracket_board import render_knockout_bracket_shell
-        render_knockout_bracket_shell()
-        st.divider()
-
     # ── KO match variables ────────────────────────────────────────────────────
     ko_mid      = km["id"]
     ko_rnd      = km["round"]

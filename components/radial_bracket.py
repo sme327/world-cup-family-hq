@@ -257,7 +257,7 @@ def _build_svg(ko: list) -> str:
         if team and team.get('name'):
             flag = team['flag']
             code = _short(team['name'])
-            svg.append(_txt(fx, fy, flag, 17, 'inherit', 'middle'))
+            svg.append(_txt(fx, fy, flag, 28, 'inherit', 'middle'))
             svg.append(_txt(cx2, cy2, code, 6.5, TXT, anchor))
         else:
             svg.append(_circ(fx, fy, 3, GRAY, 'none', 0))

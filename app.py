@@ -17,6 +17,11 @@ st.set_page_config(
 
 if "db_ready" not in st.session_state:
     init_db()
+    try:
+        from services.knockout import _sync_r32_from_standings
+        _sync_r32_from_standings()
+    except Exception:
+        pass
     st.session_state["db_ready"] = True
 
 # ── Global CSS ────────────────────────────────────────────────────────────────

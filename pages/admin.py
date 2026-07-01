@@ -484,6 +484,34 @@ with tabs[8]:
            FROM matches WHERE status='completed' ORDER BY match_date"""
     ).fetchall()
 
+    # KO Results CSV
+    _ko_results_rows = _bconn.execute(
+        """SELECT km.id, km.round, km.bracket_slot, km.match_number,
+                  km.home_team_id, km.away_team_id,
+                  ht.name AS home_name, at2.name AS away_name,
+                  km.match_date, km.home_score, km.away_score,
+                  km.winner_team_id, km.status, km.home_penalties, km.away_penalties
+           FROM knockout_matches km
+           LEFT JOIN teams ht  ON km.home_team_id  = ht.id
+           LEFT JOIN teams at2 ON km.away_team_id = at2.id
+           WHERE km.home_score IS NOT NULL OR km.winner_team_id IS NOT NULL
+           ORDER BY km.match_date, km.id"""
+    ).fetchall()
+
+    # KO Live Picks CSV
+    _ko_picks_rows = _bconn.execute(
+        """SELECT u.name AS user_name, u.id AS user_id,
+                  klp.knockout_match_id, klp.picked_team_id,
+                  t.name AS picked_team_name,
+                  km.round, km.bracket_slot, km.match_date,
+                  klp.created_at, klp.updated_at
+           FROM knockout_live_picks klp
+           JOIN users u ON klp.user_id = u.id
+           JOIN teams t ON klp.picked_team_id = t.id
+           JOIN knockout_matches km ON klp.knockout_match_id = km.id
+           ORDER BY km.match_date, km.id, u.id"""
+    ).fetchall()
+
     _bconn.close()
 
     import csv, io
@@ -500,7 +528,7 @@ with tabs[8]:
 
     col1, col2 = st.columns(2)
     with col1:
-        st.metric("Picks to backup", len(_picks_rows))
+        st.metric("Group picks to backup", len(_picks_rows))
         st.download_button(
             "⬇️ Download picks_backup.csv",
             data=_to_csv(_picks_rows, ["user_name","user_id","match_id","home_team","away_team","match_date","picked_team"]),
@@ -509,7 +537,7 @@ with tabs[8]:
             use_container_width=True,
         )
     with col2:
-        st.metric("Completed matches", len(_scores_rows))
+        st.metric("Group scores to backup", len(_scores_rows))
         st.download_button(
             "⬇️ Download scores_backup.csv",
             data=_to_csv(_scores_rows, ["home_team","away_team","match_date","home_score","away_score","status"]),
@@ -518,21 +546,42 @@ with tabs[8]:
             use_container_width=True,
         )
 
+    col3, col4 = st.columns(2)
+    with col3:
+        st.metric("KO results to backup", len(_ko_results_rows))
+        st.download_button(
+            "⬇️ Download ko_results_backup.csv",
+            data=_to_csv(_ko_results_rows, ["id","round","bracket_slot","match_number","home_team_id","away_team_id","home_name","away_name","match_date","home_score","away_score","winner_team_id","status","home_penalties","away_penalties"]),
+            file_name=f"ko_results_backup_{_ts}.csv",
+            mime="text/csv",
+            use_container_width=True,
+        )
+    with col4:
+        st.metric("KO picks to backup", len(_ko_picks_rows))
+        st.download_button(
+            "⬇️ Download ko_live_picks_backup.csv",
+            data=_to_csv(_ko_picks_rows, ["user_name","user_id","knockout_match_id","picked_team_id","picked_team_name","round","bracket_slot","match_date","created_at","updated_at"]),
+            file_name=f"ko_live_picks_backup_{_ts}.csv",
+            mime="text/csv",
+            use_container_width=True,
+        )
+
     st.divider()
     st.markdown("### 🔄 How to preserve picks across deployments")
     st.markdown(
-        "**Option A (fastest):** Download both CSVs above, save to `data/` in your local repo, "
-        "rename them to `picks_backup.csv` and `scores_backup.csv`, then commit and push.\n\n"
+        "**Option A (fastest):** Download all 4 CSVs above, save to `data/` in your local repo "
+        "with the exact filenames shown, then commit and push.\n\n"
         "**Option B (automatic):** From your terminal:\n"
     )
     st.code(
-        "python scripts/backup_picks.py    # exports CSVs to data/\n"
+        "python scripts/backup_picks.py    # exports all 4 CSVs to data/\n"
         "git add data/picks_backup.csv data/scores_backup.csv\n"
+        "git add data/ko_results_backup.csv data/ko_live_picks_backup.csv\n"
         "git commit -m 'backup picks'\n"
         "git push",
         language="bash"
     )
     st.info(
-        "💡 `reset_db.py` now automatically backs up and restores picks. "
+        "💡 `reset_db.py` automatically backs up and restores all picks and scores. "
         "Run `python scripts/reset_db.py` instead of deleting the database directly."
     )

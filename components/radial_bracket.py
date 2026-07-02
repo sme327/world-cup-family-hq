@@ -389,10 +389,6 @@ def _build_svg(ko: list, uid: str = '') -> str:
     champ_name = final_m.get('winner_name') if final_m else None
     champ_flag = None
 
-    # Halo ring: smaller radius, brighter
-    svg.append(f'<circle cx="{CX}" cy="{CY}" r="104" fill="none" stroke="{GOLD}" '
-               f'stroke-width="1.5" opacity="0.45"/>')
-
     if champ_name:
         for t in outer:
             if t and t.get('name') == champ_name:

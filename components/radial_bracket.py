@@ -33,8 +33,8 @@ R_SF   = 96         # SF  match node radius
 BG          = '#111827'
 GRAY        = '#374151'
 GRAY_LIGHT  = '#4B5563'
-GOLD        = '#C9A227'
-GOLD_DIM    = '#7A6315'
+GOLD        = '#D4A520'   # warmer amber-gold
+GOLD_DIM    = '#8A6A18'
 TXT         = '#6B7280'
 TXT_WIN     = '#FCD34D'
 NODE_BG     = '#1A2235'
@@ -250,11 +250,16 @@ def _build_svg(ko: list, uid: str = '') -> str:
         f'style="width:100%;max-width:{SIZE}px;display:block;margin:auto;background:{BG};border-radius:16px">'
     )
     svg.append(f'''<defs>
-  <!-- Center ambient glow -->
-  <radialGradient id="cg" cx="50%" cy="50%" r="45%">
-    <stop offset="0%"   stop-color="{GOLD}" stop-opacity="0.18"/>
-    <stop offset="40%"  stop-color="{GOLD}" stop-opacity="0.05"/>
-    <stop offset="100%" stop-color="{BG}"   stop-opacity="0"/>
+  <!-- Center glow: tight inner warmth + wide atmospheric spill -->
+  <radialGradient id="cg-inner" cx="50%" cy="50%" r="50%">
+    <stop offset="0%"   stop-color="{GOLD}" stop-opacity="0.32"/>
+    <stop offset="40%"  stop-color="{GOLD}" stop-opacity="0.10"/>
+    <stop offset="100%" stop-color="{GOLD}" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="cg-outer" cx="50%" cy="50%" r="50%">
+    <stop offset="0%"   stop-color="{GOLD}" stop-opacity="0.10"/>
+    <stop offset="50%"  stop-color="{GOLD}" stop-opacity="0.03"/>
+    <stop offset="100%" stop-color="{GOLD}" stop-opacity="0"/>
   </radialGradient>
   <!-- Peg body gradients: off-centre highlight → deep shadow gives 3-D dome -->
   <radialGradient id="peg-gray" cx="32%" cy="28%" r="72%">
@@ -263,28 +268,34 @@ def _build_svg(ko: list, uid: str = '') -> str:
     <stop offset="100%" stop-color="#0A1018"/>
   </radialGradient>
   <radialGradient id="peg-gold" cx="32%" cy="28%" r="72%">
-    <stop offset="0%"   stop-color="#6B4800"/>
-    <stop offset="55%"  stop-color="#3A2400"/>
-    <stop offset="100%" stop-color="#150D00"/>
+    <stop offset="0%"   stop-color="#7A5200"/>
+    <stop offset="55%"  stop-color="#3E2A00"/>
+    <stop offset="100%" stop-color="#180E00"/>
   </radialGradient>
   <!-- Halo glow for illuminated pegs -->
   <filter id="peg-halo" x="-120%" y="-120%" width="340%" height="340%">
     <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur"/>
   </filter>
+  <!-- Flag float: tiny drop shadow gives pinned-to-board depth -->
+  <filter id="flag-float" x="-15%" y="-15%" width="130%" height="130%">
+    <feDropShadow dx="0" dy="1.5" stdDeviation="1.8"
+                  flood-color="#000000" flood-opacity="0.55"/>
+  </filter>
   <!-- Trophy image clip paths -->
   <clipPath id="tc-lg">
-    <circle cx="{CX}" cy="{CY}" r="80"/>
+    <circle cx="{CX}" cy="{CY}" r="100"/>
   </clipPath>
   <clipPath id="tc-sm">
-    <circle cx="{CX}" cy="{CY - 22}" r="44"/>
+    <circle cx="{CX}" cy="{CY - 22}" r="52"/>
   </clipPath>
 </defs>''')
 
     # ── Background ────────────────────────────────────────────────────────────
     svg.append(f'<rect width="{SIZE}" height="{SIZE}" fill="{BG}" rx="16"/>')
 
-    # ── Center glow ───────────────────────────────────────────────────────────
-    svg.append(f'<circle cx="{CX}" cy="{CY}" r="200" fill="url(#cg)"/>')
+    # ── Center glow: tight warmth + wide atmospheric spill ───────────────────
+    svg.append(f'<circle cx="{CX}" cy="{CY}" r="340" fill="url(#cg-outer)"/>')
+    svg.append(f'<circle cx="{CX}" cy="{CY}" r="170" fill="url(#cg-inner)"/>')
 
     # ── Subtle ring guides ────────────────────────────────────────────────────
     for r in (R_R32, R_R16, R_QF, R_SF):
@@ -368,7 +379,8 @@ def _build_svg(ko: list, uid: str = '') -> str:
         fx, fy = _pt(R_TEAM, angle)
 
         if team and team.get('name'):
-            svg.append(_txt(fx, fy, team['flag'], 48, 'inherit', 'middle', tooltip=team['name']))
+            svg.append(_txt(fx, fy, team['flag'], 48, 'inherit', 'middle',
+                            extra=' filter="url(#flag-float)"', tooltip=team['name']))
         else:
             svg.append(_circ(fx, fy, 3, GRAY, 'none', 0))
 
@@ -377,9 +389,9 @@ def _build_svg(ko: list, uid: str = '') -> str:
     champ_name = final_m.get('winner_name') if final_m else None
     champ_flag = None
 
-    # Glow ring around the center focal point
-    svg.append(f'<circle cx="{CX}" cy="{CY}" r="83" fill="none" stroke="{GOLD}" '
-               f'stroke-width="1" opacity="0.18"/>')
+    # Halo ring: smaller radius, brighter
+    svg.append(f'<circle cx="{CX}" cy="{CY}" r="104" fill="none" stroke="{GOLD}" '
+               f'stroke-width="1.5" opacity="0.45"/>')
 
     if champ_name:
         for t in outer:
@@ -388,8 +400,8 @@ def _build_svg(ko: list, uid: str = '') -> str:
                 break
         # Smaller trophy above, champion flag + name below
         if trophy_uri:
-            svg.append(f'<image href="{trophy_uri}" x="{CX-44}" y="{CY-72}" '
-                       f'width="88" height="88" clip-path="url(#tc-sm)"/>')
+            svg.append(f'<image href="{trophy_uri}" x="{CX-52}" y="{CY-84}" '
+                       f'width="104" height="104" clip-path="url(#tc-sm)"/>')
         else:
             svg.append(_txt(CX, CY - 28, '🏆', 48, 'inherit', 'middle'))
         if champ_flag:
@@ -398,8 +410,8 @@ def _build_svg(ko: list, uid: str = '') -> str:
     else:
         # No champion yet — full trophy centred
         if trophy_uri:
-            svg.append(f'<image href="{trophy_uri}" x="{CX-80}" y="{CY-80}" '
-                       f'width="160" height="160" clip-path="url(#tc-lg)"/>')
+            svg.append(f'<image href="{trophy_uri}" x="{CX-100}" y="{CY-100}" '
+                       f'width="200" height="200" clip-path="url(#tc-lg)"/>')
         else:
             svg.append(_txt(CX, CY + 16, '🏆', 72, 'inherit', 'middle'))
 

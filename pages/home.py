@@ -20,6 +20,7 @@ from services.player_cards import get_featured_player_of_day, render_player_moda
 from services.ko_picks import (
     get_all_ko_matches_display, get_ko_picks_for_match, KO_ROUND_POINTS,
 )
+from components.radial_bracket import render_radial_bracket
 
 
 @st.dialog("⭐ Player Profile", width="large")
@@ -526,24 +527,30 @@ if upcoming:
     )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 2b. TODAY'S KNOCKOUT MATCHES
+# 2b. KNOCKOUT BRACKET
+# ─────────────────────────────────────────────────────────────────────────────
+_bkt_hdr, _bkt_lnk = st.columns([5, 1])
+with _bkt_hdr:
+    st.markdown('<div class="section-head">🏆 Knockout Bracket</div>', unsafe_allow_html=True)
+with _bkt_lnk:
+    _uid_bkt = st.session_state.get("active_user_id", "")
+    st.markdown(
+        f"<div style='text-align:right;padding-top:.55rem'>"
+        f"<a href='/bracket?u={_uid_bkt}' target='_self' "
+        f"style='font-size:.78rem;color:#60A5FA;text-decoration:none;font-weight:600'>"
+        f"Full View →</a></div>",
+        unsafe_allow_html=True,
+    )
+render_radial_bracket(show_title=False)
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 2c. TODAY'S KNOCKOUT MATCHES
 # ─────────────────────────────────────────────────────────────────────────────
 if today_ko:
-    _ko_hdr_l, _ko_hdr_r = st.columns([5, 1])
-    with _ko_hdr_l:
-        st.markdown(
-            '<div class="section-head">⚽ Today\'s Knockout Matches</div>',
-            unsafe_allow_html=True,
-        )
-    with _ko_hdr_r:
-        _uid_qp_ko = st.session_state.get("active_user_id", "")
-        st.markdown(
-            f"<div style='text-align:right;padding-top:.55rem'>"
-            f"<a href='/bracket?u={_uid_qp_ko}' target='_self' "
-            f"style='font-size:.78rem;color:#60A5FA;text-decoration:none;font-weight:600'>"
-            f"🗂️ View Bracket →</a></div>",
-            unsafe_allow_html=True,
-        )
+    st.markdown(
+        '<div class="section-head">⚽ Today\'s Knockout Matches</div>',
+        unsafe_allow_html=True,
+    )
     _nko   = len(today_ko)
     _nkcols = min(_nko, 4)
     _kocols = st.columns(_nkcols)

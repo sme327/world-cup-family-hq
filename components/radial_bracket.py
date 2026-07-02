@@ -247,7 +247,7 @@ def _build_svg(ko: list, uid: str = '') -> str:
     svg.append(
         f'<svg xmlns="http://www.w3.org/2000/svg" '
         f'viewBox="0 0 {SIZE} {SIZE}" '
-        f'style="width:100%;max-width:{SIZE}px;display:block;margin:auto;background:{BG};border-radius:16px">'
+        f'style="width:100%;max-width:{SIZE}px;display:block;margin:auto;background:transparent">'
     )
     svg.append(f'''<defs>
   <!-- Center glow: tight inner warmth + wide atmospheric spill -->
@@ -417,7 +417,7 @@ def _build_svg(ko: list, uid: str = '') -> str:
 
 # ── Public entry point ────────────────────────────────────────────────────────
 
-def render_radial_bracket() -> None:
+def render_radial_bracket(show_title: bool = True) -> None:
     """Render the circular knockout bracket inside Streamlit."""
     try:
         ko = get_all_ko_matches_display()
@@ -425,19 +425,19 @@ def render_radial_bracket() -> None:
         st.caption("Bracket data unavailable.")
         return
 
-    uid = str(st.session_state.get("active_user_id", ""))
-    svg = _build_svg(ko, uid)
+    uid  = str(st.session_state.get("active_user_id", ""))
+    svg  = _build_svg(ko, uid)
+    title_html = (
+        "<div style='text-align:center;padding:.75rem 0 .5rem'>"
+        "<div style='font-size:1.5rem;font-weight:900;color:#C9A227;letter-spacing:.12em;"
+        "text-transform:uppercase;font-family:Georgia,serif'>2026 FIFA World Cup</div>"
+        "</div>"
+    ) if show_title else ""
 
-    # Wrap in a div that allows horizontal scroll on small screens
     html = f"""
 <div style="width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:4px 0">
   <div style="min-width:480px;max-width:{SIZE}px;margin:0 auto">
-    <div style="text-align:center;padding:.75rem 0 .5rem">
-      <div style="font-size:1.5rem;font-weight:900;color:#C9A227;letter-spacing:.12em;
-                  text-transform:uppercase;font-family:'Georgia',serif">
-        2026 FIFA World Cup
-      </div>
-    </div>
+    {title_html}
     {svg}
   </div>
 </div>

@@ -33,8 +33,8 @@ R_SF   = 96         # SF  match node radius
 BG          = '#111827'
 GRAY        = '#374151'
 GRAY_LIGHT  = '#4B5563'
-GOLD        = '#D4A520'   # warmer amber-gold
-GOLD_DIM    = '#8A6A18'
+GOLD        = '#D2981C'   # sampled from trophy PNG
+GOLD_DIM    = '#694C0E'
 TXT         = '#6B7280'
 TXT_WIN     = '#FCD34D'
 NODE_BG     = '#1A2235'
@@ -200,8 +200,8 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
         svg.append(_circ(hx, hy, max(1.4, r_px * 0.30), '#FFFFFF', 'none', 0).replace('/>', ' opacity="0.30"/>'))
 
     else:
-        # Future round or TBD — flat, very subtle
-        svg.append(_circ(x, y, r_px, GRAY, 'none', 0).replace('/>', f' opacity="0.30"/>'))
+        # Future round or TBD — recede into background
+        svg.append(_circ(x, y, r_px * 0.85, GRAY, 'none', 0).replace('/>', f' opacity="0.20"/>'))
 
     if link_close:
         svg.append(link_close)
@@ -281,6 +281,11 @@ def _build_svg(ko: list, uid: str = '') -> str:
     <feDropShadow dx="0" dy="1.5" stdDeviation="1.8"
                   flood-color="#000000" flood-opacity="0.55"/>
   </filter>
+  <!-- Panel background: lighter at center, melts to near-black at edges -->
+  <radialGradient id="bg-grad" cx="50%" cy="50%" r="65%">
+    <stop offset="0%"   stop-color="#14202F"/>
+    <stop offset="100%" stop-color="#070C14"/>
+  </radialGradient>
   <!-- Trophy image clip paths -->
   <clipPath id="tc-lg">
     <circle cx="{CX}" cy="{CY}" r="100"/>
@@ -291,7 +296,7 @@ def _build_svg(ko: list, uid: str = '') -> str:
 </defs>''')
 
     # ── Background ────────────────────────────────────────────────────────────
-    svg.append(f'<rect width="{SIZE}" height="{SIZE}" fill="{BG}" rx="16"/>')
+    svg.append(f'<rect width="{SIZE}" height="{SIZE}" fill="url(#bg-grad)" rx="24"/>')
 
     # ── Center glow: tight warmth + wide atmospheric spill ───────────────────
     svg.append(f'<circle cx="{CX}" cy="{CY}" r="340" fill="url(#cg-outer)"/>')

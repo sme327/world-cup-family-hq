@@ -127,12 +127,21 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
     link_close = '</a>' if link_open else ''
 
     # Build node tooltip
-    def _fmt_date(d) -> str:
+    def _fmt_when(date_str, et_time) -> str:
+        """'Jul 5 · 3 PM PT' from match_date + kickoff_time_et."""
         try:
-            parsed = _dt.strptime(str(d), '%Y-%m-%d')
-            return f"{parsed.strftime('%b')} {parsed.day}"
+            d = _dt.strptime(str(date_str), '%Y-%m-%d')
+            if et_time:
+                pt = d.replace(hour=int(et_time[:2]), minute=int(et_time[3:5]))
+                from datetime import timedelta as _td
+                pt = pt - _td(hours=3)
+                ap = 'AM' if pt.hour < 12 else 'PM'
+                h  = pt.hour % 12 or 12
+                t  = f"{h}:{pt.minute:02d} {ap}" if pt.minute else f"{h} {ap}"
+                return f"{d.strftime('%b')} {d.day} · {t} PT"
+            return f"{d.strftime('%b')} {d.day}"
         except Exception:
-            return str(d) if d else ''
+            return ''
 
     if has_w:
         _hn = m.get('home_name', '?')
@@ -140,18 +149,25 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
         _hs = m.get('home_score')
         _as = m.get('away_score')
         _wn = m.get('winner_name', '')
-        _ps = m.get('pens_str', '')
         _sc = f"{int(_hs)}–{int(_as)}" if _hs is not None and _as is not None else ''
-        if _ps:
+        # PK: tied score with a declared winner (don't rely on pens_str — may be blank)
+        _is_pk = bool(_hs is not None and _as is not None
+                      and int(_hs) == int(_as) and _wn)
+        if _is_pk:
             _tip = f"{_hn} {_sc} {_an} · {_wn} advances on PKs"
         else:
             _tip = f"{_hn} {_sc} {_an}" + (f" · {_wn} advances" if _wn else '')
     elif m:
-        # Unplayed — show teams and date for every round
-        _hn  = m.get('home_name') or 'TBD'
-        _an  = m.get('away_name') or 'TBD'
-        _dts = _fmt_date(m.get('match_date', ''))
-        _tip = f"{_hn} vs {_an}" + (f" · {_dts}" if _dts else '')
+        # Unplayed — date + time + city for every round
+        _hn   = m.get('home_name') or ''
+        _an   = m.get('away_name') or ''
+        _when = _fmt_when(m.get('match_date', ''), m.get('kickoff_time_et', ''))
+        _city = m.get('city', '')
+        _loc  = f" · {_city}" if _city else ''
+        if _hn and _an:
+            _tip = f"{_hn} vs {_an} · {_when}{_loc}"
+        else:
+            _tip = f"{_when}{_loc}"
     else:
         _tip = ''
 

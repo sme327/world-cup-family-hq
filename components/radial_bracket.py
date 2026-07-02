@@ -1,7 +1,19 @@
 """Circular/radial knockout bracket rendered as inline SVG."""
+import base64
 import math
+import os
 import streamlit as st
 from services.ko_picks import get_all_ko_matches_display
+
+_ASSETS = os.path.join(os.path.dirname(__file__), '..', 'assets')
+
+def _trophy_data_uri() -> str | None:
+    path = os.path.join(_ASSETS, 'trophy_bracket.png')
+    try:
+        with open(path, 'rb') as fh:
+            return 'data:image/png;base64,' + base64.b64encode(fh.read()).decode()
+    except Exception:
+        return None
 
 # ── Layout ────────────────────────────────────────────────────────────────────
 SIZE  = 900
@@ -142,6 +154,8 @@ def _conn(svg: list, x1, y1, x2, y2, winner: bool) -> None:
 # ── Main SVG builder ──────────────────────────────────────────────────────────
 
 def _build_svg(ko: list) -> str:
+    trophy_uri = _trophy_data_uri()
+
     # Index by round → bracket_slot
     by_slot: dict = {rnd: {} for rnd in ('r32', 'r16', 'qf', 'sf', 'final', 'third_place')}
     for m in ko:
@@ -175,12 +189,6 @@ def _build_svg(ko: list) -> str:
     <stop offset="40%"  stop-color="{GOLD}" stop-opacity="0.05"/>
     <stop offset="100%" stop-color="{BG}"   stop-opacity="0"/>
   </radialGradient>
-  <!-- Vignette: transparent center → dark outer corners -->
-  <radialGradient id="vignette" cx="50%" cy="50%" r="72%" gradientUnits="objectBoundingBox">
-    <stop offset="0%"   stop-color="#000000" stop-opacity="0"/>
-    <stop offset="68%"  stop-color="#000000" stop-opacity="0"/>
-    <stop offset="100%" stop-color="#000000" stop-opacity="0.42"/>
-  </radialGradient>
   <!-- Peg body gradients: off-centre highlight → deep shadow gives 3-D dome -->
   <radialGradient id="peg-gray" cx="32%" cy="28%" r="72%">
     <stop offset="0%"   stop-color="#3D5475"/>
@@ -196,6 +204,13 @@ def _build_svg(ko: list) -> str:
   <filter id="peg-halo" x="-120%" y="-120%" width="340%" height="340%">
     <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur"/>
   </filter>
+  <!-- Trophy image clip paths -->
+  <clipPath id="tc-lg">
+    <circle cx="{CX}" cy="{CY}" r="52"/>
+  </clipPath>
+  <clipPath id="tc-sm">
+    <circle cx="{CX}" cy="{CY - 22}" r="34"/>
+  </clipPath>
 </defs>''')
 
     # ── Background ────────────────────────────────────────────────────────────
@@ -203,9 +218,6 @@ def _build_svg(ko: list) -> str:
 
     # ── Center glow ───────────────────────────────────────────────────────────
     svg.append(f'<circle cx="{CX}" cy="{CY}" r="200" fill="url(#cg)"/>')
-
-    # ── Vignette overlay (drawn early; content sits on top) ───────────────────
-    svg.append(f'<rect width="{SIZE}" height="{SIZE}" fill="url(#vignette)" rx="16"/>')
 
     # ── Subtle ring guides ────────────────────────────────────────────────────
     for r in (R_R32, R_R16, R_QF, R_SF):
@@ -294,26 +306,35 @@ def _build_svg(ko: list) -> str:
             svg.append(_circ(fx, fy, 3, GRAY, 'none', 0))
 
     # ── CENTER: trophy or champion ────────────────────────────────────────────
-    final_m     = by_slot['final'].get(1)
-    champ_name  = final_m.get('winner_name') if final_m else None
-    champ_flag  = None
+    final_m    = by_slot['final'].get(1)
+    champ_name = final_m.get('winner_name') if final_m else None
+    champ_flag = None
 
-    # Extra glow ring around the center focal point
-    svg.append(f'<circle cx="{CX}" cy="{CY}" r="54" fill="none" stroke="{GOLD}" '
-               f'stroke-width="1" opacity="0.25"/>')
+    # Glow ring around the center focal point
+    svg.append(f'<circle cx="{CX}" cy="{CY}" r="56" fill="none" stroke="{GOLD}" '
+               f'stroke-width="1" opacity="0.22"/>')
 
     if champ_name:
         for t in outer:
             if t and t.get('name') == champ_name:
                 champ_flag = t.get('flag')
                 break
-        svg.append(_txt(CX, CY - 32, '🏆', 52, 'inherit', 'middle'))
+        # Smaller trophy above, champion flag + name below
+        if trophy_uri:
+            svg.append(f'<image href="{trophy_uri}" x="{CX-34}" y="{CY-58}" '
+                       f'width="68" height="68" clip-path="url(#tc-sm)"/>')
+        else:
+            svg.append(_txt(CX, CY - 28, '🏆', 48, 'inherit', 'middle'))
         if champ_flag:
-            svg.append(_txt(CX, CY + 12, champ_flag, 36, 'inherit', 'middle'))
-        code = _short(champ_name)
-        svg.append(_txt(CX, CY + 46, code, 11, TXT_WIN, 'middle', weight='bold'))
+            svg.append(_txt(CX, CY + 16, champ_flag, 32, 'inherit', 'middle'))
+        svg.append(_txt(CX, CY + 44, _short(champ_name), 11, TXT_WIN, 'middle', weight='bold'))
     else:
-        svg.append(_txt(CX, CY + 16, '🏆', 72, 'inherit', 'middle'))
+        # No champion yet — full trophy centred
+        if trophy_uri:
+            svg.append(f'<image href="{trophy_uri}" x="{CX-52}" y="{CY-52}" '
+                       f'width="104" height="104" clip-path="url(#tc-lg)"/>')
+        else:
+            svg.append(_txt(CX, CY + 16, '🏆', 72, 'inherit', 'middle'))
 
     svg.append('</svg>')
     return '\n'.join(svg)

@@ -275,7 +275,7 @@ def _build_svg(ko: list) -> str:
         fx, fy = _pt(R_TEAM, angle)
 
         if team and team.get('name'):
-            svg.append(_txt(fx, fy, team['flag'], 36, 'inherit', 'middle'))
+            svg.append(_txt(fx, fy, team['flag'], 42, 'inherit', 'middle'))
         else:
             svg.append(_circ(fx, fy, 3, GRAY, 'none', 0))
 

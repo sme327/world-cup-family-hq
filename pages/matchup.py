@@ -266,7 +266,8 @@ with tab_ko:
         )
         for m in nav_ko
     }
-    _ms_ko_col, _ = st.columns([4, 4])
+    _uid_qp = st.session_state.get("active_user_id", 1)
+    _ms_ko_col, _bkt_col = st.columns([5, 2])
     with _ms_ko_col:
         _ko_chosen = st.selectbox(
             "KO Match",
@@ -275,6 +276,14 @@ with tab_ko:
             index=list(_ko_opts.keys()).index(km["id"]),
             label_visibility="collapsed",
             key="ko_mu_sel",
+        )
+    with _bkt_col:
+        st.markdown(
+            f"<div style='padding-top:.35rem;text-align:right'>"
+            f"<a href='/bracket?u={_uid_qp}' style='color:#93C5FD;font-size:.78rem;"
+            f"font-weight:700;text-decoration:none;white-space:nowrap'>"
+            f"🗂️&nbsp;Bracket&nbsp;→</a></div>",
+            unsafe_allow_html=True,
         )
     if _ko_chosen != km["id"]:
         st.query_params["match_id"] = str(_ko_chosen)
@@ -307,38 +316,27 @@ with tab_ko:
         ko_score_str = "vs"
 
     # ── 1. Hero Header ────────────────────────────────────────────────────────
-    _hdr_l, _hdr_r = st.columns([6, 1])
-    with _hdr_l:
-        st.markdown(
-            "<div style='background:linear-gradient(135deg,#1E3A5F,#1E293B);"
-            "border-radius:16px;padding:1.1rem 1.4rem .9rem;margin-bottom:.5rem'>"
-            "<div style='text-align:center'>"
-            f"<div style='margin-bottom:.3rem'>"
-            f"<span style='background:rgba(255,255,255,.1);color:#93C5FD;border-radius:4px;"
-            f"padding:.08rem .4rem;font-size:.7rem;font-weight:800;"
-            f"letter-spacing:.04em'>{rnd_lbl}</span>"
-            f"<span style='background:rgba(252,211,77,.15);color:#FCD34D;border-radius:4px;"
-            f"padding:.08rem .35rem;font-size:.68rem;font-weight:800;margin-left:.3rem'>"
-            f"+{ko_pts} pts</span></div>"
-            f"<div style='font-size:3rem;margin:.1rem 0'>{h_flag}&nbsp;&nbsp;{a_flag}</div>"
-            f"<div style='font-size:1.4rem;font-weight:900;color:#F1F5F9'>"
-            f"{h_name} "
-            f"<span style='color:#FCD34D;font-size:1.2rem'>{ko_score_str}</span>"
-            f" {a_name}</div>"
-            f"<div style='font-size:.78rem;color:#94A3B8;margin-top:.2rem'>"
-            f"🕒 {ko_time_str} · 🏟️ {km.get('venue', '')} · 📍 {km.get('city', '')}</div>"
-            "</div></div>",
-            unsafe_allow_html=True,
-        )
-    with _hdr_r:
-        _uid_qp = st.session_state.get("active_user_id", 1)
-        st.markdown(
-            f"<div style='padding-top:2.8rem;text-align:right'>"
-            f"<a href='/bracket?u={_uid_qp}' style='color:#93C5FD;font-size:.78rem;"
-            f"font-weight:700;text-decoration:none;white-space:nowrap'>"
-            f"🗂️&nbsp;Bracket&nbsp;→</a></div>",
-            unsafe_allow_html=True,
-        )
+    st.markdown(
+        "<div style='background:linear-gradient(135deg,#1E3A5F,#1E293B);"
+        "border-radius:16px;padding:1.1rem 1.4rem .9rem;margin-bottom:.5rem'>"
+        "<div style='text-align:center'>"
+        f"<div style='margin-bottom:.3rem'>"
+        f"<span style='background:rgba(255,255,255,.1);color:#93C5FD;border-radius:4px;"
+        f"padding:.08rem .4rem;font-size:.7rem;font-weight:800;"
+        f"letter-spacing:.04em'>{rnd_lbl}</span>"
+        f"<span style='background:rgba(252,211,77,.15);color:#FCD34D;border-radius:4px;"
+        f"padding:.08rem .35rem;font-size:.68rem;font-weight:800;margin-left:.3rem'>"
+        f"+{ko_pts} pts</span></div>"
+        f"<div style='font-size:3rem;margin:.1rem 0'>{h_flag}&nbsp;&nbsp;{a_flag}</div>"
+        f"<div style='font-size:1.4rem;font-weight:900;color:#F1F5F9'>"
+        f"{h_name} "
+        f"<span style='color:#FCD34D;font-size:1.2rem'>{ko_score_str}</span>"
+        f" {a_name}</div>"
+        f"<div style='font-size:.78rem;color:#94A3B8;margin-top:.2rem'>"
+        f"🕒 {ko_time_str} · 🏟️ {km.get('venue', '')} · 📍 {km.get('city', '')}</div>"
+        "</div></div>",
+        unsafe_allow_html=True,
+    )
 
     # ── 2. Explore Countries ──────────────────────────────────────────────────
     _xc1, _xc2 = st.columns(2)
@@ -425,8 +423,6 @@ with tab_ko:
 
     if ko_done and km.get("winner_name"):
         st.success(f"🏆 {km['winner_name']} advances to the next round!")
-    elif not ko_done and h_tid and a_tid:
-        st.caption(f"Pick your winner — worth {ko_pts} points! You can change your pick any time.")
 
     # ── 4. How They Got Here ──────────────────────────────────────────────────
     if h_name != "TBD" or a_name != "TBD":

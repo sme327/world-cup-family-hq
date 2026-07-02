@@ -100,23 +100,35 @@ def _txt(x, y, content, size, fill, anchor, baseline="central", weight="normal",
 # ── Match node helper ─────────────────────────────────────────────────────────
 
 def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9) -> None:
-    x, y = _pt(radius, angle)
-    has_w = m and m.get('winner_team_id')
-    grad  = 'url(#peg-gold)' if has_w else 'url(#peg-gray)'
-    sk    = GOLD if has_w else GRAY
-    sw    = 1.5 if has_w else 0.8
-    # Shadow layer (slightly offset, no stroke)
-    svg.append(_circ(x + 0.8, y + 1.2, r_px, '#000000', 'none', 0).replace(
-        '/>', ' opacity="0.55"/>'))
-    # Main peg with gradient fill
+    x, y   = _pt(radius, angle)
+    has_w  = m and m.get('winner_team_id')
+    grad   = 'url(#peg-gold)' if has_w else 'url(#peg-gray)'
+    sk     = GOLD        if has_w else GRAY
+    sw     = 1.4         if has_w else 0.7
+    gc     = GOLD        if has_w else '#4A7AB5'   # halo colour
+
+    # 1. Blurred halo — drawn via filter, outer-most so it's behind everything
+    svg.append(
+        f'<circle cx="{_f(x)}" cy="{_f(y)}" r="{r_px * 1.9}" '
+        f'fill="{gc}" filter="url(#peg-halo)" opacity="0.28"/>'
+    )
+    # 2. Soft inner glow ring (no filter needed — just a larger transparent circle)
+    svg.append(_circ(x, y, r_px * 1.45, gc, 'none', 0).replace('/>', ' opacity="0.10"/>'))
+
+    # 3. Cast shadow (offset below-right)
+    svg.append(_circ(x + 0.7, y + 1.1, r_px, '#000000', 'none', 0).replace('/>', ' opacity="0.60"/>'))
+
+    # 4. Main peg dome with off-centre radial gradient
     svg.append(_circ(x, y, r_px, grad, sk, sw))
-    # Highlight glint — small bright spot top-left for 3D feel
-    hx, hy = x - r_px * 0.28, y - r_px * 0.28
-    hr = max(1.5, r_px * 0.28)
-    svg.append(_circ(hx, hy, hr, '#FFFFFF', 'none', 0).replace(
-        '/>', ' opacity="0.18"/>'))
+
+    # 5. Specular highlight — small bright oval top-left, like light catching a dome
+    hx, hy = x - r_px * 0.27, y - r_px * 0.30
+    hr = max(1.4, r_px * 0.30)
+    svg.append(_circ(hx, hy, hr, '#FFFFFF', 'none', 0).replace('/>', ' opacity="0.28"/>'))
+
+    # 6. Tiny centre dot for won matches (gold pip)
     if has_w:
-        svg.append(_circ(x, y, 3, GOLD, 'none', 0))
+        svg.append(_circ(x, y, 2.5, GOLD, 'none', 0))
 
 
 # ── Connector helper ──────────────────────────────────────────────────────────
@@ -158,27 +170,32 @@ def _build_svg(ko: list) -> str:
         f'style="width:100%;max-width:{SIZE}px;display:block;margin:auto;background:{BG};border-radius:16px">'
     )
     svg.append(f'''<defs>
+  <!-- Center ambient glow -->
   <radialGradient id="cg" cx="50%" cy="50%" r="45%">
     <stop offset="0%"   stop-color="{GOLD}" stop-opacity="0.18"/>
     <stop offset="40%"  stop-color="{GOLD}" stop-opacity="0.05"/>
     <stop offset="100%" stop-color="{BG}"   stop-opacity="0"/>
   </radialGradient>
-  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-    <feGaussianBlur stdDeviation="3" result="b"/>
-    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-  </filter>
-  <!-- Peg depth: radial gradient makes nodes look like physical buttons -->
-  <radialGradient id="peg-gray" cx="35%" cy="30%" r="70%">
-    <stop offset="0%"   stop-color="#2D3F5A"/>
-    <stop offset="100%" stop-color="#0E1520"/>
+  <!-- Vignette: transparent center → dark outer corners -->
+  <radialGradient id="vignette" cx="50%" cy="50%" r="72%" gradientUnits="objectBoundingBox">
+    <stop offset="0%"   stop-color="#000000" stop-opacity="0"/>
+    <stop offset="68%"  stop-color="#000000" stop-opacity="0"/>
+    <stop offset="100%" stop-color="#000000" stop-opacity="0.42"/>
   </radialGradient>
-  <radialGradient id="peg-gold" cx="35%" cy="30%" r="70%">
-    <stop offset="0%"   stop-color="#3D2800"/>
-    <stop offset="100%" stop-color="#1A0E00"/>
+  <!-- Peg body gradients: off-centre highlight → deep shadow gives 3-D dome -->
+  <radialGradient id="peg-gray" cx="32%" cy="28%" r="72%">
+    <stop offset="0%"   stop-color="#3D5475"/>
+    <stop offset="55%"  stop-color="#1C2B42"/>
+    <stop offset="100%" stop-color="#0A1018"/>
   </radialGradient>
-  <filter id="peg-shadow" x="-40%" y="-40%" width="180%" height="180%">
-    <feDropShadow dx="0.8" dy="1.2" stdDeviation="1.5"
-                  flood-color="#000000" flood-opacity="0.7"/>
+  <radialGradient id="peg-gold" cx="32%" cy="28%" r="72%">
+    <stop offset="0%"   stop-color="#6B4800"/>
+    <stop offset="55%"  stop-color="#3A2400"/>
+    <stop offset="100%" stop-color="#150D00"/>
+  </radialGradient>
+  <!-- Halo glow for illuminated pegs -->
+  <filter id="peg-halo" x="-120%" y="-120%" width="340%" height="340%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur"/>
   </filter>
 </defs>''')
 
@@ -187,6 +204,9 @@ def _build_svg(ko: list) -> str:
 
     # ── Center glow ───────────────────────────────────────────────────────────
     svg.append(f'<circle cx="{CX}" cy="{CY}" r="200" fill="url(#cg)"/>')
+
+    # ── Vignette overlay (drawn early; content sits on top) ───────────────────
+    svg.append(f'<rect width="{SIZE}" height="{SIZE}" fill="url(#vignette)" rx="16"/>')
 
     # ── Subtle ring guides ────────────────────────────────────────────────────
     for r in (R_R32, R_R16, R_QF, R_SF):
@@ -264,18 +284,13 @@ def _build_svg(ko: list) -> str:
     for s0 in range(2):
         _match_node(svg, _a_sf(s0),  R_SF,  by_slot['sf'].get(s0 + 1),  11)
 
-    # ── ROUND LABELS (at 270° = left side) ───────────────────────────────────
-    for r, label in [(R_R32, 'R32'), (R_R16, 'R16'), (R_QF, 'QF'), (R_SF, 'SF')]:
-        lx, ly = _pt(r, 270)
-        svg.append(_txt(lx - 18, ly, label, 7, GRAY_LIGHT, 'middle'))
-
-    # ── OUTER TEAM LABELS ─────────────────────────────────────────────────────
+    # ── OUTER TEAM FLAGS ──────────────────────────────────────────────────────
     for i, team in enumerate(outer):
         angle = _a_team(i)
         fx, fy = _pt(R_TEAM, angle)
 
         if team and team.get('name'):
-            svg.append(_txt(fx, fy, team['flag'], 42, 'inherit', 'middle'))
+            svg.append(_txt(fx, fy, team['flag'], 48, 'inherit', 'middle'))
         else:
             svg.append(_circ(fx, fy, 3, GRAY, 'none', 0))
 
@@ -321,17 +336,17 @@ def render_radial_bracket() -> None:
     html = f"""
 <div style="width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:4px 0">
   <div style="min-width:480px;max-width:{SIZE}px;margin:0 auto">
-    {svg}
-    <div style="text-align:center;margin-top:.75rem;padding:.5rem 0">
-      <div style="font-size:1.35rem;font-weight:900;color:#C9A227;letter-spacing:.12em;
+    <div style="text-align:center;padding:.75rem 0 .5rem">
+      <div style="font-size:1.5rem;font-weight:900;color:#C9A227;letter-spacing:.12em;
                   text-transform:uppercase;font-family:'Georgia',serif">
         2026 FIFA World Cup
       </div>
-      <div style="font-size:1rem;color:#6B7280;letter-spacing:.08em;
-                  text-transform:uppercase;margin-top:.2rem">
+      <div style="font-size:1rem;color:#6B7280;letter-spacing:.1em;
+                  text-transform:uppercase;margin-top:.25rem">
         Knockout Bracket
       </div>
     </div>
+    {svg}
   </div>
 </div>
 """

@@ -281,11 +281,6 @@ def _build_svg(ko: list, uid: str = '') -> str:
     <feDropShadow dx="0" dy="1.5" stdDeviation="1.8"
                   flood-color="#000000" flood-opacity="0.55"/>
   </filter>
-  <!-- Panel background: lighter at center, melts to near-black at edges -->
-  <radialGradient id="bg-grad" cx="50%" cy="50%" r="65%">
-    <stop offset="0%"   stop-color="#14202F"/>
-    <stop offset="100%" stop-color="#070C14"/>
-  </radialGradient>
   <!-- Trophy image clip paths -->
   <clipPath id="tc-lg">
     <circle cx="{CX}" cy="{CY}" r="100"/>
@@ -296,7 +291,7 @@ def _build_svg(ko: list, uid: str = '') -> str:
 </defs>''')
 
     # ── Background ────────────────────────────────────────────────────────────
-    svg.append(f'<rect width="{SIZE}" height="{SIZE}" fill="url(#bg-grad)" rx="24"/>')
+    # No background rect — SVG is transparent so it inherits the page color seamlessly
 
     # ── Center glow: tight warmth + wide atmospheric spill ───────────────────
     svg.append(f'<circle cx="{CX}" cy="{CY}" r="340" fill="url(#cg-outer)"/>')

@@ -228,13 +228,14 @@ def _seed_knockout_matches(cursor) -> None:
 
 
 def _restore_from_backup(cursor) -> tuple[int, int]:
-    """Restore picks and scores from committed backup CSVs.
-    Called automatically when the picks table is empty (e.g. after a cloud sleep/wake cycle).
-    Handles both the full backup format (with user_id/match_id) and the Admin download
-    format (with user_name/home_team/away_team/match_date). Returns (picks_restored, scores_restored).
+    """Restore picks, scores, KO results and KO picks from committed backup CSVs.
+    Called automatically on every app startup so data survives Cloud sleep/wake cycles.
+    Returns (picks_restored, scores_restored).
     """
-    picks_path  = os.path.join(DATA_DIR, 'picks_backup.csv')
-    scores_path = os.path.join(DATA_DIR, 'scores_backup.csv')
+    picks_path      = os.path.join(DATA_DIR, 'picks_backup.csv')
+    scores_path     = os.path.join(DATA_DIR, 'scores_backup.csv')
+    ko_results_path = os.path.join(DATA_DIR, 'ko_results_backup.csv')
+    ko_picks_path   = os.path.join(DATA_DIR, 'ko_live_picks_backup.csv')
     n_picks = n_scores = 0
 
     if os.path.exists(picks_path):
@@ -246,7 +247,6 @@ def _restore_from_backup(cursor) -> tuple[int, int]:
                     uid = int(row['user_id'])
                     mid = int(row['match_id'])
                 else:
-                    # Look up IDs by name/match — handles Admin-format CSV
                     u = cursor.execute(
                         "SELECT id FROM users WHERE name=?", (str(row['user_name']),)
                     ).fetchone()
@@ -277,6 +277,47 @@ def _restore_from_backup(cursor) -> tuple[int, int]:
                 )
                 if cursor.rowcount:
                     n_scores += 1
+            except Exception:
+                pass
+
+    # ── KO match results ──────────────────────────────────────────────────────
+    if os.path.exists(ko_results_path):
+        df = pd.read_csv(ko_results_path)
+        for _, row in df.iterrows():
+            try:
+                def _int(v):
+                    s = str(v).strip()
+                    return int(float(s)) if s and s.lower() != 'nan' else None
+                cursor.execute(
+                    """UPDATE knockout_matches
+                       SET home_score=?, away_score=?, winner_team_id=?,
+                           home_penalties=?, away_penalties=?, status=?
+                       WHERE id=?""",
+                    (_int(row.get('home_score')), _int(row.get('away_score')),
+                     _int(row.get('winner_team_id')),
+                     _int(row.get('home_penalties')), _int(row.get('away_penalties')),
+                     str(row.get('status', 'completed')),
+                     int(row['id'])),
+                )
+            except Exception:
+                pass
+
+    # ── KO live picks ─────────────────────────────────────────────────────────
+    if os.path.exists(ko_picks_path):
+        df = pd.read_csv(ko_picks_path)
+        for _, row in df.iterrows():
+            try:
+                uid  = int(row['user_id'])
+                kmid = int(row['knockout_match_id'])
+                tid  = int(row['picked_team_id'])
+                cursor.execute(
+                    """INSERT OR IGNORE INTO knockout_live_picks
+                       (user_id, knockout_match_id, picked_team_id, created_at, updated_at)
+                       VALUES (?,?,?,?,?)""",
+                    (uid, kmid, tid,
+                     str(row.get('created_at', '')),
+                     str(row.get('updated_at', ''))),
+                )
             except Exception:
                 pass
 
@@ -318,13 +359,10 @@ def init_db():
         """, (int(row['id']), str(row['name']), str(row['avatar']),
               str(row['theme_color']), int(row.get('picks_only', 0))))
 
-    # Auto-restore picks + scores from backup CSVs when the DB is freshly created
-    # (catches Streamlit Cloud sleep/wake cycles where worldcup.db is rebuilt from scratch)
-    if cursor.execute("SELECT COUNT(*) FROM picks").fetchone()[0] == 0:
-        picks_path = os.path.join(DATA_DIR, 'picks_backup.csv')
-        if os.path.exists(picks_path):
-            n_picks, n_scores = _restore_from_backup(cursor)
-            conn.commit()
+    # Always restore from backup CSVs — idempotent (INSERT OR IGNORE / UPDATE).
+    # Catches Cloud sleep/wake cycles and ensures KO data is never lost.
+    _restore_from_backup(cursor)
+    conn.commit()
 
     if cursor.execute("SELECT COUNT(*) FROM knockout_matches").fetchone()[0] == 0:
         _seed_knockout_matches(cursor)

@@ -11,6 +11,7 @@ from services.passport import (
     get_stamp, log_discovery, get_country_metadata,
     get_discoveries, get_cheered_for, get_won_with,
     get_picks_per_country, get_points_per_country,
+    get_family_country_card,
 )
 from services.matches import get_matches_by_team
 from services.scoring import get_team_group_status
@@ -820,9 +821,18 @@ _nav_country = st.session_state.pop("_nav_country", None)
 
 all_countries = sorted(teams_df["name"].tolist())
 default_idx   = all_countries.index(_nav_country) if _nav_country and _nav_country in all_countries else 0
-_cp_col, _ = st.columns([2, 5])
+_uid_qp = st.session_state.get("active_user_id", 1)
+_cp_col, _map_col = st.columns([4, 1])
 with _cp_col:
     selected_country = st.selectbox("🌍 Choose a country", all_countries, index=default_idx)
+with _map_col:
+    st.markdown(
+        f"<div style='padding-top:.35rem;text-align:right'>"
+        f"<a href='/map?u={_uid_qp}' style='color:#93C5FD;font-size:.78rem;"
+        f"font-weight:700;text-decoration:none;white-space:nowrap'>"
+        f"🌍&nbsp;Map&nbsp;→</a></div>",
+        unsafe_allow_html=True,
+    )
 
 active_user_id   = st.session_state.get("active_user_id", 1)
 active_user_name = st.session_state.get("active_user_name", "You")
@@ -921,12 +931,47 @@ if not has_hero:
     )
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SECTION 3: PASSPORT STAMP WIDGET  (outside tabs — always visible)
+# SECTION 3: PASSPORT STAMP WIDGET + FAMILY CARD
 # ══════════════════════════════════════════════════════════════════════════════
-st.markdown(
-    _passport_widget_html(selected_country, stamp, disc_df, cheered, won, picks_per, points_per),
-    unsafe_allow_html=True
-)
+_pw_col, _fc_col = st.columns(2)
+with _pw_col:
+    st.markdown(
+        _passport_widget_html(selected_country, stamp, disc_df, cheered, won, picks_per, points_per),
+        unsafe_allow_html=True,
+    )
+with _fc_col:
+    _fcc = get_family_country_card(selected_country)
+    _disc_labels = _fcc.get("discoverers", [])
+    _cheer_labels = _fcc.get("cheerleaders", [])
+    _won_labels   = _fcc.get("winners", [])
+
+    def _fam_row(emoji, color, members):
+        if not members:
+            return ""
+        dots = "".join(
+            f"<span style='font-size:1.05rem;line-height:1' title='{m}'>{m.split()[0]}</span>"
+            for m in members
+        )
+        return (
+            f"<div style='display:flex;align-items:center;gap:.4rem;margin:.12rem 0'>"
+            f"<span style='font-size:.62rem;font-weight:800;color:{color};"
+            f"letter-spacing:.05em;min-width:4.4rem'>{emoji}</span>"
+            f"<span style='display:flex;gap:.25rem;flex-wrap:wrap'>{dots}</span></div>"
+        )
+
+    _fam_html = (
+        "<div style='background:linear-gradient(135deg,#0F172A,#1E293B);border-radius:14px;"
+        "padding:.6rem 1rem;border:1px solid rgba(148,163,184,.1);margin-bottom:.9rem;height:100%'>"
+        "<div style='font-size:.68rem;font-weight:800;color:#64748B;text-transform:uppercase;"
+        "letter-spacing:.06em;margin-bottom:.35rem'>👨‍👩‍👧‍👦 Family</div>"
+    )
+    _fam_html += _fam_row("🌱 Explored", "#60A5FA", _disc_labels)
+    _fam_html += _fam_row("⚽ Cheered",  "#4ADE80", _cheer_labels)
+    _fam_html += _fam_row("🏆 Won With", "#FCD34D", _won_labels)
+    if not _disc_labels and not _cheer_labels and not _won_labels:
+        _fam_html += "<div style='color:rgba(255,255,255,.3);font-size:.8rem'>No family activity yet</div>"
+    _fam_html += "</div>"
+    st.markdown(_fam_html, unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # TABS

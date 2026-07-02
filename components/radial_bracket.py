@@ -123,7 +123,7 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
     match_id  = m.get('id') if m else None
     has_teams = m and (m.get('home_name') or m.get('away_name'))
     u_param   = f'&u={uid}' if uid else ''
-    link_open  = f'<a href="/matchup?match_id={match_id}{u_param}" target="_self" style="cursor:pointer">' if (match_id and has_teams) else ''
+    link_open  = f'<a href="/matchup?match_id={match_id}{u_param}" target="_parent" style="cursor:pointer">' if (match_id and has_teams) else ''
     link_close = '</a>' if link_open else ''
 
     # Build node tooltip
@@ -419,6 +419,7 @@ def _build_svg(ko: list, uid: str = '') -> str:
 
 def render_radial_bracket(show_title: bool = True) -> None:
     """Render the circular knockout bracket inside Streamlit."""
+    import streamlit.components.v1 as _components
     try:
         ko = get_all_ko_matches_display()
     except Exception:
@@ -429,17 +430,24 @@ def render_radial_bracket(show_title: bool = True) -> None:
     svg  = _build_svg(ko, uid)
     title_html = (
         "<div style='text-align:center;padding:.75rem 0 .5rem'>"
-        "<div style='font-size:1.5rem;font-weight:900;color:#C9A227;letter-spacing:.12em;"
+        "<div style='font-size:1.5rem;font-weight:900;color:#D2981C;letter-spacing:.12em;"
         "text-transform:uppercase;font-family:Georgia,serif'>2026 FIFA World Cup</div>"
         "</div>"
     ) if show_title else ""
 
-    html = f"""
-<div style="width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:4px 0">
+    # Use components.html (iframe) so the SVG is not sanitized by Streamlit's
+    # markdown renderer. Links use target="_parent" to navigate the outer window.
+    html = f"""<!DOCTYPE html>
+<html><head><style>
+  html,body{{margin:0;padding:0;background:transparent;overflow:hidden}}
+</style></head>
+<body>
+<div style="width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 0">
   <div style="min-width:480px;max-width:{SIZE}px;margin:0 auto">
     {title_html}
     {svg}
   </div>
 </div>
-"""
-    st.markdown(html, unsafe_allow_html=True)
+</body></html>"""
+    height = SIZE + (60 if show_title else 10)
+    _components.html(html, height=height, scrolling=False)

@@ -99,36 +99,35 @@ def _txt(x, y, content, size, fill, anchor, baseline="central", weight="normal",
 
 # ── Match node helper ─────────────────────────────────────────────────────────
 
-def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9) -> None:
-    x, y   = _pt(radius, angle)
-    has_w  = m and m.get('winner_team_id')
-    grad   = 'url(#peg-gold)' if has_w else 'url(#peg-gray)'
-    sk     = GOLD        if has_w else GRAY
-    sw     = 1.4         if has_w else 0.7
-    gc     = GOLD        if has_w else '#4A7AB5'   # halo colour
+def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: str = '') -> None:
+    x, y  = _pt(radius, angle)
+    has_w = m and m.get('winner_team_id')
+    is_scheduled = m and not has_w and m.get('status', 'scheduled') == 'scheduled'
+    illuminate = is_scheduled and rnd == 'r32'   # glow only for unplayed R32
 
-    # 1. Blurred halo — drawn via filter, outer-most so it's behind everything
-    svg.append(
-        f'<circle cx="{_f(x)}" cy="{_f(y)}" r="{r_px * 1.9}" '
-        f'fill="{gc}" filter="url(#peg-halo)" opacity="0.28"/>'
-    )
-    # 2. Soft inner glow ring (no filter needed — just a larger transparent circle)
-    svg.append(_circ(x, y, r_px * 1.45, gc, 'none', 0).replace('/>', ' opacity="0.10"/>'))
-
-    # 3. Cast shadow (offset below-right)
-    svg.append(_circ(x + 0.7, y + 1.1, r_px, '#000000', 'none', 0).replace('/>', ' opacity="0.60"/>'))
-
-    # 4. Main peg dome with off-centre radial gradient
-    svg.append(_circ(x, y, r_px, grad, sk, sw))
-
-    # 5. Specular highlight — small bright oval top-left, like light catching a dome
-    hx, hy = x - r_px * 0.27, y - r_px * 0.30
-    hr = max(1.4, r_px * 0.30)
-    svg.append(_circ(hx, hy, hr, '#FFFFFF', 'none', 0).replace('/>', ' opacity="0.28"/>'))
-
-    # 6. Tiny centre dot for won matches (gold pip)
     if has_w:
-        svg.append(_circ(x, y, 2.5, GOLD, 'none', 0))
+        # Completed match — warm gold dome, no glow, just depth
+        svg.append(_circ(x + 0.6, y + 1.0, r_px, '#000000', 'none', 0).replace('/>', ' opacity="0.50"/>'))
+        svg.append(_circ(x, y, r_px, 'url(#peg-gold)', GOLD_DIM, 1.0))
+        hx, hy = x - r_px * 0.27, y - r_px * 0.30
+        svg.append(_circ(hx, hy, max(1.2, r_px * 0.28), '#FFFFFF', 'none', 0).replace('/>', ' opacity="0.20"/>'))
+        svg.append(_circ(x, y, 2.2, GOLD, 'none', 0))
+
+    elif illuminate:
+        # Unplayed R32 — full illuminated peg: halo + glow ring + dome + highlight
+        svg.append(
+            f'<circle cx="{_f(x)}" cy="{_f(y)}" r="{r_px * 1.9}" '
+            f'fill="#4A7AB5" filter="url(#peg-halo)" opacity="0.30"/>'
+        )
+        svg.append(_circ(x, y, r_px * 1.45, '#4A7AB5', 'none', 0).replace('/>', ' opacity="0.12"/>'))
+        svg.append(_circ(x + 0.7, y + 1.1, r_px, '#000000', 'none', 0).replace('/>', ' opacity="0.60"/>'))
+        svg.append(_circ(x, y, r_px, 'url(#peg-gray)', GRAY, 0.9))
+        hx, hy = x - r_px * 0.27, y - r_px * 0.30
+        svg.append(_circ(hx, hy, max(1.4, r_px * 0.30), '#FFFFFF', 'none', 0).replace('/>', ' opacity="0.30"/>'))
+
+    else:
+        # Future round or TBD — flat, very subtle
+        svg.append(_circ(x, y, r_px, GRAY, 'none', 0).replace('/>', f' opacity="0.30"/>'))
 
 
 # ── Connector helper ──────────────────────────────────────────────────────────
@@ -276,13 +275,13 @@ def _build_svg(ko: list) -> str:
 
     # ── MATCH NODES ───────────────────────────────────────────────────────────
     for s0 in range(16):
-        _match_node(svg, _a_r32(s0), R_R32, by_slot['r32'].get(s0 + 1), 8)
+        _match_node(svg, _a_r32(s0), R_R32, by_slot['r32'].get(s0 + 1), 8,  'r32')
     for s0 in range(8):
-        _match_node(svg, _a_r16(s0), R_R16, by_slot['r16'].get(s0 + 1), 9)
+        _match_node(svg, _a_r16(s0), R_R16, by_slot['r16'].get(s0 + 1), 9,  'r16')
     for s0 in range(4):
-        _match_node(svg, _a_qf(s0),  R_QF,  by_slot['qf'].get(s0 + 1),  10)
+        _match_node(svg, _a_qf(s0),  R_QF,  by_slot['qf'].get(s0 + 1),  10, 'qf')
     for s0 in range(2):
-        _match_node(svg, _a_sf(s0),  R_SF,  by_slot['sf'].get(s0 + 1),  11)
+        _match_node(svg, _a_sf(s0),  R_SF,  by_slot['sf'].get(s0 + 1),  11, 'sf')
 
     # ── OUTER TEAM FLAGS ──────────────────────────────────────────────────────
     for i, team in enumerate(outer):
@@ -340,10 +339,6 @@ def render_radial_bracket() -> None:
       <div style="font-size:1.5rem;font-weight:900;color:#C9A227;letter-spacing:.12em;
                   text-transform:uppercase;font-family:'Georgia',serif">
         2026 FIFA World Cup
-      </div>
-      <div style="font-size:1rem;color:#6B7280;letter-spacing:.1em;
-                  text-transform:uppercase;margin-top:.25rem">
-        Knockout Bracket
       </div>
     </div>
     {svg}

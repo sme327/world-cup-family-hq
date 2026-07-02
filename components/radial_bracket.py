@@ -102,10 +102,19 @@ def _txt(x, y, content, size, fill, anchor, baseline="central", weight="normal",
 def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9) -> None:
     x, y = _pt(radius, angle)
     has_w = m and m.get('winner_team_id')
-    fill  = NODE_WIN_BG if has_w else NODE_BG
+    grad  = 'url(#peg-gold)' if has_w else 'url(#peg-gray)'
     sk    = GOLD if has_w else GRAY
     sw    = 1.5 if has_w else 0.8
-    svg.append(_circ(x, y, r_px, fill, sk, sw))
+    # Shadow layer (slightly offset, no stroke)
+    svg.append(_circ(x + 0.8, y + 1.2, r_px, '#000000', 'none', 0).replace(
+        '/>', ' opacity="0.55"/>'))
+    # Main peg with gradient fill
+    svg.append(_circ(x, y, r_px, grad, sk, sw))
+    # Highlight glint — small bright spot top-left for 3D feel
+    hx, hy = x - r_px * 0.28, y - r_px * 0.28
+    hr = max(1.5, r_px * 0.28)
+    svg.append(_circ(hx, hy, hr, '#FFFFFF', 'none', 0).replace(
+        '/>', ' opacity="0.18"/>'))
     if has_w:
         svg.append(_circ(x, y, 3, GOLD, 'none', 0))
 
@@ -157,6 +166,19 @@ def _build_svg(ko: list) -> str:
   <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
     <feGaussianBlur stdDeviation="3" result="b"/>
     <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <!-- Peg depth: radial gradient makes nodes look like physical buttons -->
+  <radialGradient id="peg-gray" cx="35%" cy="30%" r="70%">
+    <stop offset="0%"   stop-color="#2D3F5A"/>
+    <stop offset="100%" stop-color="#0E1520"/>
+  </radialGradient>
+  <radialGradient id="peg-gold" cx="35%" cy="30%" r="70%">
+    <stop offset="0%"   stop-color="#3D2800"/>
+    <stop offset="100%" stop-color="#1A0E00"/>
+  </radialGradient>
+  <filter id="peg-shadow" x="-40%" y="-40%" width="180%" height="180%">
+    <feDropShadow dx="0.8" dy="1.2" stdDeviation="1.5"
+                  flood-color="#000000" flood-opacity="0.7"/>
   </filter>
 </defs>''')
 
@@ -251,14 +273,9 @@ def _build_svg(ko: list) -> str:
     for i, team in enumerate(outer):
         angle = _a_team(i)
         fx, fy = _pt(R_TEAM, angle)
-        cx2, cy2 = _pt(R_CODE, angle)
-        anchor = _text_anchor(angle)
 
         if team and team.get('name'):
-            flag = team['flag']
-            code = _short(team['name'])
-            svg.append(_txt(fx, fy, flag, 28, 'inherit', 'middle'))
-            svg.append(_txt(cx2, cy2, code, 6.5, TXT, anchor))
+            svg.append(_txt(fx, fy, team['flag'], 36, 'inherit', 'middle'))
         else:
             svg.append(_circ(fx, fy, 3, GRAY, 'none', 0))
 

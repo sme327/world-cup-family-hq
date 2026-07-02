@@ -2,6 +2,7 @@
 import base64
 import math
 import os
+from datetime import datetime as _dt
 import streamlit as st
 from services.ko_picks import get_all_ko_matches_display
 
@@ -126,19 +127,31 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
     link_close = '</a>' if link_open else ''
 
     # Build node tooltip
+    def _fmt_date(d) -> str:
+        try:
+            parsed = _dt.strptime(str(d), '%Y-%m-%d')
+            return f"{parsed.strftime('%b')} {parsed.day}"
+        except Exception:
+            return str(d) if d else ''
+
     if has_w:
-        _hn  = m.get('home_name', '?')
-        _an  = m.get('away_name', '?')
-        _hs  = m.get('home_score')
-        _as  = m.get('away_score')
-        _wn  = m.get('winner_name', '')
-        _ps  = m.get('pens_str', '')
-        _sc  = f"{int(_hs)}–{int(_as)}" if _hs is not None and _as is not None else ''
-        _tip = f"{_hn} {_sc} {_an}" + (f" ({_ps})" if _ps else '') + (f" · {_wn} advances" if _wn else '')
-    elif illuminate:
-        _hn = m.get('home_name') or 'TBD'
-        _an = m.get('away_name') or 'TBD'
-        _tip = f"{_hn} vs {_an}"
+        _hn = m.get('home_name', '?')
+        _an = m.get('away_name', '?')
+        _hs = m.get('home_score')
+        _as = m.get('away_score')
+        _wn = m.get('winner_name', '')
+        _ps = m.get('pens_str', '')
+        _sc = f"{int(_hs)}–{int(_as)}" if _hs is not None and _as is not None else ''
+        if _ps:
+            _tip = f"{_hn} {_sc} {_an} · {_wn} advances on PKs"
+        else:
+            _tip = f"{_hn} {_sc} {_an}" + (f" · {_wn} advances" if _wn else '')
+    elif m:
+        # Unplayed — show teams and date for every round
+        _hn  = m.get('home_name') or 'TBD'
+        _an  = m.get('away_name') or 'TBD'
+        _dts = _fmt_date(m.get('match_date', ''))
+        _tip = f"{_hn} vs {_an}" + (f" · {_dts}" if _dts else '')
     else:
         _tip = ''
 

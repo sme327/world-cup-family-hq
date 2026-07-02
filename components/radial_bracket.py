@@ -117,6 +117,18 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
     is_scheduled = m and not has_w and m.get('status', 'scheduled') == 'scheduled'
     illuminate = is_scheduled and rnd == 'r32'   # glow only for unplayed R32
 
+    # Linkable if the match exists and has at least one team assigned
+    match_id  = m.get('id') if m else None
+    has_teams = m and (m.get('home_name') or m.get('away_name'))
+    link_open  = f'<a href="/matchup?match_id={match_id}" target="_self" style="cursor:pointer">' if (match_id and has_teams) else ''
+    link_close = '</a>' if link_open else ''
+
+    if link_open:
+        svg.append(link_open)
+
+    # Larger invisible hit-target so small nodes are easy to tap
+    svg.append(_circ(x, y, max(r_px + 6, 14), 'transparent', 'none', 0))
+
     if has_w:
         # Completed match — warm gold dome, no glow, just depth
         svg.append(_circ(x + 0.6, y + 1.0, r_px, '#000000', 'none', 0).replace('/>', ' opacity="0.50"/>'))
@@ -140,6 +152,9 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
     else:
         # Future round or TBD — flat, very subtle
         svg.append(_circ(x, y, r_px, GRAY, 'none', 0).replace('/>', f' opacity="0.30"/>'))
+
+    if link_close:
+        svg.append(link_close)
 
 
 # ── Connector helper ──────────────────────────────────────────────────────────

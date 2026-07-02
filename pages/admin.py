@@ -114,6 +114,12 @@ with tabs[1]:
                 if st.button("✅ Save Score", key=f"save_{mid}"):
                     update_match_score(mid, int(home_score), int(away_score))
                     st.success(f"Saved: {m['home_team']} {int(home_score)}–{int(away_score)} {m['away_team']}")
+                    try:
+                        from services.github_backup import push_backups_to_github, github_backup_available
+                        if github_backup_available():
+                            push_backups_to_github("group-score")
+                    except Exception:
+                        pass
                     st.rerun()
                 if m['status'] == 'completed':
                     if st.button("↩️ Reset to Scheduled", key=f"reset_{mid}"):
@@ -278,6 +284,15 @@ with tabs[0]:
                                     _save_hp, _save_ap,
                                 )
                                 st.success(f"Saved! {ko_winner} advances.")
+                                # Auto-backup to GitHub so data survives Cloud sleep
+                                try:
+                                    from services.github_backup import push_backups_to_github, github_backup_available
+                                    if github_backup_available():
+                                        _ok, _msg = push_backups_to_github("ko-result")
+                                        if not _ok:
+                                            st.warning(f"Score saved locally but GitHub backup failed: {_msg}")
+                                except Exception as _ge:
+                                    pass  # backup failure should never block the save
                                 st.rerun()
                             else:
                                 st.error(f"Team '{ko_winner}' not found in DB.")
@@ -461,6 +476,39 @@ with tabs[7]:
 # ── Backup & Restore ──────────────────────────────────────────────────────────
 with tabs[8]:
     st.markdown("### 💾 Backup Picks")
+
+    # ── One-click GitHub backup ───────────────────────────────────────────────
+    from services.github_backup import push_backups_to_github, github_backup_available
+    if github_backup_available():
+        st.success("✅ GitHub auto-backup is active — data is committed automatically when scores are saved.")
+        if st.button("💾 Save Everything to GitHub Now", type="primary", use_container_width=True):
+            with st.spinner("Committing to GitHub..."):
+                _ok, _msg = push_backups_to_github("manual")
+            if _ok:
+                st.success(_msg)
+            else:
+                st.error(_msg)
+    else:
+        st.warning(
+            "⚠️ **GitHub auto-backup is not configured.** "
+            "Data entered on Streamlit Cloud will be lost when the app goes to sleep (~1 hour). "
+            "Add `GITHUB_TOKEN` to your Streamlit Cloud secrets to enable auto-backup."
+        )
+        with st.expander("How to set up auto-backup"):
+            st.markdown("""
+1. Go to [github.com/settings/tokens](https://github.com/settings/tokens) → **Fine-grained tokens** → Generate new token
+2. Set **Repository access** → Only select: `world-cup-family-hq`
+3. Set **Permissions** → Contents: **Read and write**
+4. Copy the token (starts with `github_pat_...`)
+5. In Streamlit Cloud dashboard → your app → **Settings** → **Secrets** → paste:
+```toml
+GITHUB_TOKEN = "github_pat_your_token_here"
+GITHUB_REPO  = "sme327/world-cup-family-hq"
+```
+6. Save — the app will restart and auto-backup will be active.
+""")
+
+    st.divider()
     st.markdown(
         "Download the current picks and scores so they survive code deployments. "
         "**Do this before pushing any code changes to GitHub.**"

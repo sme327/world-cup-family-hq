@@ -111,7 +111,7 @@ def _txt(x, y, content, size, fill, anchor, baseline="central", weight="normal",
 
 # ── Match node helper ─────────────────────────────────────────────────────────
 
-def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: str = '') -> None:
+def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: str = '', uid: str = '') -> None:
     x, y  = _pt(radius, angle)
     has_w = m and m.get('winner_team_id')
     is_scheduled = m and not has_w and m.get('status', 'scheduled') == 'scheduled'
@@ -120,7 +120,8 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
     # Linkable if the match exists and has at least one team assigned
     match_id  = m.get('id') if m else None
     has_teams = m and (m.get('home_name') or m.get('away_name'))
-    link_open  = f'<a href="/matchup?match_id={match_id}" target="_self" style="cursor:pointer">' if (match_id and has_teams) else ''
+    u_param   = f'&u={uid}' if uid else ''
+    link_open  = f'<a href="/matchup?match_id={match_id}{u_param}" target="_self" style="cursor:pointer">' if (match_id and has_teams) else ''
     link_close = '</a>' if link_open else ''
 
     if link_open:
@@ -168,7 +169,7 @@ def _conn(svg: list, x1, y1, x2, y2, winner: bool) -> None:
 
 # ── Main SVG builder ──────────────────────────────────────────────────────────
 
-def _build_svg(ko: list) -> str:
+def _build_svg(ko: list, uid: str = '') -> str:
     trophy_uri = _trophy_data_uri()
 
     # Index by round → bracket_slot
@@ -302,13 +303,13 @@ def _build_svg(ko: list) -> str:
 
     # ── MATCH NODES ───────────────────────────────────────────────────────────
     for s0 in range(16):
-        _match_node(svg, _a_r32(s0), R_R32, by_slot['r32'].get(s0 + 1), 8,  'r32')
+        _match_node(svg, _a_r32(s0), R_R32, by_slot['r32'].get(s0 + 1), 8,  'r32', uid)
     for s0 in range(8):
-        _match_node(svg, _a_r16(s0), R_R16, by_slot['r16'].get(s0 + 1), 9,  'r16')
+        _match_node(svg, _a_r16(s0), R_R16, by_slot['r16'].get(s0 + 1), 9,  'r16', uid)
     for s0 in range(4):
-        _match_node(svg, _a_qf(s0),  R_QF,  by_slot['qf'].get(s0 + 1),  10, 'qf')
+        _match_node(svg, _a_qf(s0),  R_QF,  by_slot['qf'].get(s0 + 1),  10, 'qf',  uid)
     for s0 in range(2):
-        _match_node(svg, _a_sf(s0),  R_SF,  by_slot['sf'].get(s0 + 1),  11, 'sf')
+        _match_node(svg, _a_sf(s0),  R_SF,  by_slot['sf'].get(s0 + 1),  11, 'sf',  uid)
 
     # ── OUTER TEAM FLAGS ──────────────────────────────────────────────────────
     for i, team in enumerate(outer):
@@ -365,7 +366,8 @@ def render_radial_bracket() -> None:
         st.caption("Bracket data unavailable.")
         return
 
-    svg = _build_svg(ko)
+    uid = str(st.session_state.get("active_user_id", ""))
+    svg = _build_svg(ko, uid)
 
     # Wrap in a div that allows horizontal scroll on small screens
     html = f"""

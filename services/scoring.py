@@ -229,17 +229,23 @@ def get_combined_leaderboard() -> list[dict]:
 
     result = []
     for _, row in group_board.iterrows():
-        uid = int(row["id"])
-        grp = float(row["total_points"])
-        ko  = float(ko_map.get(uid, {}).get("total", 0.0))
+        uid         = int(row["id"])
+        grp         = float(row["total_points"])
+        ko_entry    = ko_map.get(uid, {})
+        ko          = float(ko_entry.get("total", 0.0))
+        grp_correct = int(row.get("correct_picks", 0))
+        ko_correct  = int(ko_entry.get("correct", 0))
         result.append({
-            "user_id":     uid,
-            "name":        str(row["name"]),
-            "avatar":      str(row["avatar"]),
-            "theme_color": str(row.get("theme_color", "")),
-            "group_pts":   grp,
-            "ko_live_pts": ko,
-            "total_pts":   grp + ko,
+            "user_id":       uid,
+            "name":          str(row["name"]),
+            "avatar":        str(row["avatar"]),
+            "theme_color":   str(row.get("theme_color", "")),
+            "group_pts":     grp,
+            "ko_live_pts":   ko,
+            "total_pts":     grp + ko,
+            "group_correct": grp_correct,
+            "ko_correct":    ko_correct,
+            "total_correct": grp_correct + ko_correct,
         })
 
     result.sort(key=lambda x: (-x["total_pts"], x["name"]))

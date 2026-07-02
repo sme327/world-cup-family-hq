@@ -267,23 +267,22 @@ def _build_svg(ko: list) -> str:
     champ_name  = final_m.get('winner_name') if final_m else None
     champ_flag  = None
 
+    # Extra glow ring around the center focal point
+    svg.append(f'<circle cx="{CX}" cy="{CY}" r="54" fill="none" stroke="{GOLD}" '
+               f'stroke-width="1" opacity="0.25"/>')
+
     if champ_name:
-        # Find flag from outer list
         for t in outer:
             if t and t.get('name') == champ_name:
                 champ_flag = t.get('flag')
                 break
-        svg.append(_txt(CX, CY - 26, '🏆', 28, 'inherit', 'middle'))
+        svg.append(_txt(CX, CY - 32, '🏆', 52, 'inherit', 'middle'))
         if champ_flag:
-            svg.append(_txt(CX, CY + 4, champ_flag, 22, 'inherit', 'middle'))
+            svg.append(_txt(CX, CY + 12, champ_flag, 36, 'inherit', 'middle'))
         code = _short(champ_name)
-        svg.append(_txt(CX, CY + 30, code, 9, TXT_WIN, 'middle', weight='bold'))
+        svg.append(_txt(CX, CY + 46, code, 11, TXT_WIN, 'middle', weight='bold'))
     else:
-        svg.append(_txt(CX, CY, '🏆', 40, 'inherit', 'middle'))
-
-    # ── TITLE label (top center, inside bracket) ──────────────────────────────
-    svg.append(_txt(CX, 38, '2026 FIFA WORLD CUP', 9, GRAY_LIGHT, 'middle', weight='bold', extra=' letter-spacing="2"'))
-    svg.append(_txt(CX, 52, 'Knockout Bracket', 7, GRAY, 'middle'))
+        svg.append(_txt(CX, CY + 16, '🏆', 72, 'inherit', 'middle'))
 
     svg.append('</svg>')
     return '\n'.join(svg)
@@ -306,6 +305,16 @@ def render_radial_bracket() -> None:
 <div style="width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:4px 0">
   <div style="min-width:480px;max-width:{SIZE}px;margin:0 auto">
     {svg}
+    <div style="text-align:center;margin-top:.75rem;padding:.5rem 0">
+      <div style="font-size:1.35rem;font-weight:900;color:#C9A227;letter-spacing:.12em;
+                  text-transform:uppercase;font-family:'Georgia',serif">
+        2026 FIFA World Cup
+      </div>
+      <div style="font-size:1rem;color:#6B7280;letter-spacing:.08em;
+                  text-transform:uppercase;margin-top:.2rem">
+        Knockout Bracket
+      </div>
+    </div>
   </div>
 </div>
 """

@@ -35,7 +35,7 @@ _QUERY = """
     LEFT JOIN teams th ON km.home_team_id = th.id
     LEFT JOIN teams ta ON km.away_team_id = ta.id
     LEFT JOIN teams tw ON km.winner_team_id = tw.id
-    ORDER BY km.round, km.bracket_slot
+    ORDER BY km.match_number, km.id
 """
 
 

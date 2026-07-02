@@ -422,8 +422,9 @@ with _tab_total:
                     "rgba(148,163,184,.18)", "#E2E8F0",
                 )
 
-            p_name   = str(entry["name"])
-            p_avatar = str(entry["avatar"])
+            p_name        = str(entry["name"])
+            p_avatar      = str(entry["avatar"])
+            total_correct = int(entry.get("total_correct", 0))
 
             st.markdown(
                 f"<div style='background:{bg};border:2px solid {border};"
@@ -442,7 +443,8 @@ with _tab_total:
                 f"<div style='font-size:1.05rem;font-weight:900;color:#F1F5F9'>{p_name}</div>"
                 f"<div style='display:flex;gap:.6rem;margin-top:.25rem;flex-wrap:wrap'>"
                 f"<span style='font-size:.75rem;color:#86EFAC'>⚽ Group: <b>{grp:.1f}</b></span>"
-                f"<span style='font-size:.75rem;color:#7DD3FC'>🏆 Knockout: <b>{ko:.0f}</b></span>"
+                f"<span style='font-size:.75rem;color:#7DD3FC'>🏆 KO: <b>{ko:.0f}</b></span>"
+                f"<span style='font-size:.75rem;color:#FCD34D'>✅ <b>{total_correct}</b> correct picks</span>"
                 f"</div>"
                 f"</div>"
 

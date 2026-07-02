@@ -388,35 +388,47 @@ with tab_ko:
     if not _has_ko:
         st.info("The knockout stage begins June 28 — check back soon! 🏆")
     else:
-        st.caption("Round of 32 → Final · June 28 – July 19, 2026 · All times Pacific")
-
         _ko_round_order = ["r32", "r16", "qf", "sf", "final"]
-        for _rnd in _ko_round_order:
-            _rnd_matches = [km for km in _ko_matches if km["round"] == _rnd]
-            if not _rnd_matches:
-                continue
 
-            _rnd_lbl = KO_ROUND_LABELS.get(_rnd, _rnd)
-            st.markdown(
-                f"<div id='ko-{_rnd}' style='font-size:.9rem;font-weight:800;color:#94A3B8;"
-                f"letter-spacing:.03em;margin:.8rem 0 .2rem'>🏆 {_rnd_lbl}</div>",
-                unsafe_allow_html=True,
-            )
+        # Only show rounds that have at least one match seeded
+        _avail_rnds = [r for r in _ko_round_order
+                       if any(km["round"] == r for km in _ko_matches)]
 
-            for _i in range(0, len(_rnd_matches), 2):
-                if _i + 1 < len(_rnd_matches):
-                    _ka, _kb = st.columns(2, gap="medium")
-                    with _ka:
+        # Auto-select the first round that still has scheduled games
+        _default_rnd = next(
+            (r for r in _ko_round_order
+             if any(km["round"] == r and km["status"] == "scheduled" for km in _ko_matches)),
+            _avail_rnds[-1] if _avail_rnds else "r32",
+        )
+
+        _sel_rnd = st.radio(
+            "Round",
+            _avail_rnds,
+            format_func=lambda r: KO_ROUND_LABELS.get(r, r),
+            index=_avail_rnds.index(_default_rnd) if _default_rnd in _avail_rnds else 0,
+            horizontal=True,
+            label_visibility="collapsed",
+        )
+
+        _rnd_matches = [km for km in _ko_matches if km["round"] == _sel_rnd]
+        _rnd_lbl     = KO_ROUND_LABELS.get(_sel_rnd, _sel_rnd)
+        _pts         = KO_ROUND_POINTS.get(_sel_rnd, 0)
+        st.caption(f"🏆 {_rnd_lbl} · +{_pts} pts per correct pick · All times Pacific")
+
+        for _i in range(0, len(_rnd_matches), 2):
+            if _i + 1 < len(_rnd_matches):
+                _ka, _kb = st.columns(2, gap="medium")
+                with _ka:
+                    _render_ko_card(_rnd_matches[_i])
+                with _kb:
+                    _render_ko_card(_rnd_matches[_i + 1])
+            else:
+                if _sel_rnd == "final":
+                    _, _fc, _ = st.columns([1, 2, 1])
+                    with _fc:
                         _render_ko_card(_rnd_matches[_i])
-                    with _kb:
-                        _render_ko_card(_rnd_matches[_i + 1])
                 else:
-                    if _rnd == "final":
-                        _, _fc, _ = st.columns([1, 2, 1])
-                        with _fc:
-                            _render_ko_card(_rnd_matches[_i])
-                    else:
-                        _render_ko_card(_rnd_matches[_i])
+                    _render_ko_card(_rnd_matches[_i])
 
 
 # ══════════════════════════════════════════════════════════════════════════════

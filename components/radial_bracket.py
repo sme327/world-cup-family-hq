@@ -206,10 +206,10 @@ def _build_svg(ko: list) -> str:
   </filter>
   <!-- Trophy image clip paths -->
   <clipPath id="tc-lg">
-    <circle cx="{CX}" cy="{CY}" r="52"/>
+    <circle cx="{CX}" cy="{CY}" r="80"/>
   </clipPath>
   <clipPath id="tc-sm">
-    <circle cx="{CX}" cy="{CY - 22}" r="34"/>
+    <circle cx="{CX}" cy="{CY - 22}" r="44"/>
   </clipPath>
 </defs>''')
 
@@ -311,8 +311,8 @@ def _build_svg(ko: list) -> str:
     champ_flag = None
 
     # Glow ring around the center focal point
-    svg.append(f'<circle cx="{CX}" cy="{CY}" r="56" fill="none" stroke="{GOLD}" '
-               f'stroke-width="1" opacity="0.22"/>')
+    svg.append(f'<circle cx="{CX}" cy="{CY}" r="83" fill="none" stroke="{GOLD}" '
+               f'stroke-width="1" opacity="0.18"/>')
 
     if champ_name:
         for t in outer:
@@ -321,8 +321,8 @@ def _build_svg(ko: list) -> str:
                 break
         # Smaller trophy above, champion flag + name below
         if trophy_uri:
-            svg.append(f'<image href="{trophy_uri}" x="{CX-34}" y="{CY-58}" '
-                       f'width="68" height="68" clip-path="url(#tc-sm)"/>')
+            svg.append(f'<image href="{trophy_uri}" x="{CX-44}" y="{CY-72}" '
+                       f'width="88" height="88" clip-path="url(#tc-sm)"/>')
         else:
             svg.append(_txt(CX, CY - 28, '🏆', 48, 'inherit', 'middle'))
         if champ_flag:
@@ -331,8 +331,8 @@ def _build_svg(ko: list) -> str:
     else:
         # No champion yet — full trophy centred
         if trophy_uri:
-            svg.append(f'<image href="{trophy_uri}" x="{CX-52}" y="{CY-52}" '
-                       f'width="104" height="104" clip-path="url(#tc-lg)"/>')
+            svg.append(f'<image href="{trophy_uri}" x="{CX-80}" y="{CY-80}" '
+                       f'width="160" height="160" clip-path="url(#tc-lg)"/>')
         else:
             svg.append(_txt(CX, CY + 16, '🏆', 72, 'inherit', 'middle'))
 

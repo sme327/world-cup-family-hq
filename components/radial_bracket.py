@@ -2,7 +2,7 @@
 import base64
 import math
 import os
-from datetime import datetime as _dt
+from datetime import datetime as _dt, timedelta as _td
 import streamlit as st
 from services.ko_picks import get_all_ko_matches_display
 
@@ -117,7 +117,8 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
     x, y  = _pt(radius, angle)
     has_w = m and m.get('winner_team_id')
     is_scheduled = m and not has_w and m.get('status', 'scheduled') == 'scheduled'
-    illuminate = is_scheduled and rnd == 'r32'   # glow only for unplayed R32
+    _today = (_dt.utcnow() - _td(hours=7)).date().isoformat()
+    illuminate = is_scheduled and (m.get('match_date') == _today if m else False)
 
     # Linkable if the match exists and has at least one team assigned
     match_id  = m.get('id') if m else None

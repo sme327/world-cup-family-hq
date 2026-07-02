@@ -103,10 +103,11 @@ def _circ(x, y, r, fill, stroke, sw) -> str:
             f'stroke="{stroke}" stroke-width="{sw}"/>')
 
 
-def _txt(x, y, content, size, fill, anchor, baseline="central", weight="normal", extra="") -> str:
+def _txt(x, y, content, size, fill, anchor, baseline="central", weight="normal", extra="", tooltip="") -> str:
+    title = f'<title>{tooltip}</title>' if tooltip else ''
     return (f'<text x="{_f(x)}" y="{_f(y)}" font-size="{size}" fill="{fill}" '
             f'text-anchor="{anchor}" dominant-baseline="{baseline}" '
-            f'font-weight="{weight}" font-family="system-ui,sans-serif"{extra}>{content}</text>')
+            f'font-weight="{weight}" font-family="system-ui,sans-serif"{extra}>{title}{content}</text>')
 
 
 # ── Match node helper ─────────────────────────────────────────────────────────
@@ -123,6 +124,25 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
     u_param   = f'&u={uid}' if uid else ''
     link_open  = f'<a href="/matchup?match_id={match_id}{u_param}" target="_self" style="cursor:pointer">' if (match_id and has_teams) else ''
     link_close = '</a>' if link_open else ''
+
+    # Build node tooltip
+    if has_w:
+        _hn  = m.get('home_name', '?')
+        _an  = m.get('away_name', '?')
+        _hs  = m.get('home_score')
+        _as  = m.get('away_score')
+        _wn  = m.get('winner_name', '')
+        _ps  = m.get('pens_str', '')
+        _sc  = f"{int(_hs)}–{int(_as)}" if _hs is not None and _as is not None else ''
+        _tip = f"{_hn} {_sc} {_an}" + (f" ({_ps})" if _ps else '') + (f" · {_wn} advances" if _wn else '')
+    elif illuminate:
+        _hn = m.get('home_name') or 'TBD'
+        _an = m.get('away_name') or 'TBD'
+        _tip = f"{_hn} vs {_an}"
+    else:
+        _tip = ''
+
+    svg.append(f'<g{">" if not _tip else f"><title>{_tip}</title>"}')
 
     if link_open:
         svg.append(link_open)
@@ -156,6 +176,8 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
 
     if link_close:
         svg.append(link_close)
+
+    svg.append('</g>')
 
 
 # ── Connector helper ──────────────────────────────────────────────────────────
@@ -317,7 +339,7 @@ def _build_svg(ko: list, uid: str = '') -> str:
         fx, fy = _pt(R_TEAM, angle)
 
         if team and team.get('name'):
-            svg.append(_txt(fx, fy, team['flag'], 48, 'inherit', 'middle'))
+            svg.append(_txt(fx, fy, team['flag'], 48, 'inherit', 'middle', tooltip=team['name']))
         else:
             svg.append(_circ(fx, fy, 3, GRAY, 'none', 0))
 

@@ -19,6 +19,7 @@ from services.explorer import get_explorer_leaderboard, get_weekly_explorer, get
 from services.player_cards import get_featured_player_of_day, render_player_modal_content
 from services.ko_picks import (
     get_all_ko_matches_display, get_ko_picks_for_match, KO_ROUND_POINTS,
+    save_ko_pick,
 )
 from components.radial_bracket import render_radial_bracket
 
@@ -321,8 +322,32 @@ def _today_ko_card(km: dict) -> None:
         "</div></div>"
     )
     st.markdown(card_html, unsafe_allow_html=True)
-    if st.button(btn_label, key=f"home_ko_{mid}", use_container_width=True):
-        st.switch_page("pages/schedule.py")
+    if is_done:
+        if st.button("📊 View Result", key=f"home_ko_res_{mid}", use_container_width=True):
+            st.session_state["_nav_match_id"] = mid
+            st.switch_page("pages/matchup.py")
+    elif home_id and away_id:
+        _pb_h, _pb_a = st.columns(2)
+        with _pb_h:
+            _h_picked = active_pick_id == home_id
+            if st.button(
+                f"{'✓ ' if _h_picked else ''}{home_flag} {home_name}",
+                key=f"home_ko_ph_{mid}",
+                use_container_width=True,
+                type="primary" if _h_picked else "secondary",
+            ):
+                save_ko_pick(active_uid, mid, home_id)
+                st.rerun()
+        with _pb_a:
+            _a_picked = active_pick_id == away_id
+            if st.button(
+                f"{'✓ ' if _a_picked else ''}{away_flag} {away_name}",
+                key=f"home_ko_pa_{mid}",
+                use_container_width=True,
+                type="primary" if _a_picked else "secondary",
+            ):
+                save_ko_pick(active_uid, mid, away_id)
+                st.rerun()
 
 
 def _build_storylines(combined: list[dict], active_uid: int) -> list[str]:
@@ -529,18 +554,7 @@ if upcoming:
 # ─────────────────────────────────────────────────────────────────────────────
 # 2b. KNOCKOUT BRACKET
 # ─────────────────────────────────────────────────────────────────────────────
-_bkt_hdr, _bkt_lnk = st.columns([5, 1])
-with _bkt_hdr:
-    st.markdown('<div class="section-head">🏆 Knockout Bracket</div>', unsafe_allow_html=True)
-with _bkt_lnk:
-    _uid_bkt = st.session_state.get("active_user_id", "")
-    st.markdown(
-        f"<div style='text-align:right;padding-top:.55rem'>"
-        f"<a href='/bracket?u={_uid_bkt}' target='_self' "
-        f"style='font-size:.78rem;color:#60A5FA;text-decoration:none;font-weight:600'>"
-        f"Full View →</a></div>",
-        unsafe_allow_html=True,
-    )
+st.markdown('<div class="section-head">🏆 Knockout Bracket</div>', unsafe_allow_html=True)
 render_radial_bracket(show_title=False)
 
 # ─────────────────────────────────────────────────────────────────────────────

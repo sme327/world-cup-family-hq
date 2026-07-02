@@ -280,9 +280,9 @@ with tab_ko:
     with _bkt_col:
         st.markdown(
             f"<div style='padding-top:.35rem;text-align:right'>"
-            f"<a href='/bracket?u={_uid_qp}' style='color:#93C5FD;font-size:.78rem;"
+            f"<a href='/?u={_uid_qp}' style='color:#93C5FD;font-size:.78rem;"
             f"font-weight:700;text-decoration:none;white-space:nowrap'>"
-            f"🗂️&nbsp;Bracket&nbsp;→</a></div>",
+            f"🏠&nbsp;Home&nbsp;→</a></div>",
             unsafe_allow_html=True,
         )
     if _ko_chosen != km["id"]:

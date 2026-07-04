@@ -302,6 +302,36 @@ def _restore_from_backup(cursor) -> tuple[int, int]:
             except Exception:
                 pass
 
+    # ── Re-propagate KO winners to downstream slots ───────────────────────────
+    # save_knockout_result() sets home_team_id/away_team_id on the next round's
+    # match, but that update is not in any backup CSV — only scores/winner are.
+    # Replay propagation so R16+ slots fill in correctly after every restart.
+    try:
+        completed = cursor.execute("""
+            SELECT id, winner_team_id, winner_to_id, winner_to_slot,
+                   loser_to_id, loser_to_slot, home_team_id, away_team_id
+            FROM knockout_matches
+            WHERE status = 'completed' AND winner_team_id IS NOT NULL
+        """).fetchall()
+        for (mid, winner_id, w_to_id, w_to_slot,
+             l_to_id, l_to_slot, home_id, away_id) in completed:
+            if w_to_id and w_to_slot and winner_id:
+                col = "home_team_id" if w_to_slot == "home" else "away_team_id"
+                cursor.execute(
+                    f"UPDATE knockout_matches SET {col}=? WHERE id=?",
+                    (winner_id, w_to_id),
+                )
+            if l_to_id and l_to_slot and winner_id:
+                loser_id = away_id if winner_id == home_id else home_id
+                if loser_id:
+                    col = "home_team_id" if l_to_slot == "home" else "away_team_id"
+                    cursor.execute(
+                        f"UPDATE knockout_matches SET {col}=? WHERE id=?",
+                        (loser_id, l_to_id),
+                    )
+    except Exception:
+        pass
+
     # ── KO live picks ─────────────────────────────────────────────────────────
     if os.path.exists(ko_picks_path):
         df = pd.read_csv(ko_picks_path)

@@ -120,12 +120,10 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
     _today = (_dt.utcnow() - _td(hours=7)).date().isoformat()
     illuminate = is_scheduled and (m.get('match_date') == _today if m else False)
 
-    # Linkable if the match exists and has at least one team assigned
+    # Clickable if the match exists and has at least one team assigned
     match_id  = m.get('id') if m else None
     has_teams = m and (m.get('home_name') or m.get('away_name'))
     u_param   = f'&u={uid}' if uid else ''
-    link_open  = f'<a href="/matchup?match_id={match_id}{u_param}" target="_parent" style="cursor:pointer">' if (match_id and has_teams) else ''
-    link_close = '</a>' if link_open else ''
 
     # Build node tooltip
     def _fmt_when(date_str, et_time) -> str:
@@ -172,10 +170,13 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
     else:
         _tip = ''
 
-    svg.append(f'<g{">" if not _tip else f"><title>{_tip}</title>"}')
-
-    if link_open:
-        svg.append(link_open)
+    if match_id and has_teams:
+        _nav = f"/matchup?match_id={match_id}{u_param}"
+        g_attrs = f' onclick="window.top.location.href=\'{_nav}\'" style="cursor:pointer"'
+    else:
+        g_attrs = ''
+    title_el = f'<title>{_tip}</title>' if _tip else ''
+    svg.append(f'<g{g_attrs}>{title_el}')
 
     # Larger invisible hit-target so small nodes are easy to tap
     svg.append(_circ(x, y, max(r_px + 6, 14), 'transparent', 'none', 0))
@@ -203,9 +204,6 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
     else:
         # Future round or TBD — recede into background
         svg.append(_circ(x, y, r_px * 0.85, GRAY, 'none', 0).replace('/>', f' opacity="0.20"/>'))
-
-    if link_close:
-        svg.append(link_close)
 
     svg.append('</g>')
 

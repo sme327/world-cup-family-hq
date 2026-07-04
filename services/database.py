@@ -132,6 +132,8 @@ CREATE TABLE IF NOT EXISTS knockout_matches (
     host_country    TEXT,
     home_score      INTEGER,
     away_score      INTEGER,
+    home_penalties  INTEGER,
+    away_penalties  INTEGER,
     winner_team_id  INTEGER REFERENCES teams(id),
     status          TEXT DEFAULT 'scheduled',
     winner_to_id    INTEGER REFERENCES knockout_matches(id),

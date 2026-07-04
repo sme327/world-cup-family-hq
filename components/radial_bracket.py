@@ -184,8 +184,15 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
     # Larger invisible hit-target so small nodes are easy to tap
     svg.append(_circ(x, y, max(r_px + 6, 14), 'transparent', 'none', 0))
 
-    if has_w:
-        # Completed match — warm gold dome, no glow, just depth
+    if has_w and rnd == 'r16':
+        # R16 winner — show the advancing team's flag instead of the dome node
+        _wflag = (m.get('home_flag', '') if m.get('winner_team_id') == m.get('home_team_id')
+                  else m.get('away_flag', ''))
+        svg.append(_txt(x, y, _wflag, 34, 'inherit', 'middle',
+                        extra=' filter="url(#flag-float)"'))
+
+    elif has_w:
+        # Completed match (other rounds) — warm gold dome, no glow, just depth
         svg.append(_circ(x + 0.6, y + 1.0, r_px, '#000000', 'none', 0).replace('/>', ' opacity="0.50"/>'))
         svg.append(_circ(x, y, r_px, 'url(#peg-gold)', GOLD_DIM, 1.0))
         hx, hy = x - r_px * 0.27, y - r_px * 0.30

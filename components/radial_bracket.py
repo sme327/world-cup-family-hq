@@ -172,11 +172,14 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
 
     if match_id and has_teams:
         _nav = f"/matchup?match_id={match_id}{u_param}"
-        g_attrs = f' onclick="window.top.location.href=\'{_nav}\'" style="cursor:pointer"'
+        link_open  = f'<a href="{_nav}" target="_self" style="cursor:pointer">'
+        link_close = '</a>'
     else:
-        g_attrs = ''
+        link_open = link_close = ''
     title_el = f'<title>{_tip}</title>' if _tip else ''
-    svg.append(f'<g{g_attrs}>{title_el}')
+    svg.append(f'<g>{title_el}')
+    if link_open:
+        svg.append(link_open)
 
     # Larger invisible hit-target so small nodes are easy to tap
     svg.append(_circ(x, y, max(r_px + 6, 14), 'transparent', 'none', 0))
@@ -205,6 +208,8 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
         # Future round or TBD — recede into background
         svg.append(_circ(x, y, r_px * 0.85, GRAY, 'none', 0).replace('/>', f' opacity="0.20"/>'))
 
+    if link_close:
+        svg.append(link_close)
     svg.append('</g>')
 
 
@@ -418,7 +423,6 @@ def _build_svg(ko: list, uid: str = '') -> str:
 
 def render_radial_bracket(show_title: bool = True) -> None:
     """Render the circular knockout bracket inside Streamlit."""
-    import streamlit.components.v1 as _components
     try:
         ko = get_all_ko_matches_display()
     except Exception:
@@ -434,19 +438,12 @@ def render_radial_bracket(show_title: bool = True) -> None:
         "</div>"
     ) if show_title else ""
 
-    # Use components.html (iframe) so the SVG is not sanitized by Streamlit's
-    # markdown renderer. Links use target="_parent" to navigate the outer window.
-    html = f"""<!DOCTYPE html>
-<html><head><style>
-  html,body{{margin:0;padding:0;background:transparent;overflow:hidden}}
-</style></head>
-<body>
-<div style="width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 0">
-  <div style="min-width:480px;max-width:{SIZE}px;margin:0 auto">
-    {title_html}
-    {svg}
-  </div>
-</div>
-</body></html>"""
-    height = SIZE + (60 if show_title else 10)
-    _components.html(html, height=height, scrolling=False)
+    # st.html() renders directly in the page (no iframe/sandbox) so SVG links
+    # with target="_self" navigate normally within the Streamlit app.
+    html = (
+        f"<div style='width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 0'>"
+        f"<div style='min-width:480px;max-width:{SIZE}px;margin:0 auto'>"
+        f"{title_html}{svg}"
+        f"</div></div>"
+    )
+    st.html(html)

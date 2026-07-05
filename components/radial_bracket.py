@@ -172,14 +172,13 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
 
     if match_id and has_teams:
         _nav = f"/matchup?match_id={match_id}{u_param}"
-        link_open  = f'<a href="{_nav}" target="_self" style="cursor:pointer">'
-        link_close = '</a>'
+        # postMessage to outer page listener; navigation blocked by iframe sandbox
+        _msg = f"window.parent.postMessage({{type:'bracket_nav',url:'{_nav}'}},'*')"
+        g_attrs = f' onclick="{_msg}" style="cursor:pointer"'
     else:
-        link_open = link_close = ''
+        g_attrs = ''
     title_el = f'<title>{_tip}</title>' if _tip else ''
-    svg.append(f'<g>{title_el}')
-    if link_open:
-        svg.append(link_open)
+    svg.append(f'<g{g_attrs}>{title_el}')
 
     # Larger invisible hit-target so small nodes are easy to tap
     svg.append(_circ(x, y, max(r_px + 6, 14), 'transparent', 'none', 0))
@@ -215,8 +214,6 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
         # Future round or TBD — recede into background
         svg.append(_circ(x, y, r_px * 0.85, GRAY, 'none', 0).replace('/>', f' opacity="0.20"/>'))
 
-    if link_close:
-        svg.append(link_close)
     svg.append('</g>')
 
 
@@ -445,12 +442,38 @@ def render_radial_bracket(show_title: bool = True) -> None:
         "</div>"
     ) if show_title else ""
 
-    # st.html() renders directly in the page (no iframe/sandbox) so SVG links
-    # with target="_self" navigate normally within the Streamlit app.
-    html = (
-        f"<div style='width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 0'>"
-        f"<div style='min-width:480px;max-width:{SIZE}px;margin:0 auto'>"
-        f"{title_html}{svg}"
-        f"</div></div>"
+    import streamlit.components.v1 as _components
+
+    # Inject a postMessage listener into the outer Streamlit page.
+    # The bracket iframe sends {type:'bracket_nav', url} on node click;
+    # this listener (running outside the sandbox) navigates the top window.
+    st.html(
+        "<script>"
+        "if (!window._bktNavInit) {"
+        "  window._bktNavInit = true;"
+        "  window.addEventListener('message', function(e) {"
+        "    if (e.data && e.data.type === 'bracket_nav') {"
+        "      window.location.href = e.data.url;"
+        "    }"
+        "  });"
+        "}"
+        "</script>",
+        unsafe_allow_javascript=True,
     )
-    st.html(html)
+
+    # Render the SVG inside an iframe (components.html) so it is not sanitized.
+    # Node onclick sends postMessage; the listener above navigates the outer page.
+    html = f"""<!DOCTYPE html>
+<html><head><style>
+  html,body{{margin:0;padding:0;background:transparent;overflow:hidden}}
+</style></head>
+<body>
+<div style="width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 0">
+  <div style="min-width:480px;max-width:{SIZE}px;margin:0 auto">
+    {title_html}
+    {svg}
+  </div>
+</div>
+</body></html>"""
+    height = SIZE + (60 if show_title else 10)
+    _components.html(html, height=height, scrolling=False)

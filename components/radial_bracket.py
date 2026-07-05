@@ -444,30 +444,35 @@ def render_radial_bracket(show_title: bool = True) -> None:
 
     import streamlit.components.v1 as _components
 
-    # Inject a postMessage listener into the outer Streamlit page.
-    # The bracket iframe sends {type:'bracket_nav', url} on node click;
-    # this listener (running outside the sandbox) navigates the top window.
-    st.html(
+    # Navigation strategy:
+    # The iframe sandbox lacks allow-top-navigation so it can't navigate the
+    # outer window directly.  But with allow-same-origin the iframe CAN access
+    # window.parent.document and append a <script> element to it.  That script
+    # runs in the outer (non-sandboxed) page and listens for postMessage events
+    # from the bracket iframe, then sets window.location.href freely.
+    nav_init = (
         "<script>"
-        "if (!window._bktNavInit) {"
-        "  window._bktNavInit = true;"
-        "  window.addEventListener('message', function(e) {"
-        "    if (e.data && e.data.type === 'bracket_nav') {"
-        "      window.location.href = e.data.url;"
-        "    }"
-        "  });"
+        "(function(){"
+        "try{"
+        "if(window.parent&&!window.parent._bktNavInit){"
+        "window.parent._bktNavInit=true;"
+        "var s=window.parent.document.createElement('script');"
+        "s.textContent='window.addEventListener(\"message\",function(e){"
+        "if(e.data&&e.data.type===\"bracket_nav\")window.location.href=e.data.url;"
+        "});';"
+        "(window.parent.document.head||window.parent.document.body).appendChild(s);"
         "}"
-        "</script>",
-        unsafe_allow_javascript=True,
+        "}catch(err){}"
+        "})();"
+        "</script>"
     )
 
-    # Render the SVG inside an iframe (components.html) so it is not sanitized.
-    # Node onclick sends postMessage; the listener above navigates the outer page.
     html = f"""<!DOCTYPE html>
 <html><head><style>
   html,body{{margin:0;padding:0;background:transparent;overflow:hidden}}
 </style></head>
 <body>
+{nav_init}
 <div style="width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:2px 0">
   <div style="min-width:480px;max-width:{SIZE}px;margin:0 auto">
     {title_html}

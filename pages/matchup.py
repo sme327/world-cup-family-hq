@@ -9,7 +9,7 @@ from services.roster import get_featured_players, get_team_summary, get_mls_play
 from services.player_cards import render_player_modal_content
 from services.ko_picks import (
     get_all_ko_matches_display, get_ko_picks_for_match, save_ko_pick,
-    get_ko_pick, KO_ROUND_LABELS, KO_ROUND_POINTS,
+    get_ko_pick, KO_ROUND_LABELS, KO_ROUND_POINTS, ko_picks_visible,
 )
 from services.espn import get_match_recap
 from services.scoring import get_team_group_status
@@ -305,6 +305,7 @@ with tab_ko:
     ko_picks    = get_ko_picks_for_match(ko_mid)
     ko_my_pick  = get_ko_pick(active_user_id, ko_mid) if h_tid and a_tid else None
     ko_winner_id = km.get("winner_team_id")
+    _ko_vis, _ko_n_picked, _ko_total = ko_picks_visible(ko_mid)
 
     if ko_done and km.get("home_score") is not None:
         _hs_str = f"{int(km['home_score'])}–{int(km['away_score'])}"
@@ -375,7 +376,21 @@ with tab_ko:
                 if pickers:
                     result_html += "<div style='color:#F87171;font-size:.78rem'>+0 pts</div>"
 
-        if pickers:
+        if not _ko_vis:
+            # Picks hidden until all family members have picked
+            _my_hint = (
+                "<div style='color:#F59E0B;font-size:.78rem;font-weight:700;margin:.15rem 0'>✅ You picked</div>"
+                if my_pick else ""
+            )
+            pickers_html = (
+                f"<div style='margin:.35rem 0'>"
+                f"<div style='color:#94A3B8;font-size:.82rem;font-weight:700'>"
+                f"🔒 {_ko_n_picked}/{_ko_total} picked</div>"
+                f"<div style='color:#64748B;font-size:.72rem;margin:.12rem 0'>"
+                f"Picks reveal when everyone's in</div>"
+                f"{_my_hint}</div>"
+            )
+        elif pickers:
             cells = "".join(
                 f"<div style='display:flex;align-items:center;gap:.25rem;padding:.1rem 0'>"
                 f"<span style='font-size:1.5rem;line-height:1'>{p['avatar']}</span>"

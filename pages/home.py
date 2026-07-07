@@ -22,7 +22,7 @@ from services.player_cards import (
 from services.roster import get_featured_players, get_player_slug, get_team_roster
 from services.ko_picks import (
     get_all_ko_matches_display, get_ko_picks_for_match, KO_ROUND_POINTS,
-    save_ko_pick,
+    save_ko_pick, ko_picks_visible,
 )
 from components.radial_bracket import render_radial_bracket
 
@@ -200,6 +200,7 @@ def _today_ko_card(km: dict) -> None:
     home_pickers: list[dict] = []
     away_pickers: list[dict] = []
     active_pick_id: int | None = None
+    _picks_vis, _n_picked, _total_users = True, 0, 7
     if home_id and away_id:
         ko_picks     = get_ko_picks_for_match(mid)
         home_pickers = [p for p in ko_picks if p["picked_team_id"] == home_id]
@@ -208,6 +209,7 @@ def _today_ko_card(km: dict) -> None:
             if p["user_id"] == active_uid:
                 active_pick_id = p["picked_team_id"]
                 break
+        _picks_vis, _n_picked, _total_users = ko_picks_visible(mid)
 
     def _avatars(pickers: list[dict]) -> str:
         parts = []
@@ -225,10 +227,22 @@ def _today_ko_card(km: dict) -> None:
             f"<span style='border-bottom:2px solid rgba(245,158,11,.6);padding-bottom:.12rem'>{name}</span>"
             if is_my_pick else name
         )
-        supporter_html = (
-            "<div style='font-size:.6rem;color:#6B7280;margin:.5rem 0 .15rem;"
-            "letter-spacing:.02em;font-weight:500'>Supporters</div>" + _avatars(pickers)
-        ) if pickers else ""
+        if _picks_vis:
+            supporter_html = (
+                "<div style='font-size:.6rem;color:#6B7280;margin:.5rem 0 .15rem;"
+                "letter-spacing:.02em;font-weight:500'>Supporters</div>" + _avatars(pickers)
+            ) if pickers else ""
+        else:
+            # Picks hidden until everyone has picked
+            my_pick_hint = (
+                "<div style='font-size:.65rem;color:#F59E0B;margin:.35rem 0'>✅ You picked</div>"
+                if is_my_pick else ""
+            )
+            supporter_html = (
+                f"<div style='font-size:.62rem;color:#64748B;margin:.4rem 0'>"
+                f"🔒 {_n_picked}/{_total_users} picked</div>"
+                + my_pick_hint
+            )
         return (
             "<div style='flex:1;min-width:0;text-align:center;padding:.05rem .2rem'>"
             f"<div style='font-size:2.8rem;line-height:1.05'>{flag}</div>"

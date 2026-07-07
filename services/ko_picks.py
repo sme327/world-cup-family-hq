@@ -225,6 +225,34 @@ def get_ko_live_leaderboard() -> list[dict]:
     return scores
 
 
+# ── Pick visibility ───────────────────────────────────────────────────────────
+
+def ko_picks_visible(knockout_match_id: int) -> tuple[bool, int, int]:
+    """Return (visible, n_picked, total_users).
+
+    Picks are revealed once every family member has submitted a pick,
+    OR after the match result is entered. Until then they stay hidden so
+    nobody is influenced by what others chose.
+    """
+    try:
+        conn = get_connection()
+        total = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+        n_picked = conn.execute(
+            "SELECT COUNT(*) FROM knockout_live_picks WHERE knockout_match_id = ?",
+            (knockout_match_id,),
+        ).fetchone()[0]
+        status = conn.execute(
+            "SELECT status FROM knockout_matches WHERE id = ?",
+            (knockout_match_id,),
+        ).fetchone()
+        conn.close()
+        is_done = bool(status and status[0] == "completed")
+        visible = is_done or (n_picked >= total)
+        return visible, int(n_picked), int(total)
+    except Exception:
+        return True, 0, 7   # fail open
+
+
 # ── KO match data for schedule/display ────────────────────────────────────────
 
 def get_all_ko_matches_display() -> list[dict]:

@@ -823,7 +823,7 @@ if is_qf_plus:
     with _qsc2:
         st.markdown('<div class="section-head">🎯 Knockout Stage</div>', unsafe_allow_html=True)
         for _i, _e in enumerate(_combined_by_ko):
-            _ks    = _ko_stats.get(_e["id"], {})
+            _ks    = _ko_stats.get(_e["user_id"], {})
             _wins  = _ks.get("wins", 0)
             _picks = _ks.get("picks", 0)
             _chips = (

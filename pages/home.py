@@ -16,7 +16,10 @@ from services.time_utils import fmt_match_time, pt_date_str
 from services.database import get_connection
 from services.map_utils import build_atlas_figure, get_iso3_maps
 from services.explorer import get_explorer_leaderboard, get_weekly_explorer, get_badge
-from services.player_cards import get_featured_player_of_day, render_player_modal_content
+from services.player_cards import (
+    get_featured_player_of_day, render_player_modal_content, get_player_card_data,
+)
+from services.roster import get_featured_players, get_player_slug, get_team_roster
 from services.ko_picks import (
     get_all_ko_matches_display, get_ko_picks_for_match, KO_ROUND_POINTS,
     save_ko_pick,
@@ -178,12 +181,7 @@ _KO_RND_LABELS = {
 
 
 def _today_ko_card(km: dict) -> None:
-    """Cinematic home-page card for one knockout match.
-
-    Layout — TOP: round/pts badges | MIDDLE: team blocks flanking a gold vs badge
-    (or score) | BOTTOM: venue/kickoff. Supporters live inside each team block
-    so they visually belong to their side.
-    """
+    """Cinematic home-page card for one knockout match."""
     mid        = km["id"]
     rnd        = km["round"]
     home_id    = km["home_team_id"]
@@ -199,7 +197,6 @@ def _today_ko_card(km: dict) -> None:
     is_done    = km["status"] == "completed"
     active_uid = st.session_state.get("active_user_id", 1)
 
-    # ── Picks ───────────────────────────────────────────────────────────────
     home_pickers: list[dict] = []
     away_pickers: list[dict] = []
     active_pick_id: int | None = None
@@ -215,78 +212,53 @@ def _today_ko_card(km: dict) -> None:
     def _avatars(pickers: list[dict]) -> str:
         parts = []
         for p in pickers:
-            if p["user_id"] == active_uid:
-                style = "font-size:1.55rem;line-height:1;"  # slightly larger, no ring
-            else:
-                style = "font-size:1.35rem;line-height:1;"
+            style = "font-size:1.55rem;line-height:1;" if p["user_id"] == active_uid else "font-size:1.35rem;line-height:1;"
             parts.append(f"<span style='{style}'>{p['avatar']}</span>")
         return (
             "<div style='display:flex;flex-wrap:wrap;justify-content:center;gap:.25rem'>"
-            + "".join(parts)
-            + "</div>"
+            + "".join(parts) + "</div>"
         )
 
     def _team_block(flag: str, name: str, pickers: list[dict], team_id: int | None) -> str:
-        # Subtle gold underline on name if this is the active user's pick
         is_my_pick = bool(team_id and active_pick_id and team_id == active_pick_id)
-        if is_my_pick:
-            name_inner = (
-                f"<span style='border-bottom:2px solid rgba(245,158,11,.6);"
-                f"padding-bottom:.12rem'>{name}</span>"
-            )
-        else:
-            name_inner = name
-
-        supporter_html = ""
-        if pickers:
-            supporter_html = (
-                # Slightly more space between name and label, label more muted (no uppercase)
-                "<div style='font-size:.6rem;color:#6B7280;margin:.5rem 0 .15rem;"
-                "letter-spacing:.02em;font-weight:500'>Supporters</div>"
-                + _avatars(pickers)
-            )
+        name_inner = (
+            f"<span style='border-bottom:2px solid rgba(245,158,11,.6);padding-bottom:.12rem'>{name}</span>"
+            if is_my_pick else name
+        )
+        supporter_html = (
+            "<div style='font-size:.6rem;color:#6B7280;margin:.5rem 0 .15rem;"
+            "letter-spacing:.02em;font-weight:500'>Supporters</div>" + _avatars(pickers)
+        ) if pickers else ""
         return (
             "<div style='flex:1;min-width:0;text-align:center;padding:.05rem .2rem'>"
             f"<div style='font-size:2.8rem;line-height:1.05'>{flag}</div>"
-            f"<div style='font-size:.95rem;font-weight:800;color:#F1F5F9;"
-            f"margin:.2rem 0 0;line-height:1.2'>{name_inner}</div>"
-            + supporter_html
-            + "</div>"
+            f"<div style='font-size:.95rem;font-weight:800;color:#F1F5F9;margin:.2rem 0 0;line-height:1.2'>{name_inner}</div>"
+            + supporter_html + "</div>"
         )
 
-    # ── Center badge ────────────────────────────────────────────────────────
     if is_done and km.get("home_score") is not None:
         hs, as_ = int(km["home_score"]), int(km["away_score"])
         center_html = (
             "<div style='flex-shrink:0;align-self:center;padding:0 .4rem;text-align:center'>"
-            f"<div style='color:#FCD34D;font-size:1.25rem;font-weight:900;"
-            f"line-height:1'>{hs}–{as_}</div>"
-            "</div>"
+            f"<div style='color:#FCD34D;font-size:1.25rem;font-weight:900;line-height:1'>{hs}–{as_}</div></div>"
         )
-        btn_label = "📊 View Result"
     else:
         center_html = (
             "<div style='flex-shrink:0;align-self:center;padding:0 .4rem;text-align:center'>"
             "<span style='background:rgba(245,158,11,.12);color:#F59E0B;"
             "border:1px solid rgba(245,158,11,.28);border-radius:20px;"
-            "padding:.17rem .48rem;font-size:.63rem;font-weight:900;"
-            "letter-spacing:.06em'>vs</span>"
-            "</div>"
+            "padding:.17rem .48rem;font-size:.63rem;font-weight:900;letter-spacing:.06em'>vs</span></div>"
         )
-        btn_label = "⚽ Make Your Pick"
 
-    # ── Card wrapper ────────────────────────────────────────────────────────
     home_uri = get_country_image_data_uri(home_name) or ""
     away_uri = get_country_image_data_uri(away_name) or ""
     if home_uri and away_uri:
         card_html = (
             "<div style='position:relative;border-radius:16px;overflow:hidden;margin-bottom:.5rem'>"
             f"<div style='position:absolute;top:0;left:0;width:50%;height:100%;"
-            f"background:url('{home_uri}') center/cover no-repeat;"
-            f"filter:brightness(.18) blur(2px)'></div>"
+            f"background:url('{home_uri}') center/cover no-repeat;filter:brightness(.18) blur(2px)'></div>"
             f"<div style='position:absolute;top:0;right:0;width:50%;height:100%;"
-            f"background:url('{away_uri}') center/cover no-repeat;"
-            f"filter:brightness(.18) blur(2px)'></div>"
+            f"background:url('{away_uri}') center/cover no-repeat;filter:brightness(.18) blur(2px)'></div>"
             "<div style='position:absolute;inset:0;"
             "background:linear-gradient(135deg,rgba(30,58,95,.5),rgba(15,23,42,.4))'></div>"
             "<div style='position:relative;z-index:1;padding:.85rem .75rem .65rem'>"
@@ -294,32 +266,24 @@ def _today_ko_card(km: dict) -> None:
     else:
         card_html = (
             f"<div style='background:linear-gradient(135deg,{bg_c},{bg_c}cc);"
-            f"border-radius:16px;padding:.85rem .75rem .65rem;margin-bottom:.5rem'>"
-            "<div>"
+            f"border-radius:16px;padding:.85rem .75rem .65rem;margin-bottom:.5rem'><div>"
         )
 
     card_html += (
-        # TOP: badges (centered)
         "<div style='text-align:center;margin-bottom:.5rem'>"
         f"<span style='background:{bg_c};color:{tx_c};border-radius:4px;"
-        f"padding:.08rem .4rem;font-size:.7rem;font-weight:800;"
-        f"letter-spacing:.04em'>{rnd_lbl}</span>"
+        f"padding:.08rem .4rem;font-size:.7rem;font-weight:800;letter-spacing:.04em'>{rnd_lbl}</span>"
         f"<span style='background:rgba(255,255,255,.12);color:#FCD34D;border-radius:4px;"
-        f"padding:.08rem .35rem;font-size:.68rem;font-weight:800;"
-        f"margin-left:.3rem'>+{pts_val} pts</span>"
-        "</div>"
-        # MIDDLE: Team A block | vs badge | Team B block
+        f"padding:.08rem .35rem;font-size:.68rem;font-weight:800;margin-left:.3rem'>+{pts_val} pts</span></div>"
         "<div style='display:flex;align-items:flex-start'>"
         + _team_block(home_flag, home_name, home_pickers, home_id)
         + center_html
         + _team_block(away_flag, away_name, away_pickers, away_id)
         + "</div>"
-        # BOTTOM: kickoff + venue
         "<div style='text-align:center;margin-top:.5rem'>"
         f"<div style='font-size:.72rem;color:#94A3B8'>🕒 {time_str} · 🏟️ {km['venue']}</div>"
         f"<div style='font-size:.68rem;color:#64748B'>📍 {km['city']}, {km['host_country']}</div>"
-        "</div>"
-        "</div></div>"
+        "</div></div></div>"
     )
     st.markdown(card_html, unsafe_allow_html=True)
     if is_done:
@@ -332,8 +296,7 @@ def _today_ko_card(km: dict) -> None:
             _h_picked = active_pick_id == home_id
             if st.button(
                 f"{'✓ ' if _h_picked else ''}{home_flag} {home_name}",
-                key=f"home_ko_ph_{mid}",
-                use_container_width=True,
+                key=f"home_ko_ph_{mid}", use_container_width=True,
                 type="primary" if _h_picked else "secondary",
             ):
                 save_ko_pick(active_uid, mid, home_id)
@@ -342,8 +305,7 @@ def _today_ko_card(km: dict) -> None:
             _a_picked = active_pick_id == away_id
             if st.button(
                 f"{'✓ ' if _a_picked else ''}{away_flag} {away_name}",
-                key=f"home_ko_pa_{mid}",
-                use_container_width=True,
+                key=f"home_ko_pa_{mid}", use_container_width=True,
                 type="primary" if _a_picked else "secondary",
             ):
                 save_ko_pick(active_uid, mid, away_id)
@@ -353,11 +315,8 @@ def _today_ko_card(km: dict) -> None:
 def _build_storylines(combined: list[dict], active_uid: int) -> list[str]:
     """Generate up to 4 narrative storyline strings for the current standings."""
     stories: list[str] = []
-
-    # 1. Leader gap
     if len(combined) >= 2:
-        leader = combined[0]
-        second = combined[1]
+        leader, second = combined[0], combined[1]
         gap = leader["total_pts"] - second["total_pts"]
         if gap == 0:
             stories.append(f"⚖️ **{leader['name']}** and **{second['name']}** are tied at the top!")
@@ -366,8 +325,6 @@ def _build_storylines(combined: list[dict], active_uid: int) -> list[str]:
                 f"🏆 **{leader['avatar']} {leader['name']}** leads by "
                 f"**{gap:.1f} pt{'s' if gap != 1.0 else ''}**"
             )
-
-    # 2. Most recent scored KO live pick
     try:
         conn = get_connection()
         row = conn.execute("""
@@ -376,10 +333,8 @@ def _build_storylines(combined: list[dict], active_uid: int) -> list[str]:
             JOIN knockout_matches km ON klp.knockout_match_id = km.id
             JOIN users u ON klp.user_id = u.id
             JOIN teams t ON klp.picked_team_id = t.id
-            WHERE km.status = 'completed'
-              AND km.winner_team_id = klp.picked_team_id
-            ORDER BY km.match_date DESC, km.kickoff_time_et DESC
-            LIMIT 1
+            WHERE km.status = 'completed' AND km.winner_team_id = klp.picked_team_id
+            ORDER BY km.match_date DESC, km.kickoff_time_et DESC LIMIT 1
         """).fetchone()
         conn.close()
         if row:
@@ -391,19 +346,164 @@ def _build_storylines(combined: list[dict], active_uid: int) -> list[str]:
             )
     except Exception:
         pass
-
-    # 3. Closest chaser (last place's gap to leader)
     if len(combined) >= 3:
-        leader = combined[0]
-        chaser = combined[-1]
+        leader, chaser = combined[0], combined[-1]
         gap = leader["total_pts"] - chaser["total_pts"]
         if 0 < gap <= 15:
             stories.append(
-                f"{chaser['avatar']} **{chaser['name']}** is **{gap:.1f} pts** behind — "
-                f"still in reach!"
+                f"{chaser['avatar']} **{chaser['name']}** is **{gap:.1f} pts** behind — still in reach!"
             )
-
     return stories[:4]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# QF+ Phase helpers  (activates beginning with Quarterfinals)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _is_qf_plus() -> bool:
+    """True once QF teams are assigned (Quarterfinals through Final)."""
+    try:
+        conn = get_connection()
+        n = conn.execute(
+            "SELECT COUNT(*) FROM knockout_matches WHERE round='qf' AND home_team_id IS NOT NULL"
+        ).fetchone()[0]
+        conn.close()
+        return n > 0
+    except Exception:
+        return False
+
+
+def _current_phase() -> str:
+    """Active tournament phase: 'qf', 'sf', 'third', 'final', or 'early'."""
+    try:
+        conn = get_connection()
+        row = conn.execute("""
+            SELECT round FROM knockout_matches
+            WHERE status='scheduled' AND home_team_id IS NOT NULL
+            ORDER BY CASE round
+                WHEN 'final' THEN 7 WHEN 'third' THEN 6
+                WHEN 'sf' THEN 5 WHEN 'qf' THEN 4
+                WHEN 'r16' THEN 3 WHEN 'r32' THEN 2 ELSE 1 END DESC
+            LIMIT 1
+        """).fetchone()
+        conn.close()
+        return row[0] if row else 'early'
+    except Exception:
+        return 'early'
+
+
+def _get_ko_pick_stats() -> dict[int, dict]:
+    """Per-user {wins, picks} for completed knockout matches."""
+    try:
+        conn = get_connection()
+        rows = conn.execute("""
+            SELECT klp.user_id,
+                   COUNT(*) AS total_picks,
+                   SUM(CASE WHEN km.winner_team_id = klp.picked_team_id THEN 1 ELSE 0 END) AS wins
+            FROM knockout_live_picks klp
+            JOIN knockout_matches km ON klp.knockout_match_id = km.id
+            WHERE km.status = 'completed'
+            GROUP BY klp.user_id
+        """).fetchall()
+        conn.close()
+        return {uid: {'picks': int(picks), 'wins': int(wins or 0)} for uid, picks, wins in rows}
+    except Exception:
+        return {}
+
+
+def _get_watch_players(team_name: str, n: int = 2) -> list[dict]:
+    """Up to n featured players for one team, always including the starting GK."""
+    results: list[dict] = []
+    try:
+        fp_list = get_featured_players(team_name)
+
+        has_gk = any(p['position'] == 'GK' for p in fp_list)
+        if not has_gk:
+            roster = get_team_roster(team_name)
+            if not roster.empty:
+                gk_rows = roster[roster['position'] == 'GK'].sort_values('shirt_number')
+                if not gk_rows.empty:
+                    gk = gk_rows.iloc[0]
+                    fp_list.insert(0, {
+                        'name':         gk['player_name'],
+                        'shirt_number': int(gk['shirt_number']),
+                        'position':     'GK',
+                        'club':         gk['club'],
+                        'club_short':   str(gk.get('club_short', gk['club'])),
+                        'age':          int(gk.get('age', 0)),
+                        'role':         '🧤 Goalkeeper',
+                    })
+
+        for fp in fp_list[:n]:
+            slug = get_player_slug(team_name, fp['name'])
+            card = get_player_card_data(slug) if slug else None
+            if card:
+                results.append(card)
+            else:
+                results.append({
+                    'player_slug':  '',
+                    'name':         fp['name'],
+                    'shirt_number': fp['shirt_number'],
+                    'position':     fp['position'],
+                    'club_short':   fp.get('club_short', fp.get('club', '')),
+                    'flag':         get_flag(team_name),
+                    'team':         team_name,
+                    'is_captain':   '🎖️' in fp.get('role', ''),
+                    'quick_facts':  [fp.get('role', fp['position'])],
+                    'one_thing': (
+                        f"#{fp['shirt_number']} {fp['name']} — "
+                        f"{fp['position']} representing {team_name} at the 2026 World Cup."
+                    ),
+                })
+    except Exception:
+        pass
+    return results
+
+
+def _player_watch_card(player: dict) -> None:
+    """Render one player card in the Players to Watch section."""
+    _pf   = player.get('flag', '⬜')
+    _pnum = player.get('shirt_number', '?')
+    _ppos = player.get('position', '')
+    _pnam = player.get('name', '')
+    _pclb = player.get('club_short', player.get('club', ''))
+    _pone = player.get('one_thing', '')
+    _pqf  = player.get('quick_facts') or []
+
+    _badges = "".join(
+        f"<span style='background:rgba(255,255,255,.08);color:#CBD5E1;"
+        f"border-radius:4px;padding:.08rem .3rem;font-size:.6rem;"
+        f"font-weight:700;white-space:nowrap'>{qf}</span>"
+        for qf in _pqf[:3]
+    )
+    st.markdown(
+        f"<div style='background:linear-gradient(160deg,#1E293B,#0F172A);"
+        f"border:1px solid rgba(148,163,184,.15);border-radius:12px;"
+        f"padding:.75rem .85rem;margin:.1rem 0'>"
+        f"<div style='display:flex;align-items:center;gap:.4rem;margin-bottom:.25rem'>"
+        f"<span style='font-size:1.3rem;line-height:1'>{_pf}</span>"
+        f"<span style='background:rgba(245,158,11,.15);color:#F59E0B;"
+        f"border-radius:5px;padding:.08rem .28rem;font-size:.7rem;font-weight:900'>#{_pnum}</span>"
+        f"<span style='color:#94A3B8;font-size:.68rem'>{_ppos}</span>"
+        f"<span style='margin-left:auto;font-size:.62rem;color:#64748B;"
+        f"overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:6rem'>{_pclb}</span>"
+        f"</div>"
+        f"<div style='font-size:1rem;font-weight:900;color:#F1F5F9;line-height:1.1;margin-bottom:.25rem'>"
+        f"{_pnam}</div>"
+        + (
+            f"<div style='font-size:.76rem;color:#CBD5E1;line-height:1.45;"
+            f"border-left:3px solid rgba(245,158,11,.4);padding-left:.45rem;"
+            f"margin-bottom:.3rem'>{_pone}</div>"
+            if _pone else ""
+        )
+        + (f"<div style='display:flex;flex-wrap:wrap;gap:.18rem'>{_badges}</div>" if _badges else "")
+        + "</div>",
+        unsafe_allow_html=True,
+    )
+    _pslug = player.get('player_slug', '')
+    if _pslug:
+        if st.button("👤 Profile", key=f"ptw_{_pslug}_{_pnum}", use_container_width=True):
+            _show_player_modal_home(_pslug)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -432,17 +532,21 @@ today_matches = today_matches.sort_values('_sk').drop(columns=['_sk'])
 board    = get_leaderboard()
 combined = get_combined_leaderboard()
 
-# Knockout matches scheduled for today (exclude 3rd-place match 131)
 try:
-    _ko_all        = get_all_ko_matches_display()
-    today_ko       = [m for m in _ko_all if m["match_date"] == today_str and m["id"] != 131]
+    _ko_all  = get_all_ko_matches_display()
+    today_ko = [m for m in _ko_all if m["match_date"] == today_str and m["id"] != 131]
 except Exception:
+    _ko_all  = []
     today_ko = []
 
 try:
     cotd_hero = get_country_of_the_day()
 except Exception:
     cotd_hero = None
+
+# QF+ phase detection (computed once per page load)
+is_qf_plus = _is_qf_plus()
+_phase     = _current_phase()   # 'qf', 'sf', 'third', 'final', or 'early'
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -478,15 +582,43 @@ if combined:
         f"</div>"
     )
 
+# Optional B: replace COTD with next KO match in QF+ phase
 cotd_hero_html = ""
-if cotd_hero:
+if is_qf_plus:
+    _next_ko = next(
+        (m for m in _ko_all if m['status'] == 'scheduled'
+         and m.get('home_name') and m.get('away_name')),
+        None,
+    )
+    if _next_ko:
+        _nko_time = fmt_match_time(_next_ko.get('match_date', ''), _next_ko.get('kickoff_time_et', ''))
+        cotd_hero_html = (
+            f"<div style='font-size:.85rem;color:#CBD5E1;margin:.2rem 0'>"
+            f"🏟️ Next: {_next_ko['home_flag']} {_next_ko['home_name']} vs "
+            f"{_next_ko['away_name']} {_next_ko['away_flag']} · {_nko_time}"
+            f"</div>"
+        )
+elif cotd_hero:
     cotd_hero_html = (
         f"<div style='font-size:.85rem;color:#CBD5E1;margin:.2rem 0'>"
         f"🌍 Country of the Day: {cotd_hero['flag']} <b>{cotd_hero['country']}</b>"
         f"</div>"
     )
 
-day_label   = f"⚽ Day {day_num}" if in_tournament and day_num else "⚽ FIFA World Cup 2026"
+# Optional A: phase-aware day label
+_PHASE_DISPLAY = {
+    'qf':    'Quarterfinals',
+    'sf':    'Semifinals',
+    'third': 'Third Place',
+    'final': 'The Final',
+}
+if is_qf_plus and _phase in _PHASE_DISPLAY:
+    day_label = f"🏆 {_PHASE_DISPLAY[_phase]}"
+elif in_tournament and day_num:
+    day_label = f"⚽ Day {day_num}"
+else:
+    day_label = "⚽ FIFA World Cup 2026"
+
 if n_today > 0:
     match_label = f"🗓 {n_today} Match{'es' if n_today != 1 else ''} Today"
 elif today_ko:
@@ -552,9 +684,10 @@ if upcoming:
     )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 2b. KNOCKOUT BRACKET
+# 2b. KNOCKOUT BRACKET  (heading hidden in QF+ — bracket becomes visual centerpiece)
 # ─────────────────────────────────────────────────────────────────────────────
-st.markdown('<div class="section-head">🏆 Knockout Bracket</div>', unsafe_allow_html=True)
+if not is_qf_plus:
+    st.markdown('<div class="section-head">🏆 Knockout Bracket</div>', unsafe_allow_html=True)
 render_radial_bracket(show_title=False)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -565,7 +698,7 @@ if today_ko:
         '<div class="section-head">⚽ Today\'s Knockout Matches</div>',
         unsafe_allow_html=True,
     )
-    _nko   = len(today_ko)
+    _nko    = len(today_ko)
     _nkcols = min(_nko, 4)
     _kocols = st.columns(_nkcols)
     for _ki, _km in enumerate(today_ko):
@@ -585,7 +718,7 @@ if not today_matches.empty:
             _today_match_card(_m)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 4. COMPACT PICKS STRIP — single horizontal line
+# 4. COMPACT PICKS STRIP
 # ─────────────────────────────────────────────────────────────────────────────
 _uid   = st.session_state.get("active_user_id", 1)
 _uname = st.session_state.get("active_user_name", "You")
@@ -645,323 +778,491 @@ if not today_matches.empty:
 st.divider()
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 5. THREE-COLUMN: Leaderboard | Family Favorites | Discovery Race
+# 5 onwards — layout branches on tournament phase
+# Group Stage / R32 / R16 → original layout (unchanged)
+# Quarterfinals+ → competition-focused layout
 # ─────────────────────────────────────────────────────────────────────────────
-lb_col, fav_col, disc_col = st.columns([3, 4, 4])
 
-# ── Race to the Cup ────────────────────────────────────────────────────────────
-with lb_col:
-    st.markdown('<div class="section-head">🏆 Race to the Cup</div>', unsafe_allow_html=True)
-    medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣", "6️⃣", "7️⃣"]
-    for i, entry in enumerate(combined):
+if is_qf_plus:
+
+    # ── QF+ A: FAMILY COMPETITION (three equal scoreboards) ──────────────────
+    st.markdown('<div class="section-head">🎯 Family Competition</div>', unsafe_allow_html=True)
+
+    _ko_stats          = _get_ko_pick_stats()
+    _combined_by_total = sorted(combined, key=lambda x: (-x["total_pts"],   x["name"]))
+    _combined_by_ko    = sorted(combined, key=lambda x: (-x["ko_live_pts"], x["name"]))
+    _combined_by_grp   = sorted(combined, key=lambda x: (-x["group_pts"],   x["name"]))
+    _medals_qf = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣", "6️⃣", "7️⃣"]
+
+    def _qf_sb_row(rank_i: int, entry: dict, pts_str: str, chips_html: str) -> str:
         color = entry.get("theme_color") or "#E2E8F0"
-        grp   = entry["group_pts"]
-        ko    = entry["ko_live_pts"]
-        tot   = entry["total_pts"]
-        chips = (
-            f"<span style='font-size:.65rem;color:#86EFAC'>⚽{grp:.1f}</span>"
-            f"<span style='font-size:.65rem;color:#7DD3FC'>🎯{ko:.0f}</span>"
-        )
-        st.markdown(
+        return (
             f"<div class='lb-row' style='background:{color}22;border-left:3px solid {color};"
-            f"display:flex;align-items:center;gap:.5rem'>"
-            f"<span style='font-size:2rem;flex-shrink:0'>{entry['avatar']}</span>"
+            f"display:flex;align-items:center;gap:.45rem'>"
+            f"<span style='font-size:1.85rem;flex-shrink:0'>{entry['avatar']}</span>"
             f"<div style='flex:1;min-width:0'>"
-            f"<div style='font-size:1.05rem;font-weight:800'>{medals[i] if i < len(medals) else ''} {entry['name']}</div>"
-            f"<div style='display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.05rem'>"
-            f"<span style='color:#FCD34D;font-size:.88rem;font-weight:700'>{tot:.1f} pts</span>"
-            f"&nbsp;{chips}</div>"
-            f"</div></div>",
-            unsafe_allow_html=True,
+            f"<div style='font-size:.98rem;font-weight:800'>"
+            f"{_medals_qf[rank_i] if rank_i < len(_medals_qf) else ''} {entry['name']}</div>"
+            f"<div style='display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.04rem'>"
+            f"<span style='color:#FCD34D;font-size:.82rem;font-weight:700'>{pts_str}</span>"
+            f"&nbsp;{chips_html}</div></div></div>"
         )
-    st.page_link("pages/leaderboard.py", label="→ Full Breakdown", icon="📊")
 
-# ── Family Favorites — compact [square image] + [text] media cards ─────────────
-with fav_col:
+    _qsc1, _qsc2, _qsc3 = st.columns(3)
+
+    with _qsc1:
+        st.markdown('<div class="section-head">🏆 Race to the Cup</div>', unsafe_allow_html=True)
+        for _i, _e in enumerate(_combined_by_total):
+            _chips = (
+                f"<span style='font-size:.58rem;color:#86EFAC'>⚽{_e['group_pts']:.1f}</span>"
+                f"<span style='font-size:.58rem;color:#7DD3FC'>🎯{_e['ko_live_pts']:.0f}</span>"
+            )
+            st.markdown(_qf_sb_row(_i, _e, f"{_e['total_pts']:.1f} pts", _chips), unsafe_allow_html=True)
+        st.page_link("pages/leaderboard.py", label="→ Full Breakdown", icon="📊")
+
+    with _qsc2:
+        st.markdown('<div class="section-head">🎯 Knockout Stage</div>', unsafe_allow_html=True)
+        for _i, _e in enumerate(_combined_by_ko):
+            _ks    = _ko_stats.get(_e["id"], {})
+            _wins  = _ks.get("wins", 0)
+            _picks = _ks.get("picks", 0)
+            _chips = (
+                f"<span style='font-size:.58rem;color:#86EFAC'>{_wins}W / {_picks} picks</span>"
+            ) if _picks else ""
+            st.markdown(_qf_sb_row(_i, _e, f"{_e['ko_live_pts']:.0f} pts", _chips), unsafe_allow_html=True)
+
+    with _qsc3:
+        st.markdown('<div class="section-head">⭐ Group Stage</div>', unsafe_allow_html=True)
+        for _i, _e in enumerate(_combined_by_grp):
+            _chips = "<span style='font-size:.58rem;color:#94A3B8'>Final</span>"
+            st.markdown(_qf_sb_row(_i, _e, f"{_e['group_pts']:.1f} pts", _chips), unsafe_allow_html=True)
+
+    st.divider()
+
+    # ── QF+ B: FAMILY FAVORITES (compact 4-column gallery) ───────────────────
     st.markdown('<div class="section-head">⭐ Family Favorites</div>', unsafe_allow_html=True)
     try:
-        country_owners: dict[str, list] = {}
-        no_fav_rows = []
-        for i, (_, row) in enumerate(board.iterrows()):
-            uid  = int(row['id'])
-            favs = get_top_favorites(uid, 1)
-            if favs:
-                country_owners.setdefault(favs[0], []).append((i, row))
-            else:
-                no_fav_rows.append(row)
-
-        sorted_countries = sorted(
-            country_owners.items(),
-            key=lambda item: (-len(item[1]), min(r for r, _ in item[1])),
-        )
-
-        for country, owners in sorted_countries:
-            n_fans   = len(owners)
-            border   = "#9333EA" if n_fans >= 4 else "#3B82F6" if n_fans >= 2 else "#D97706"
-            stamp    = get_stamp(country)
-            flag     = get_flag(country)
-            landmark = stamp.get('stamp_label', '')
-            pick_count = _country_total_picks(country)
-
-            if n_fans == 1:
-                ctx, ctx_color = f"❤️ {owners[0][1]['name']}'s #1 pick", "#94A3B8"
-            elif n_fans == 2:
-                ctx, ctx_color = "👨‍👩‍👧 Shared by 2 family members", "#60A5FA"
-            else:
-                ctx, ctx_color = f"👨‍👩‍👧 Shared by {n_fans} family members", "#A78BFA"
-
-            av_html = "".join(
-                "<span title='" + str(r["name"]) + "' style='font-size:1.2rem'>" + str(r["avatar"]) + "</span>"
-                for _, r in owners
-            )
-
-            st.markdown(
-                f"<div style='display:flex;align-items:flex-start;gap:.55rem;"
-                f"border:2px solid {border};border-radius:10px;"
-                f"padding:.4rem .55rem .4rem .4rem;margin:.18rem 0'>"
-                + _country_sq_img(country, "78px")
-                + f"<div style='min-width:0;flex:1'>"
-                f"<div style='font-size:.93rem;font-weight:900'>{flag} {country}</div>"
-                f"<div style='font-size:.7rem;color:#64748B;margin:.04rem 0'>{landmark}</div>"
-                f"<div style='font-size:.72rem;font-weight:700;color:{ctx_color}'>{ctx}</div>"
-                f"<div style='display:flex;gap:.15rem;margin:.06rem 0'>{av_html}</div>"
-                f"<div style='font-size:.68rem;color:#475569'>⚽ {pick_count} pick{'s' if pick_count != 1 else ''}</div>"
-                f"</div></div>",
-                unsafe_allow_html=True,
-            )
-
-        for row in no_fav_rows:
-            st.markdown(
-                f"<div style='border:1px solid rgba(255,255,255,.07);border-radius:10px;"
-                f"padding:.38rem .65rem;margin:.18rem 0;opacity:.4;"
-                f"display:flex;align-items:center;gap:.5rem'>"
-                f"<span style='font-size:1.4rem'>{row['avatar']}</span>"
-                f"<span style='font-size:.8rem;color:#94A3B8;font-style:italic'>"
-                f"{row['name']} — keep exploring!</span></div>",
-                unsafe_allow_html=True,
-            )
+        _fav_list = get_family_top_favorites(n=8)
+        if _fav_list:
+            _fav_cols = st.columns(4)
+            for _fi, _fc in enumerate(_fav_list):
+                with _fav_cols[_fi % 4]:
+                    _fc_flag  = get_flag(_fc)
+                    _fc_stamp = get_stamp(_fc)
+                    _fc_label = _fc_stamp.get('stamp_label', '')
+                    _fc_uri   = get_country_image_data_uri(_fc) or ''
+                    if _fc_uri:
+                        _fav_img = (
+                            f"<div style='width:100%;aspect-ratio:4/3;"
+                            f"background:url(\"{_fc_uri}\") center/cover no-repeat;"
+                            f"border-radius:8px;margin-bottom:.22rem'></div>"
+                        )
+                    else:
+                        _fav_img = (
+                            f"<div style='width:100%;aspect-ratio:4/3;"
+                            f"background:linear-gradient(135deg,#1E293B,#334155);"
+                            f"display:flex;align-items:center;justify-content:center;"
+                            f"font-size:2rem;border-radius:8px;margin-bottom:.22rem'>{_fc_flag}</div>"
+                        )
+                    st.markdown(
+                        f"<div style='text-align:center;margin-bottom:.3rem'>"
+                        + _fav_img
+                        + f"<div style='font-size:.82rem;font-weight:800;color:#F1F5F9'>{_fc_flag} {_fc}</div>"
+                        f"<div style='font-size:.67rem;color:#64748B;margin-top:.02rem'>{_fc_label}</div>"
+                        f"</div>",
+                        unsafe_allow_html=True,
+                    )
+            st.page_link("pages/passport_family.py", label="→ Family Passport", icon="🌍")
     except Exception:
         st.caption("Favorites loading...")
 
-# ── Discovery Race — promoted to first-class column ───────────────────────────
-with disc_col:
-    st.markdown('<div class="section-head">🌎 Discovery Race</div>', unsafe_allow_html=True)
-    try:
-        _exp_board  = get_explorer_leaderboard()
-        _exp_weekly = get_weekly_explorer()
+    st.divider()
 
-        if _exp_weekly and _exp_weekly.get('count', 0) > 0:
-            _ew_word = "country" if _exp_weekly['count'] == 1 else "countries"
-            st.markdown(
-                f"<div style='background:rgba(168,85,247,.12);border-left:3px solid #A855F7;"
-                f"border-radius:0 8px 8px 0;padding:.38rem .6rem;margin:.25rem 0 .45rem;"
-                f"font-size:.8rem'>"
-                f"<span style='color:#A855F7;font-weight:800'>🌟 This Week's Explorer</span><br>"
-                f"<span style='color:#F1F5F9'>{_exp_weekly['avatar']} {_exp_weekly['name']}"
-                f" — {_exp_weekly['count']} new {_ew_word}</span></div>",
-                unsafe_allow_html=True,
-            )
+    # ── QF+ C: PLAYERS TO WATCH TODAY ────────────────────────────────────────
+    st.markdown('<div class="section-head">🌟 Players to Watch Today</div>', unsafe_allow_html=True)
 
-        medals_exp = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣", "6️⃣"]
-        for i, _erow in enumerate(_exp_board):
-            _escore        = _erow['score']
-            _etitle, _eemoji = get_badge(_escore)
-            _ecolor        = _erow['theme_color']
-            st.markdown(
-                f"<div class='lb-row' style='background:{_ecolor}22;border-left:3px solid {_ecolor};"
-                f"display:flex;align-items:center;gap:.5rem'>"
-                f"<span style='font-size:2rem;flex-shrink:0'>{_erow['avatar']}</span>"
-                f"<div><div style='font-size:1.05rem;font-weight:800'>"
-                f"{medals_exp[i] if i < len(medals_exp) else ''} {_erow['name']}</div>"
-                f"<div style='color:#475569;font-size:.82rem'><b>{_escore}</b> pts · {_eemoji} {_etitle}"
-                f"</div></div></div>",
-                unsafe_allow_html=True,
-            )
-        st.page_link("pages/discovery_race.py", label="→ Full Discovery Race", icon="🌎")
-    except Exception:
-        st.caption("Discovery Race loading...")
+    _ptw_matches = [m for m in today_ko if m.get('home_name') and m.get('away_name')]
 
-st.divider()
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 5b. STORYLINES STRIP
-# ─────────────────────────────────────────────────────────────────────────────
-_uid_for_stories = st.session_state.get("active_user_id", 1)
-try:
-    _stories = _build_storylines(combined, _uid_for_stories)
-except Exception:
-    _stories = []
-
-def _md_bold(s: str) -> str:
-    return re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', s)
-
-if _stories:
-    _s_cols = st.columns(len(_stories))
-    for _si, (_scol, _story) in enumerate(zip(_s_cols, _stories)):
-        with _scol:
-            st.markdown(
-                f"<div style='background:rgba(255,255,255,.04);"
-                f"border:1px solid rgba(255,255,255,.1);border-radius:10px;"
-                f"padding:.55rem .75rem;font-size:.85rem;color:#CBD5E1;line-height:1.45'>"
-                f"{_md_bold(_story)}</div>",
-                unsafe_allow_html=True,
-            )
-    st.markdown("<div style='height:.3rem'></div>", unsafe_allow_html=True)
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 6. FAMILY STORY — full-width compact 2-column feed, deduplicated
-# ─────────────────────────────────────────────────────────────────────────────
-st.markdown('<div class="section-head">📖 Family Story</div>', unsafe_allow_html=True)
-
-_TIER_STYLE = {
-    1: ("rgba(251,191,36,.07)",  "rgba(217,119,6,.55)"),
-    2: ("rgba(16,185,129,.06)",  "rgba(16,185,129,.4)"),
-    3: ("rgba(248,250,252,.03)", "rgba(255,255,255,.07)"),
-}
-
-story_items = _dedup_story(get_tiered_family_activity(limit=20))
-
-if story_items.empty:
-    st.markdown(
-        "<div style='background:rgba(248,250,252,.05);border:1px solid rgba(255,255,255,.08);"
-        "border-radius:12px;padding:1.2rem;text-align:center;color:#64748B'>"
-        "<div style='font-size:2.5rem'>🗺️</div>"
-        "<div style='font-weight:700;margin:.3rem 0'>The adventure begins here.</div>"
-        "<div style='font-size:.88rem'>Explore countries and make picks to write the family story.</div>"
-        "</div>",
-        unsafe_allow_html=True,
-    )
-else:
-    _scols = st.columns(2)
-    for _i, (_, _act) in enumerate(story_items.head(12).iterrows()):
-        _icon, _narr = format_activity_message(_act)
-        _tier  = int(_act.get('_tier', 3))
-        _ts    = str(_act.get('timestamp', ''))[:10]
-        _av    = str(_act.get('avatar', '⚽'))
-        _name  = str(_act.get('user_name', ''))
-        _bg, _border = _TIER_STYLE.get(_tier, _TIER_STYLE[3])
-
-        # Merge grouped users
-        _grp_avs = str(_act.get('_grp_avs') or '')
-        if '|' in _grp_avs:
-            _av = " ".join(a for a in _grp_avs.split('|')[:4] if a)
-            _grp_names = str(_act.get('_grp_names') or '').split('|')
-            _grp_names = [n for n in _grp_names if n]
-            if len(_grp_names) <= 3:
-                _name = " & ".join(_grp_names)
-            else:
-                _name = f"{len(_grp_names)} family members"
-
-        with _scols[_i % 2]:
-            st.markdown(
-                f"<div style='display:flex;align-items:center;gap:.45rem;padding:.28rem .55rem;"
-                f"border-radius:8px;margin:.08rem 0;background:{_bg};border:1px solid {_border}'>"
-                f"<span style='font-size:1.1rem;flex-shrink:0'>{_icon}</span>"
-                f"<span style='font-size:.95rem;flex-shrink:0'>{_av}</span>"
-                f"<span style='font-size:.84rem;font-weight:700;flex-shrink:0;color:#F1F5F9;"
-                f"max-width:5.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>{_name}</span>"
-                f"<span style='font-size:.83rem;flex:1;color:#CBD5E1;min-width:0;"
-                f"overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>{_narr}</span>"
-                f"<span style='font-size:.68rem;color:#475569;flex-shrink:0;white-space:nowrap'>{_ts}</span>"
-                f"</div>",
-                unsafe_allow_html=True,
-            )
-
-st.divider()
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 7. FEATURED PLAYER OF THE DAY
-# ─────────────────────────────────────────────────────────────────────────────
-st.markdown('<div class="section-head">⭐ Featured Player of the Day</div>', unsafe_allow_html=True)
-try:
-    _fp = get_featured_player_of_day()
-    if _fp:
-        _fp_c1, _fp_c2 = st.columns([1, 3])
-        with _fp_c1:
-            st.markdown(
-                f"<div style='text-align:center;padding:.5rem 0'>"
-                f"<div style='font-size:4rem;line-height:1'>{_fp['flag']}</div>"
-                f"<div style='font-size:2.2rem;font-weight:900;color:#FCD34D;margin:.1rem 0'>#{_fp['shirt_number']}</div>"
-                f"<div style='font-size:1rem;font-weight:900;color:#F1F5F9;line-height:1.2'>{_fp['name']}</div>"
-                f"<div style='font-size:.82rem;color:#94A3B8;margin-top:.1rem'>{_fp['team']}</div>"
-                f"<div style='font-size:.78rem;color:#64748B'>{_fp['position']} · {_fp['club_short']}</div>"
-                f"</div>",
-                unsafe_allow_html=True,
-            )
-            if st.button("👤 Learn More", key=f"home_fp_{_fp['player_slug']}", use_container_width=True):
-                _show_player_modal_home(_fp['player_slug'])
-        with _fp_c2:
-            st.markdown(
-                f"<div style='background:linear-gradient(160deg,#1E293B,#0F172A);"
-                f"border-left:4px solid #F59E0B;border-radius:0 14px 14px 0;"
-                f"padding:1rem 1.2rem;height:100%;color:white;"
-                f"border:1px solid rgba(148,163,184,.12)'>"
-                f"<div style='font-size:.65rem;font-weight:800;color:#D97706;"
-                f"text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem'>"
-                f"⭐ One Thing To Remember</div>"
-                f"<div style='font-size:1.05rem;color:#F1F5F9;line-height:1.6;font-weight:500'>"
-                f"{_fp['one_thing']}</div>"
-                f"</div>",
-                unsafe_allow_html=True,
-            )
-    else:
-        st.caption("Roster data loading...")
-except Exception:
-    st.caption("Featured player loading...")
-
-st.divider()
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 8. WORLD ATLAS PREVIEW
-# ─────────────────────────────────────────────────────────────────────────────
-_map_head, _map_btn = st.columns([5, 1])
-with _map_head:
-    st.markdown('<div class="section-head">🌎 World Atlas</div>', unsafe_allow_html=True)
-with _map_btn:
-    st.markdown("&nbsp;", unsafe_allow_html=True)
-    if st.button("Open Full Atlas →", use_container_width=True, key="home_open_atlas"):
-        st.switch_page("pages/map.py")
-
-try:
-    _map_teams   = get_all_teams()
-    _map_iso3, _ = get_iso3_maps(_map_teams)
-    _active_uid  = st.session_state.get("active_user_id", 1)
-    _map_disc_df = get_discoveries(_active_uid)
-    _map_disc    = set(_map_disc_df["country_name"].tolist()) if not _map_disc_df.empty else set()
-    _map_cheered = set(get_cheered_for(_active_uid))
-    _map_won     = set(get_won_with(_active_uid))
-    _map_favs    = get_family_top_favorites(n=5)
-    # Include both group-stage and KO match teams in the "playing today" highlight
-    _map_today = set(today_matches["home_team"].tolist() + today_matches["away_team"].tolist())
-    for _ktm in today_ko:
-        if _ktm.get("home_name"):
-            _map_today.add(_ktm["home_name"])
-        if _ktm.get("away_name"):
-            _map_today.add(_ktm["away_name"])
-
-    _mini_fig = build_atlas_figure(
-        layer="today", teams_df=_map_teams,
-        discoveries=_map_disc, cheered=_map_cheered, won=_map_won,
-        family_favs=_map_favs, today_countries=_map_today, height=300,
-    )
-    _mini_event = st.plotly_chart(_mini_fig, on_select="rerun",
-                                  use_container_width=True, key="home_mini_atlas")
-    if _mini_event and _mini_event.selection and _mini_event.selection.points:
-        _pt   = _mini_event.selection.points[0]
-        _iso3 = _pt.get("location")
-        if _iso3 and _iso3 in _map_iso3:
-            st.session_state["_nav_country"] = _map_iso3[_iso3]
-            st.switch_page("pages/country_profile.py")
-
-    if _map_today:
-        _today_flags = " ".join(
-            str(_map_teams.loc[_map_teams["name"] == n, "flag_emoji"].values[0])
-            for n in sorted(_map_today)
-            if not _map_teams.loc[_map_teams["name"] == n, "flag_emoji"].empty
+    if not _ptw_matches:
+        # No matches today — show players for the next scheduled match
+        _ptw_next = next(
+            (m for m in _ko_all if m['status'] == 'scheduled'
+             and m.get('home_name') and m.get('away_name')),
+            None,
         )
-        _today_lbl = "⚽ Playing today" if today_ko else "🗓 Playing today"
-        st.caption(f"{_today_lbl}: {_today_flags}  ·  📍 Blue = USA · Red = Canada · Green = Mexico")
+        if _ptw_next:
+            _ptw_matches = [_ptw_next]
+            _ptw_lbl = fmt_match_time(_ptw_next.get('match_date', ''), _ptw_next.get('kickoff_time_et', ''))
+            st.caption(f"No matches today — showing players for the next match ({_ptw_lbl})")
+        else:
+            st.info("Player spotlight will appear when the next matches are scheduled.")
+
+    _MATCH_STORIES = {
+        'qf':    "One win away from the Semifinals — everything is on the line.",
+        'sf':    "One win from the World Cup Final. The last four teams standing.",
+        'third': "Playing for bronze and third place on the world stage.",
+        'final': "🏆 This is it — the 2026 World Cup Final.",
+    }
+
+    for _ptw_m in _ptw_matches:
+        _ptw_hname = _ptw_m['home_name']
+        _ptw_aname = _ptw_m['away_name']
+        _ptw_hf    = _ptw_m.get('home_flag', '⬜')
+        _ptw_af    = _ptw_m.get('away_flag', '⬜')
+        _ptw_rnd   = _ptw_m.get('round', 'qf')
+        _ptw_rlbl  = _KO_RND_LABELS.get(_ptw_rnd, 'Knockout Round')
+        _ptw_time  = fmt_match_time(_ptw_m.get('match_date', ''), _ptw_m.get('kickoff_time_et', ''))
+        _ptw_city  = _ptw_m.get('city', '')
+        _ptw_story = _MATCH_STORIES.get(_ptw_rnd, "Winner-takes-all knockout football.")
+
+        # Match header card with storyline
+        st.markdown(
+            f"<div style='background:rgba(245,158,11,.06);"
+            f"border:1px solid rgba(245,158,11,.18);border-radius:12px;"
+            f"padding:.65rem 1rem;margin:.35rem 0 .25rem;text-align:center'>"
+            f"<div style='font-size:2rem;line-height:1;margin-bottom:.1rem'>"
+            f"{_ptw_hf} &nbsp;vs&nbsp; {_ptw_af}</div>"
+            f"<div style='font-size:1rem;font-weight:900;color:#F1F5F9'>"
+            f"{_ptw_hname} <span style='opacity:.4;font-weight:300'>vs</span> {_ptw_aname}</div>"
+            f"<div style='font-size:.73rem;color:#94A3B8;margin:.08rem 0'>"
+            f"{_ptw_rlbl} · {_ptw_time} · {_ptw_city}</div>"
+            f"<div style='font-size:.78rem;color:#FCD34D;font-style:italic;margin-top:.12rem'>"
+            f"✨ {_ptw_story}</div></div>",
+            unsafe_allow_html=True,
+        )
+
+        _ptw_hcol, _ptw_acol = st.columns(2)
+        with _ptw_hcol:
+            st.markdown(
+                f"<div style='font-size:.82rem;font-weight:900;color:#93C5FD;"
+                f"text-align:center;margin:.1rem 0'>{_ptw_hf} {_ptw_hname}</div>",
+                unsafe_allow_html=True,
+            )
+        with _ptw_acol:
+            st.markdown(
+                f"<div style='font-size:.82rem;font-weight:900;color:#93C5FD;"
+                f"text-align:center;margin:.1rem 0'>{_ptw_af} {_ptw_aname}</div>",
+                unsafe_allow_html=True,
+            )
+
+        _h_players = _get_watch_players(_ptw_hname, n=2)
+        _a_players = _get_watch_players(_ptw_aname, n=2)
+
+        for _pi in range(max(len(_h_players), len(_a_players), 1)):
+            _pc_h, _pc_a = st.columns(2)
+            if _pi < len(_h_players):
+                with _pc_h:
+                    _player_watch_card(_h_players[_pi])
+            if _pi < len(_a_players):
+                with _pc_a:
+                    _player_watch_card(_a_players[_pi])
+
+else:
+    # ─────────────────────────────────────────────────────────────────────────
+    # 5. THREE-COLUMN: Leaderboard | Family Favorites | Discovery Race
+    # (original layout — Group Stage / R32 / R16 only)
+    # ─────────────────────────────────────────────────────────────────────────
+    lb_col, fav_col, disc_col = st.columns([3, 4, 4])
+
+    with lb_col:
+        st.markdown('<div class="section-head">🏆 Race to the Cup</div>', unsafe_allow_html=True)
+        medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣", "6️⃣", "7️⃣"]
+        for i, entry in enumerate(combined):
+            color = entry.get("theme_color") or "#E2E8F0"
+            grp   = entry["group_pts"]
+            ko    = entry["ko_live_pts"]
+            tot   = entry["total_pts"]
+            chips = (
+                f"<span style='font-size:.65rem;color:#86EFAC'>⚽{grp:.1f}</span>"
+                f"<span style='font-size:.65rem;color:#7DD3FC'>🎯{ko:.0f}</span>"
+            )
+            st.markdown(
+                f"<div class='lb-row' style='background:{color}22;border-left:3px solid {color};"
+                f"display:flex;align-items:center;gap:.5rem'>"
+                f"<span style='font-size:2rem;flex-shrink:0'>{entry['avatar']}</span>"
+                f"<div style='flex:1;min-width:0'>"
+                f"<div style='font-size:1.05rem;font-weight:800'>{medals[i] if i < len(medals) else ''} {entry['name']}</div>"
+                f"<div style='display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.05rem'>"
+                f"<span style='color:#FCD34D;font-size:.88rem;font-weight:700'>{tot:.1f} pts</span>"
+                f"&nbsp;{chips}</div>"
+                f"</div></div>",
+                unsafe_allow_html=True,
+            )
+        st.page_link("pages/leaderboard.py", label="→ Full Breakdown", icon="📊")
+
+    with fav_col:
+        st.markdown('<div class="section-head">⭐ Family Favorites</div>', unsafe_allow_html=True)
+        try:
+            country_owners: dict[str, list] = {}
+            no_fav_rows = []
+            for i, (_, row) in enumerate(board.iterrows()):
+                uid  = int(row['id'])
+                favs = get_top_favorites(uid, 1)
+                if favs:
+                    country_owners.setdefault(favs[0], []).append((i, row))
+                else:
+                    no_fav_rows.append(row)
+
+            sorted_countries = sorted(
+                country_owners.items(),
+                key=lambda item: (-len(item[1]), min(r for r, _ in item[1])),
+            )
+
+            for country, owners in sorted_countries:
+                n_fans   = len(owners)
+                border   = "#9333EA" if n_fans >= 4 else "#3B82F6" if n_fans >= 2 else "#D97706"
+                stamp    = get_stamp(country)
+                flag     = get_flag(country)
+                landmark = stamp.get('stamp_label', '')
+                pick_count = _country_total_picks(country)
+
+                if n_fans == 1:
+                    ctx, ctx_color = f"❤️ {owners[0][1]['name']}'s #1 pick", "#94A3B8"
+                elif n_fans == 2:
+                    ctx, ctx_color = "👨‍👩‍👧 Shared by 2 family members", "#60A5FA"
+                else:
+                    ctx, ctx_color = f"👨‍👩‍👧 Shared by {n_fans} family members", "#A78BFA"
+
+                av_html = "".join(
+                    "<span title='" + str(r["name"]) + "' style='font-size:1.2rem'>" + str(r["avatar"]) + "</span>"
+                    for _, r in owners
+                )
+
+                st.markdown(
+                    f"<div style='display:flex;align-items:flex-start;gap:.55rem;"
+                    f"border:2px solid {border};border-radius:10px;"
+                    f"padding:.4rem .55rem .4rem .4rem;margin:.18rem 0'>"
+                    + _country_sq_img(country, "78px")
+                    + f"<div style='min-width:0;flex:1'>"
+                    f"<div style='font-size:.93rem;font-weight:900'>{flag} {country}</div>"
+                    f"<div style='font-size:.7rem;color:#64748B;margin:.04rem 0'>{landmark}</div>"
+                    f"<div style='font-size:.72rem;font-weight:700;color:{ctx_color}'>{ctx}</div>"
+                    f"<div style='display:flex;gap:.15rem;margin:.06rem 0'>{av_html}</div>"
+                    f"<div style='font-size:.68rem;color:#475569'>⚽ {pick_count} pick{'s' if pick_count != 1 else ''}</div>"
+                    f"</div></div>",
+                    unsafe_allow_html=True,
+                )
+
+            for row in no_fav_rows:
+                st.markdown(
+                    f"<div style='border:1px solid rgba(255,255,255,.07);border-radius:10px;"
+                    f"padding:.38rem .65rem;margin:.18rem 0;opacity:.4;"
+                    f"display:flex;align-items:center;gap:.5rem'>"
+                    f"<span style='font-size:1.4rem'>{row['avatar']}</span>"
+                    f"<span style='font-size:.8rem;color:#94A3B8;font-style:italic'>"
+                    f"{row['name']} — keep exploring!</span></div>",
+                    unsafe_allow_html=True,
+                )
+        except Exception:
+            st.caption("Favorites loading...")
+
+    with disc_col:
+        st.markdown('<div class="section-head">🌎 Discovery Race</div>', unsafe_allow_html=True)
+        try:
+            _exp_board  = get_explorer_leaderboard()
+            _exp_weekly = get_weekly_explorer()
+
+            if _exp_weekly and _exp_weekly.get('count', 0) > 0:
+                _ew_word = "country" if _exp_weekly['count'] == 1 else "countries"
+                st.markdown(
+                    f"<div style='background:rgba(168,85,247,.12);border-left:3px solid #A855F7;"
+                    f"border-radius:0 8px 8px 0;padding:.38rem .6rem;margin:.25rem 0 .45rem;"
+                    f"font-size:.8rem'>"
+                    f"<span style='color:#A855F7;font-weight:800'>🌟 This Week's Explorer</span><br>"
+                    f"<span style='color:#F1F5F9'>{_exp_weekly['avatar']} {_exp_weekly['name']}"
+                    f" — {_exp_weekly['count']} new {_ew_word}</span></div>",
+                    unsafe_allow_html=True,
+                )
+
+            medals_exp = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣", "6️⃣"]
+            for i, _erow in enumerate(_exp_board):
+                _escore        = _erow['score']
+                _etitle, _eemoji = get_badge(_escore)
+                _ecolor        = _erow['theme_color']
+                st.markdown(
+                    f"<div class='lb-row' style='background:{_ecolor}22;border-left:3px solid {_ecolor};"
+                    f"display:flex;align-items:center;gap:.5rem'>"
+                    f"<span style='font-size:2rem;flex-shrink:0'>{_erow['avatar']}</span>"
+                    f"<div><div style='font-size:1.05rem;font-weight:800'>"
+                    f"{medals_exp[i] if i < len(medals_exp) else ''} {_erow['name']}</div>"
+                    f"<div style='color:#475569;font-size:.82rem'><b>{_escore}</b> pts · {_eemoji} {_etitle}"
+                    f"</div></div></div>",
+                    unsafe_allow_html=True,
+                )
+            st.page_link("pages/discovery_race.py", label="→ Full Discovery Race", icon="🌎")
+        except Exception:
+            st.caption("Discovery Race loading...")
+
+    st.divider()
+
+    # ── 5b. STORYLINES STRIP ─────────────────────────────────────────────────
+    _uid_for_stories = st.session_state.get("active_user_id", 1)
+    try:
+        _stories = _build_storylines(combined, _uid_for_stories)
+    except Exception:
+        _stories = []
+
+    def _md_bold(s: str) -> str:
+        return re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', s)
+
+    if _stories:
+        _s_cols = st.columns(len(_stories))
+        for _si, (_scol, _story) in enumerate(zip(_s_cols, _stories)):
+            with _scol:
+                st.markdown(
+                    f"<div style='background:rgba(255,255,255,.04);"
+                    f"border:1px solid rgba(255,255,255,.1);border-radius:10px;"
+                    f"padding:.55rem .75rem;font-size:.85rem;color:#CBD5E1;line-height:1.45'>"
+                    f"{_md_bold(_story)}</div>",
+                    unsafe_allow_html=True,
+                )
+        st.markdown("<div style='height:.3rem'></div>", unsafe_allow_html=True)
+
+    # ── 6. FAMILY STORY ───────────────────────────────────────────────────────
+    st.markdown('<div class="section-head">📖 Family Story</div>', unsafe_allow_html=True)
+
+    _TIER_STYLE = {
+        1: ("rgba(251,191,36,.07)",  "rgba(217,119,6,.55)"),
+        2: ("rgba(16,185,129,.06)",  "rgba(16,185,129,.4)"),
+        3: ("rgba(248,250,252,.03)", "rgba(255,255,255,.07)"),
+    }
+
+    story_items = _dedup_story(get_tiered_family_activity(limit=20))
+
+    if story_items.empty:
+        st.markdown(
+            "<div style='background:rgba(248,250,252,.05);border:1px solid rgba(255,255,255,.08);"
+            "border-radius:12px;padding:1.2rem;text-align:center;color:#64748B'>"
+            "<div style='font-size:2.5rem'>🗺️</div>"
+            "<div style='font-weight:700;margin:.3rem 0'>The adventure begins here.</div>"
+            "<div style='font-size:.88rem'>Explore countries and make picks to write the family story.</div>"
+            "</div>",
+            unsafe_allow_html=True,
+        )
     else:
-        st.caption("📍 Blue = USA · Red = Canada · Green = Mexico")
-except Exception:
-    st.info("🌎 Map loading...")
+        _scols = st.columns(2)
+        for _i, (_, _act) in enumerate(story_items.head(12).iterrows()):
+            _icon, _narr = format_activity_message(_act)
+            _tier  = int(_act.get('_tier', 3))
+            _ts    = str(_act.get('timestamp', ''))[:10]
+            _av    = str(_act.get('avatar', '⚽'))
+            _name  = str(_act.get('user_name', ''))
+            _bg, _border = _TIER_STYLE.get(_tier, _TIER_STYLE[3])
+
+            _grp_avs = str(_act.get('_grp_avs') or '')
+            if '|' in _grp_avs:
+                _av = " ".join(a for a in _grp_avs.split('|')[:4] if a)
+                _grp_names = str(_act.get('_grp_names') or '').split('|')
+                _grp_names = [n for n in _grp_names if n]
+                if len(_grp_names) <= 3:
+                    _name = " & ".join(_grp_names)
+                else:
+                    _name = f"{len(_grp_names)} family members"
+
+            with _scols[_i % 2]:
+                st.markdown(
+                    f"<div style='display:flex;align-items:center;gap:.45rem;padding:.28rem .55rem;"
+                    f"border-radius:8px;margin:.08rem 0;background:{_bg};border:1px solid {_border}'>"
+                    f"<span style='font-size:1.1rem;flex-shrink:0'>{_icon}</span>"
+                    f"<span style='font-size:.95rem;flex-shrink:0'>{_av}</span>"
+                    f"<span style='font-size:.84rem;font-weight:700;flex-shrink:0;color:#F1F5F9;"
+                    f"max-width:5.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>{_name}</span>"
+                    f"<span style='font-size:.83rem;flex:1;color:#CBD5E1;min-width:0;"
+                    f"overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>{_narr}</span>"
+                    f"<span style='font-size:.68rem;color:#475569;flex-shrink:0;white-space:nowrap'>{_ts}</span>"
+                    f"</div>",
+                    unsafe_allow_html=True,
+                )
+
+    st.divider()
+
+    # ── 7. FEATURED PLAYER OF THE DAY ────────────────────────────────────────
+    st.markdown('<div class="section-head">⭐ Featured Player of the Day</div>', unsafe_allow_html=True)
+    try:
+        _fp = get_featured_player_of_day()
+        if _fp:
+            _fp_c1, _fp_c2 = st.columns([1, 3])
+            with _fp_c1:
+                st.markdown(
+                    f"<div style='text-align:center;padding:.5rem 0'>"
+                    f"<div style='font-size:4rem;line-height:1'>{_fp['flag']}</div>"
+                    f"<div style='font-size:2.2rem;font-weight:900;color:#FCD34D;margin:.1rem 0'>#{_fp['shirt_number']}</div>"
+                    f"<div style='font-size:1rem;font-weight:900;color:#F1F5F9;line-height:1.2'>{_fp['name']}</div>"
+                    f"<div style='font-size:.82rem;color:#94A3B8;margin-top:.1rem'>{_fp['team']}</div>"
+                    f"<div style='font-size:.78rem;color:#64748B'>{_fp['position']} · {_fp['club_short']}</div>"
+                    f"</div>",
+                    unsafe_allow_html=True,
+                )
+                if st.button("👤 Learn More", key=f"home_fp_{_fp['player_slug']}", use_container_width=True):
+                    _show_player_modal_home(_fp['player_slug'])
+            with _fp_c2:
+                st.markdown(
+                    f"<div style='background:linear-gradient(160deg,#1E293B,#0F172A);"
+                    f"border-left:4px solid #F59E0B;border-radius:0 14px 14px 0;"
+                    f"padding:1rem 1.2rem;height:100%;color:white;"
+                    f"border:1px solid rgba(148,163,184,.12)'>"
+                    f"<div style='font-size:.65rem;font-weight:800;color:#D97706;"
+                    f"text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem'>"
+                    f"⭐ One Thing To Remember</div>"
+                    f"<div style='font-size:1.05rem;color:#F1F5F9;line-height:1.6;font-weight:500'>"
+                    f"{_fp['one_thing']}</div></div>",
+                    unsafe_allow_html=True,
+                )
+        else:
+            st.caption("Roster data loading...")
+    except Exception:
+        st.caption("Featured player loading...")
+
+    st.divider()
+
+    # ── 8. WORLD ATLAS PREVIEW ────────────────────────────────────────────────
+    _map_head, _map_btn = st.columns([5, 1])
+    with _map_head:
+        st.markdown('<div class="section-head">🌎 World Atlas</div>', unsafe_allow_html=True)
+    with _map_btn:
+        st.markdown("&nbsp;", unsafe_allow_html=True)
+        if st.button("Open Full Atlas →", use_container_width=True, key="home_open_atlas"):
+            st.switch_page("pages/map.py")
+
+    try:
+        _map_teams   = get_all_teams()
+        _map_iso3, _ = get_iso3_maps(_map_teams)
+        _active_uid  = st.session_state.get("active_user_id", 1)
+        _map_disc_df = get_discoveries(_active_uid)
+        _map_disc    = set(_map_disc_df["country_name"].tolist()) if not _map_disc_df.empty else set()
+        _map_cheered = set(get_cheered_for(_active_uid))
+        _map_won     = set(get_won_with(_active_uid))
+        _map_favs    = get_family_top_favorites(n=5)
+        _map_today   = set(today_matches["home_team"].tolist() + today_matches["away_team"].tolist())
+        for _ktm in today_ko:
+            if _ktm.get("home_name"):
+                _map_today.add(_ktm["home_name"])
+            if _ktm.get("away_name"):
+                _map_today.add(_ktm["away_name"])
+
+        _mini_fig = build_atlas_figure(
+            layer="today", teams_df=_map_teams,
+            discoveries=_map_disc, cheered=_map_cheered, won=_map_won,
+            family_favs=_map_favs, today_countries=_map_today, height=300,
+        )
+        _mini_event = st.plotly_chart(_mini_fig, on_select="rerun",
+                                      use_container_width=True, key="home_mini_atlas")
+        if _mini_event and _mini_event.selection and _mini_event.selection.points:
+            _pt   = _mini_event.selection.points[0]
+            _iso3 = _pt.get("location")
+            if _iso3 and _iso3 in _map_iso3:
+                st.session_state["_nav_country"] = _map_iso3[_iso3]
+                st.switch_page("pages/country_profile.py")
+
+        if _map_today:
+            _today_flags = " ".join(
+                str(_map_teams.loc[_map_teams["name"] == n, "flag_emoji"].values[0])
+                for n in sorted(_map_today)
+                if not _map_teams.loc[_map_teams["name"] == n, "flag_emoji"].empty
+            )
+            _today_lbl = "⚽ Playing today" if today_ko else "🗓 Playing today"
+            st.caption(f"{_today_lbl}: {_today_flags}  ·  📍 Blue = USA · Red = Canada · Green = Mexico")
+        else:
+            st.caption("📍 Blue = USA · Red = Canada · Green = Mexico")
+    except Exception:
+        st.info("🌎 Map loading...")

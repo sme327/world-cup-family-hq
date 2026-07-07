@@ -5,7 +5,7 @@ from services.matches import get_all_matches
 from services.teams import get_flag, get_all_group_letters
 from services.time_utils import fmt_date, fmt_match_time, pt_date_str
 from services.scoring import pick_result, get_leaderboard
-from services.ko_picks import get_all_ko_matches_display, get_ko_picks_for_match, KO_ROUND_LABELS
+from services.ko_picks import get_all_ko_matches_display, get_ko_picks_for_match, KO_ROUND_LABELS, ko_picks_visible
 
 active_user    = st.session_state.get("active_user_name", "Shawn")
 active_user_id = st.session_state.get("active_user_id", 1)
@@ -531,6 +531,7 @@ with tab_ko:
                 _hs, _as  = _km.get("home_score"), _km.get("away_score")
                 _is_today = _km.get("match_date") == _today_str2
                 _pens_str = _km.get("pens_str", "")
+                _pt_vis, _pt_n, _pt_tot = ko_picks_visible(_ko_mid)
 
                 # Build score string
                 if _hs is not None and _km.get("status") == "completed":
@@ -541,7 +542,14 @@ with tab_ko:
                     _score_disp = "vs"
 
                 _time_str  = fmt_match_time(_km.get("match_date", ""), _km.get("kickoff_time_et", ""))
-                _board_html = _ko_pick_board_html(_km, _ko_picks, n_family)
+                if _pt_vis:
+                    _board_html = _ko_pick_board_html(_km, _ko_picks, n_family)
+                else:
+                    _board_html = (
+                        f"<div style='font-size:.75rem;color:#94A3B8;font-weight:700;"
+                        f"margin:.2rem 0'>🔒 {_pt_n}/{_pt_tot} picked · "
+                        f"reveals when everyone's in</div>"
+                    )
                 _uid_qp_ko = active_user_id
 
                 _today_badge = (
@@ -574,13 +582,18 @@ with tab_ko:
         _third = next((km for km in _all_ko if km.get("id") == 131), None)
         if _third:
             _t_picks  = get_ko_picks_for_match(131)
+            _t_vis, _t_n, _t_tot = ko_picks_visible(131)
             _t_hs, _t_as = _third.get("home_score"), _third.get("away_score")
             _t_score  = f"{int(_t_hs)}–{int(_t_as)}" if _t_hs is not None else "vs"
             _t_pens   = _third.get("pens_str", "")
             if _t_pens:
                 _t_score += f" ({_t_pens})"
             _t_time   = fmt_match_time(_third.get("match_date", ""), _third.get("kickoff_time_et", ""))
-            _t_board  = _ko_pick_board_html(_third, _t_picks, n_family)
+            _t_board  = (
+                _ko_pick_board_html(_third, _t_picks, n_family) if _t_vis else
+                f"<div style='font-size:.75rem;color:#94A3B8;font-weight:700;margin:.2rem 0'>"
+                f"🔒 {_t_n}/{_t_tot} picked · reveals when everyone's in</div>"
+            )
             st.markdown(
                 f"<div style='font-size:.95rem;font-weight:800;color:#94A3B8;"
                 f"text-transform:uppercase;letter-spacing:.04em;margin:.7rem 0 .3rem'>"

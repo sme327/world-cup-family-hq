@@ -12,6 +12,7 @@ from services.ko_picks import (
     save_ko_pick,
     KO_ROUND_LABELS,
     KO_ROUND_POINTS,
+    ko_picks_visible,
 )
 
 # ── Page CSS ───────────────────────────────────────────────────────────────────
@@ -222,21 +223,37 @@ def _render_ko_card(km: dict) -> None:
 
     user_ko_pick    = get_ko_pick(active_user_id, mid) if (home_id and away_id) else None
     ko_family_picks = get_ko_picks_for_match(mid) if (home_id and away_id) else []
+    _vis, _n_picked, _total = ko_picks_visible(mid) if (home_id and away_id) else (True, 0, 7)
 
     both_known = bool(home_id and away_id)
     is_done    = (status == "completed")
     can_pick   = both_known and not is_done
 
-    sticker = (
-        f"<div style='display:flex;justify-content:center;gap:1.5rem;margin:.2rem 0'>"
-        f"{_ko_sticker_block(home_id, home_name, home_flag, ko_family_picks)}"
-        f"{_ko_sticker_block(away_id, away_name, away_flag, ko_family_picks)}"
-        f"</div>"
-        if ko_family_picks else
-        f"<div style='text-align:center;margin:.2rem 0;font-size:.72rem;color:#374151'>"
-        + ("🗳️ Picks Open" if can_pick else ("⏳ Teams TBD" if not both_known else ""))
-        + "</div>"
-    )
+    my_pick_hint = ""
+    if not _vis and user_ko_pick:
+        my_pick_hint = " · ✅ you picked"
+
+    if not _vis:
+        sticker = (
+            f"<div style='text-align:center;margin:.25rem 0'>"
+            f"<span style='font-size:.75rem;color:#94A3B8;font-weight:700'>"
+            f"🔒 {_n_picked}/{_total} picked{my_pick_hint}</span><br>"
+            f"<span style='font-size:.65rem;color:#64748B'>Reveals when everyone's in</span>"
+            f"</div>"
+        )
+    elif ko_family_picks:
+        sticker = (
+            f"<div style='display:flex;justify-content:center;gap:1.5rem;margin:.2rem 0'>"
+            f"{_ko_sticker_block(home_id, home_name, home_flag, ko_family_picks)}"
+            f"{_ko_sticker_block(away_id, away_name, away_flag, ko_family_picks)}"
+            f"</div>"
+        )
+    else:
+        sticker = (
+            f"<div style='text-align:center;margin:.2rem 0;font-size:.72rem;color:#374151'>"
+            + ("🗳️ Picks Open" if can_pick else ("⏳ Teams TBD" if not both_known else ""))
+            + "</div>"
+        )
 
     score_line = ""
     if is_done and km.get("home_score") is not None:

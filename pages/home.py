@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 from datetime import date, timedelta, datetime as _dt
 from services.matches import get_all_matches
-from services.scoring import get_leaderboard, get_combined_leaderboard
+from services.scoring import get_leaderboard, get_combined_leaderboard, get_group_standings
 from services.teams import get_flag, get_all_teams
 from services.activity import format_activity_message, get_tiered_family_activity
 from services.picks import get_picks_for_match
@@ -623,7 +623,7 @@ if n_today > 0:
     match_label = f"🗓 {n_today} Match{'es' if n_today != 1 else ''} Today"
 elif today_ko:
     _nko = len(today_ko)
-    match_label = f"🏆 {_nko} Knockout Match{'es' if _nko != 1 else ''} Today"
+    match_label = f"⚽ {_nko} Knockout Match{'es' if _nko != 1 else ''} Today"
 else:
     match_label = "🗓 No matches today"
 
@@ -638,7 +638,7 @@ st.markdown(
     f"<div style='font-size:1rem;color:#93C5FD'>{match_label}</div>"
     "</div>"
     "<div style='text-align:right'>"
-    + last_result_html + leader_html + cotd_hero_html
+    + leader_html + cotd_hero_html
     + "</div></div></div>",
     unsafe_allow_html=True,
 )
@@ -804,7 +804,7 @@ if is_qf_plus:
             f"<div style='font-size:.98rem;font-weight:800'>"
             f"{_medals_qf[rank_i] if rank_i < len(_medals_qf) else ''} {entry['name']}</div>"
             f"<div style='display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.04rem'>"
-            f"<span style='color:#FCD34D;font-size:.82rem;font-weight:700'>{pts_str}</span>"
+            f"<span style='color:#FCD34D;font-size:1.0rem;font-weight:700'>{pts_str}</span>"
             f"&nbsp;{chips_html}</div></div></div>"
         )
 
@@ -813,10 +813,8 @@ if is_qf_plus:
     with _qsc1:
         st.markdown('<div class="section-head">🏆 Race to the Cup</div>', unsafe_allow_html=True)
         for _i, _e in enumerate(_combined_by_total):
-            _chips = (
-                f"<span style='font-size:.58rem;color:#86EFAC'>⚽{_e['group_pts']:.1f}</span>"
-                f"<span style='font-size:.58rem;color:#7DD3FC'>🎯{_e['ko_live_pts']:.0f}</span>"
-            )
+            _tc = _e.get('total_correct', 0)
+            _chips = f"<span style='font-size:.62rem;color:#86EFAC'>{_tc} correct pick{'s' if _tc != 1 else ''}</span>"
             st.markdown(_qf_sb_row(_i, _e, f"{_e['total_pts']:.1f} pts", _chips), unsafe_allow_html=True)
         st.page_link("pages/leaderboard.py", label="→ Full Breakdown", icon="📊")
 
@@ -826,31 +824,110 @@ if is_qf_plus:
             _ks    = _ko_stats.get(_e["user_id"], {})
             _wins  = _ks.get("wins", 0)
             _picks = _ks.get("picks", 0)
+            _pct   = f"{int(_wins / _picks * 100)}%" if _picks else "0%"
             _chips = (
-                f"<span style='font-size:.58rem;color:#86EFAC'>{_wins}W / {_picks} picks</span>"
-            ) if _picks else ""
+                f"<span style='font-size:.62rem;color:#86EFAC'>{_wins} correct · {_pct}</span>"
+            ) if _picks else "<span style='font-size:.62rem;color:#64748B'>no picks yet</span>"
             st.markdown(_qf_sb_row(_i, _e, f"{_e['ko_live_pts']:.0f} pts", _chips), unsafe_allow_html=True)
 
     with _qsc3:
         st.markdown('<div class="section-head">⭐ Group Stage</div>', unsafe_allow_html=True)
         for _i, _e in enumerate(_combined_by_grp):
-            _chips = "<span style='font-size:.58rem;color:#94A3B8'>Final</span>"
+            _gc = _e.get('group_correct', 0)
+            _gd = int(round(2 * (_e['group_pts'] - _gc)))   # draws = (pts - wins) / 0.5
+            _chips = (
+                f"<span style='font-size:.62rem;color:#86EFAC'>{_gc}W</span>"
+                f"<span style='font-size:.62rem;color:#FCD34D'>{_gd}D</span>"
+            )
             st.markdown(_qf_sb_row(_i, _e, f"{_e['group_pts']:.1f} pts", _chips), unsafe_allow_html=True)
 
     st.divider()
 
     # ── QF+ B: FAMILY FAVORITES (compact 4-column gallery) ───────────────────
     st.markdown('<div class="section-head">⭐ Family Favorites</div>', unsafe_allow_html=True)
+
+    def _fav_tooltip(country: str, grp_standings: dict, ko_all: list[dict]) -> str:
+        """Build a browser tooltip string for a family favorite country card."""
+        lines: list[str] = []
+        flag = get_flag(country)
+        lines.append(f"{flag} {country}")
+
+        # Group stage record
+        for _gl, _gteams in grp_standings.items():
+            for _gt in _gteams:
+                if _gt['team'] == country:
+                    _pos = _gteams.index(_gt) + 1
+                    _adv = "✅ Qualified" if _pos <= 2 else "❌ Eliminated in group"
+                    lines.append(
+                        f"Group {_gl}: {_gt['w']}W {_gt['d']}D {_gt['l']}L "
+                        f"({_gt['gf']}–{_gt['ga']}) — {_adv}"
+                    )
+                    break
+
+        # Knockout journey
+        _rnd_order = {'r32': 1, 'r16': 2, 'qf': 3, 'sf': 4, 'third': 5, 'final': 6}
+        _ko_matches = sorted(
+            [m for m in ko_all
+             if m['status'] == 'completed'
+             and (m.get('home_name') == country or m.get('away_name') == country)],
+            key=lambda m: _rnd_order.get(m.get('round', ''), 0),
+        )
+        for _km in _ko_matches:
+            _rnd_lbl = _KO_RND_LABELS.get(_km['round'], _km['round'])
+            _is_home = _km.get('home_name') == country
+            _opp     = _km.get('away_name') if _is_home else _km.get('home_name')
+            _opp_f   = _km.get('away_flag', '') if _is_home else _km.get('home_flag', '')
+            _hs      = int(_km.get('home_score') or 0)
+            _as_     = int(_km.get('away_score') or 0)
+            _my_s    = _hs if _is_home else _as_
+            _op_s    = _as_ if _is_home else _hs
+            _wid     = _km.get('winner_team_id')
+            _hid     = _km.get('home_team_id')
+            _won     = (_wid == _hid) if _is_home else (_wid != _hid)
+            _res     = "🏆 Won" if _won else "💔 Lost"
+            lines.append(f"{_rnd_lbl}: {_res} vs {_opp_f} {_opp} {_my_s}–{_op_s}")
+
+        # Family who picked / explored this country
+        try:
+            _conn = get_connection()
+            _prows = _conn.execute("""
+                SELECT u.name, u.avatar, COUNT(*) as cnt
+                FROM picks p JOIN users u ON p.user_id = u.id
+                WHERE p.picked_team = ?
+                GROUP BY p.user_id ORDER BY cnt DESC
+            """, (country,)).fetchall()
+            _drows = _conn.execute("""
+                SELECT u.name, u.avatar, d.visit_count
+                FROM discoveries d JOIN users u ON d.user_id = u.id
+                WHERE d.country_name = ?
+                ORDER BY d.visit_count DESC
+            """, (country,)).fetchall()
+            _conn.close()
+            if _prows:
+                _pfans = "  ".join(
+                    f"{av}{nm}({cnt}x)" for nm, av, cnt in _prows
+                )
+                lines.append(f"Picked by: {_pfans}")
+            if _drows:
+                _dfans = "  ".join(f"{av}{nm}" for nm, av, _ in _drows)
+                lines.append(f"Explored by: {_dfans}")
+        except Exception:
+            pass
+
+        return "&#10;".join(lines)
+
     try:
-        _fav_list = get_family_top_favorites(n=8)
+        _fav_list     = get_family_top_favorites(n=8)
+        _grp_standing = get_group_standings()
         if _fav_list:
             _fav_cols = st.columns(4)
             for _fi, _fc in enumerate(_fav_list):
                 with _fav_cols[_fi % 4]:
-                    _fc_flag  = get_flag(_fc)
-                    _fc_stamp = get_stamp(_fc)
-                    _fc_label = _fc_stamp.get('stamp_label', '')
-                    _fc_uri   = get_country_image_data_uri(_fc) or ''
+                    _fc_flag    = get_flag(_fc)
+                    _fc_stamp   = get_stamp(_fc)
+                    _fc_label   = _fc_stamp.get('stamp_label', '')
+                    _fc_uri     = get_country_image_data_uri(_fc) or ''
+                    _fc_tooltip = _fav_tooltip(_fc, _grp_standing, _ko_all)
                     if _fc_uri:
                         _fav_img = (
                             f"<div style='width:100%;aspect-ratio:4/3;"
@@ -865,7 +942,7 @@ if is_qf_plus:
                             f"font-size:2rem;border-radius:8px;margin-bottom:.22rem'>{_fc_flag}</div>"
                         )
                     st.markdown(
-                        f"<div style='text-align:center;margin-bottom:.3rem'>"
+                        f"<div title='{_fc_tooltip}' style='text-align:center;margin-bottom:.3rem;cursor:help'>"
                         + _fav_img
                         + f"<div style='font-size:.82rem;font-weight:800;color:#F1F5F9'>{_fc_flag} {_fc}</div>"
                         f"<div style='font-size:.67rem;color:#64748B;margin-top:.02rem'>{_fc_label}</div>"

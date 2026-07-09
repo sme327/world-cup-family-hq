@@ -183,8 +183,8 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
     # Larger invisible hit-target so small nodes are easy to tap
     svg.append(_circ(x, y, max(r_px + 6, 14), 'transparent', 'none', 0))
 
-    if has_w and rnd == 'r16':
-        # R16 winner — show the advancing team's flag instead of the dome node
+    if has_w and rnd in ('r16', 'qf', 'sf'):
+        # R16/QF/SF winner — show the advancing team's flag instead of the dome node
         _wflag = (m.get('home_flag', '') if m.get('winner_team_id') == m.get('home_team_id')
                   else m.get('away_flag', ''))
         svg.append(_txt(x, y, _wflag, 34, 'inherit', 'middle',

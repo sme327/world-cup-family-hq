@@ -282,7 +282,7 @@ def _render_ko_card(km: dict) -> None:
         )
         b1, b2 = st.columns(2)
         with b1:
-            h_picked = user_ko_pick == home_id
+            h_picked = bool(home_id) and user_ko_pick == home_id
             h_label  = f"✅ {home_name}" if h_picked else home_name
             if st.button(h_label, key=f"ko_{mid}_h", use_container_width=True, disabled=not can_pick):
                 if can_pick and not h_picked:
@@ -292,7 +292,7 @@ def _render_ko_card(km: dict) -> None:
                     except ValueError as e:
                         st.error(str(e))
         with b2:
-            a_picked = user_ko_pick == away_id
+            a_picked = bool(away_id) and user_ko_pick == away_id
             a_label  = f"✅ {away_name}" if a_picked else away_name
             if st.button(a_label, key=f"ko_{mid}_a", use_container_width=True, disabled=not can_pick):
                 if can_pick and not a_picked:
@@ -384,7 +384,7 @@ all_matches['pt_date'] = all_matches.apply(
 # KO data
 try:
     _ko_all     = get_all_ko_matches_display()
-    _ko_matches = [km for km in _ko_all if km["id"] != 131]
+    _ko_matches = _ko_all   # include the 3rd-place match — pickable like any other
     _has_ko     = bool(_ko_matches)
 except Exception:
     _ko_matches = []
@@ -405,7 +405,7 @@ with tab_ko:
     if not _has_ko:
         st.info("The knockout stage begins June 28 — check back soon! 🏆")
     else:
-        _ko_round_order = ["r32", "r16", "qf", "sf", "final"]
+        _ko_round_order = ["r32", "r16", "qf", "sf", "third_place", "final"]
 
         # Only show rounds that have at least one match seeded
         _avail_rnds = [r for r in _ko_round_order

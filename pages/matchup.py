@@ -236,7 +236,7 @@ a.mu-chip:hover { background:rgba(255,255,255,.18); color:white; }
 # ══════════════════════════════════════════════════════════════════════════════
 with tab_ko:
     all_ko = get_all_ko_matches_display()
-    nav_ko = [m for m in all_ko if m["id"] != 131]  # 131 = 3rd place, shown separately
+    nav_ko = all_ko  # include the 3rd-place match — a first-class, pickable KO match
 
     if not nav_ko:
         st.info("Knockout matches begin June 29, 2026. Check back soon!")

@@ -27,8 +27,9 @@ except (ValueError, TypeError):
     target_id = None
 
 all_ko = get_all_ko_matches_display()
-# exclude 3rd place from navigation
-nav_ko = [km for km in all_ko if km["id"] != 131]
+# Include every knockout match — the 3rd-place match is pickable and worth the
+# same as a semifinal (5 pts), so it must be reachable here.
+nav_ko = all_ko
 
 if not nav_ko:
     st.info("No knockout matches available yet.")
@@ -196,7 +197,12 @@ if home_id and away_id and not is_done:
                 st.error(str(e))
 
 elif is_done and km.get("winner_name"):
-    st.success(f"🏆 {km['winner_name']} advances!")
+    if rnd == "third_place":
+        st.success(f"🥉 {km['winner_name']} finishes 3rd — takes the bronze!")
+    elif rnd == "final":
+        st.success(f"🏆 {km['winner_name']} are World Cup champions!")
+    else:
+        st.success(f"🏆 {km['winner_name']} advances!")
 
 st.divider()
 

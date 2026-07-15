@@ -28,3 +28,4 @@ id,round,bracket_slot,match_number,home_team_id,away_team_id,home_name,away_name
 127,qf,3,99,35,45,Norway,England,2026-07-11,1,2,45,completed,,
 128,qf,4,100,37,8,Argentina,Switzerland,2026-07-11,2,1,37,completed,,
 129,sf,1,101,33,29,France,Spain,2026-07-14,0,2,29,completed,,
+130,sf,2,102,45,37,England,Argentina,2026-07-15,1,2,37,completed,,

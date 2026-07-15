@@ -271,6 +271,53 @@ def save_knockout_result(match_id: int, home_score: int, away_score: int,
     conn.close()
 
 
+def resync_bracket_advancement() -> int:
+    """Re-derive every downstream team slot from completed knockout results.
+
+    save_knockout_result() advances the winner as a side effect of score entry.
+    A restore from backup CSVs writes scores directly, so those slots never get
+    filled. Running this after a restore rebuilds them.
+
+    Processes matches in bracket order so a winner advanced into round N is
+    available when round N's own result is applied. Returns the number of slots
+    written.
+    """
+    conn = get_connection()
+    cur  = conn.cursor()
+
+    rows = cur.execute("""
+        SELECT id, round, winner_team_id, home_team_id, away_team_id,
+               winner_to_id, winner_to_slot, loser_to_id, loser_to_slot
+        FROM knockout_matches
+        WHERE status = 'completed' AND winner_team_id IS NOT NULL
+    """).fetchall()
+
+    order = {r: i for i, r in enumerate(_ROUND_ORDER)}
+    rows  = sorted(rows, key=lambda r: order.get(r[1], 99))
+
+    written = 0
+    for (_mid, _rnd, winner_id, home_id, away_id,
+         w_to_id, w_to_slot, l_to_id, l_to_slot) in rows:
+
+        if w_to_id and w_to_slot:
+            col = "home_team_id" if w_to_slot == "home" else "away_team_id"
+            cur.execute(f"UPDATE knockout_matches SET {col}=? WHERE id=?",
+                        (winner_id, w_to_id))
+            written += 1
+
+        if l_to_id and l_to_slot:
+            loser_id = away_id if winner_id == home_id else home_id
+            if loser_id:
+                col = "home_team_id" if l_to_slot == "home" else "away_team_id"
+                cur.execute(f"UPDATE knockout_matches SET {col}=? WHERE id=?",
+                            (loser_id, l_to_id))
+                written += 1
+
+    conn.commit()
+    conn.close()
+    return written
+
+
 def reset_knockout_result(match_id: int) -> tuple[bool, str]:
     """Clear a knockout match result.
 

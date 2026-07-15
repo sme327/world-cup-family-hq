@@ -213,4 +213,12 @@ else:
     print("  KO live picks: no backup found")
 
 conn.close()
+
+# ── Bracket advancement ───────────────────────────────────────────────────────
+# Scores restored above are written straight to the row; unlike admin score
+# entry, that never advances winners into the next round's team slots.
+sys.path.insert(0, ROOT)
+from services.knockout import resync_bracket_advancement  # noqa: E402
+print(f"  Bracket advancement: {resync_bracket_advancement()} slots resynced")
+
 print("\n✅ Restore complete.\n")

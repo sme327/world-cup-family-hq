@@ -29,6 +29,15 @@ R_R16  = 266        # R16 match node radius
 R_QF   = 179        # QF  match node radius
 R_SF   = 96         # SF  match node radius
 
+# ── Flag sizing ───────────────────────────────────────────────────────────────
+# The 32 outer team flags start large (they are the whole story in the group-of-32
+# round). Once that round is done they shrink slightly, ceding the spotlight to the
+# deeper rounds, whose winner flags grow toward the trophy — up to ~25% larger.
+OUTER_FLAG_PRE  = 56    # outer team flags before the R32 round is complete
+OUTER_FLAG_POST = 44    # …after: shrink slightly (below the original 48)
+_WIN_FLAG_SIZE  = {'r16': 42, 'qf': 46, 'sf': 50}   # progressive, deepest = biggest
+CHAMP_FLAG      = 40    # champion flag in the center
+
 # ── Palette ───────────────────────────────────────────────────────────────────
 BG          = '#111827'
 GRAY        = '#374151'
@@ -187,7 +196,7 @@ def _match_node(svg: list, angle: float, radius: float, m, r_px: int = 9, rnd: s
         # R16/QF/SF winner — show the advancing team's flag instead of the dome node
         _wflag = (m.get('home_flag', '') if m.get('winner_team_id') == m.get('home_team_id')
                   else m.get('away_flag', ''))
-        svg.append(_txt(x, y, _wflag, 34, 'inherit', 'middle',
+        svg.append(_txt(x, y, _wflag, _WIN_FLAG_SIZE.get(rnd, 40), 'inherit', 'middle',
                         extra=' filter="url(#flag-float)"'))
 
     elif has_w:
@@ -248,6 +257,12 @@ def _build_svg(ko: list, uid: str = '') -> str:
             i = 2 * (s1 - 1)
             outer[i]     = {'name': m.get('home_name'), 'flag': m.get('home_flag') or '⬜', 'tid': m.get('home_team_id')}
             outer[i + 1] = {'name': m.get('away_name'), 'flag': m.get('away_flag') or '⬜', 'tid': m.get('away_team_id')}
+
+    # Once every R32 match has a winner, the first round is over: shrink the outer
+    # team flags so the deeper rounds carry the eye inward.
+    r32_matches = [by_slot['r32'].get(s1) for s1 in range(1, 17)]
+    r32_done    = all(m and m.get('winner_team_id') for m in r32_matches)
+    outer_flag  = OUTER_FLAG_POST if r32_done else OUTER_FLAG_PRE
 
     svg = []
 
@@ -387,7 +402,7 @@ def _build_svg(ko: list, uid: str = '') -> str:
         fx, fy = _pt(R_TEAM, angle)
 
         if team and team.get('name'):
-            svg.append(_txt(fx, fy, team['flag'], 48, 'inherit', 'middle',
+            svg.append(_txt(fx, fy, team['flag'], outer_flag, 'inherit', 'middle',
                             extra=' filter="url(#flag-float)"', tooltip=team['name']))
         else:
             svg.append(_circ(fx, fy, 3, GRAY, 'none', 0))
@@ -409,7 +424,7 @@ def _build_svg(ko: list, uid: str = '') -> str:
         else:
             svg.append(_txt(CX, CY - 28, '🏆', 48, 'inherit', 'middle'))
         if champ_flag:
-            svg.append(_txt(CX, CY + 16, champ_flag, 32, 'inherit', 'middle'))
+            svg.append(_txt(CX, CY + 16, champ_flag, CHAMP_FLAG, 'inherit', 'middle'))
         svg.append(_txt(CX, CY + 44, _short(champ_name), 11, TXT_WIN, 'middle', weight='bold'))
     else:
         # No champion yet — full trophy centred

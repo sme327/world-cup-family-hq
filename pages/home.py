@@ -172,12 +172,45 @@ def _dedup_story(df: pd.DataFrame) -> pd.DataFrame:
 _KO_RND_COLORS = {
     "r32": ("#1E3A5F", "#BAE6FD"), "r16": ("#14532D", "#BBF7D0"),
     "qf":  ("#3B1A6B", "#DDD6FE"), "sf":  ("#7C2D12", "#FED7AA"),
-    "final": ("#78350F", "#FDE68A"),
+    "third_place": ("#155E75", "#A5F3FC"), "final": ("#78350F", "#FDE68A"),
 }
 _KO_RND_LABELS = {
     "r32": "Round of 32", "r16": "Round of 16", "qf": "Quarterfinals",
-    "sf": "Semifinals", "final": "Final",
+    "sf": "Semifinals", "third_place": "3rd Place", "final": "Final",
 }
+
+# From the quarterfinals on, the home page shows every match in the current
+# round instead of only what is on today. The last two matches are grouped so
+# the 3rd-place match and the Final appear together.
+_KO_PHASES: list[tuple[str, tuple[str, ...]]] = [
+    ("🏆 Quarterfinals",     ("qf",)),
+    ("🏆 Semifinals",        ("sf",)),
+    ("🏆 Final & 3rd Place", ("final", "third_place")),
+]
+
+
+def _current_round_matches(ko_all: list[dict]) -> tuple[str, list[dict]] | None:
+    """The heading and matches for the current QF-or-later round.
+
+    The current round is the earliest phase still holding an unplayed match, so
+    finished matches stay on the page beside their unplayed siblings until the
+    whole round is done. Returns None before the quarterfinals have teams, and
+    once the Final has been played.
+    """
+    for label, rounds in _KO_PHASES:
+        in_phase = [m for m in ko_all if m["round"] in rounds]
+        if not in_phase:
+            continue
+        if not any(m.get("home_team_id") or m.get("away_team_id") for m in in_phase):
+            return None   # Phase not reached yet — nothing to show
+        if any(m["status"] != "completed" for m in in_phase):
+            # Final is listed before third_place so it leads the row.
+            order = {r: i for i, r in enumerate(rounds)}
+            return label, sorted(
+                in_phase,
+                key=lambda m: (order[m["round"]], m["match_date"], m["kickoff_time_et"]),
+            )
+    return None   # Tournament complete
 
 
 def _today_ko_card(km: dict) -> None:
@@ -283,12 +316,20 @@ def _today_ko_card(km: dict) -> None:
             f"border-radius:16px;padding:.85rem .75rem .65rem;margin-bottom:.5rem'><div>"
         )
 
+    today_badge = (
+        "<span style='background:#DC2626;color:#FFF;border-radius:4px;"
+        "padding:.08rem .35rem;font-size:.68rem;font-weight:900;margin-left:.3rem;"
+        "letter-spacing:.05em'>TODAY</span>"
+        if not is_done and km["match_date"] == today_str else ""
+    )
+
     card_html += (
         "<div style='text-align:center;margin-bottom:.5rem'>"
         f"<span style='background:{bg_c};color:{tx_c};border-radius:4px;"
         f"padding:.08rem .4rem;font-size:.7rem;font-weight:800;letter-spacing:.04em'>{rnd_lbl}</span>"
         f"<span style='background:rgba(255,255,255,.12);color:#FCD34D;border-radius:4px;"
-        f"padding:.08rem .35rem;font-size:.68rem;font-weight:800;margin-left:.3rem'>+{pts_val} pts</span></div>"
+        f"padding:.08rem .35rem;font-size:.68rem;font-weight:800;margin-left:.3rem'>+{pts_val} pts</span>"
+        + today_badge + "</div>"
         "<div style='display:flex;align-items:flex-start'>"
         + _team_block(home_flag, home_name, home_pickers, home_id)
         + center_html
@@ -395,7 +436,7 @@ def _current_phase() -> str:
             SELECT round FROM knockout_matches
             WHERE status='scheduled' AND home_team_id IS NOT NULL
             ORDER BY CASE round
-                WHEN 'final' THEN 7 WHEN 'third' THEN 6
+                WHEN 'final' THEN 7 WHEN 'third_place' THEN 6
                 WHEN 'sf' THEN 5 WHEN 'qf' THEN 4
                 WHEN 'r16' THEN 3 WHEN 'r32' THEN 2 ELSE 1 END DESC
             LIMIT 1
@@ -560,7 +601,7 @@ except Exception:
 
 # QF+ phase detection (computed once per page load)
 is_qf_plus = _is_qf_plus()
-_phase     = _current_phase()   # 'qf', 'sf', 'third', 'final', or 'early'
+_phase     = _current_phase()   # 'qf', 'sf', 'third_place', 'final', or 'early'
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -621,10 +662,10 @@ elif cotd_hero:
 
 # Optional A: phase-aware day label
 _PHASE_DISPLAY = {
-    'qf':    'Quarterfinals',
-    'sf':    'Semifinals',
-    'third': 'Third Place',
-    'final': 'The Final',
+    'qf':          'Quarterfinals',
+    'sf':          'Semifinals',
+    'third_place': 'Third Place',
+    'final':       'The Final',
 }
 if is_qf_plus and _phase in _PHASE_DISPLAY:
     day_label = f"🏆 {_PHASE_DISPLAY[_phase]}"
@@ -705,9 +746,23 @@ if not is_qf_plus:
 render_radial_bracket(show_title=False)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 2c. TODAY'S KNOCKOUT MATCHES
+# 2c. KNOCKOUT MATCHES
+#     QF onward: the whole current round, so the semifinals (or the Final and
+#     3rd-place match) are on the home page even on a day with no kickoff.
+#     Before that: only today's matches, since a full round is 8–16 cards.
 # ─────────────────────────────────────────────────────────────────────────────
-if today_ko:
+_round_section = _current_round_matches(_ko_all)
+
+if _round_section:
+    _round_label, _round_ko = _round_section
+    st.markdown(f'<div class="section-head">{_round_label}</div>', unsafe_allow_html=True)
+    _nkcols = min(len(_round_ko), 4)
+    _kocols = st.columns(_nkcols)
+    for _ki, _km in enumerate(_round_ko):
+        with _kocols[_ki % _nkcols]:
+            _today_ko_card(_km)
+
+elif today_ko:
     st.markdown(
         '<div class="section-head">⚽ Today\'s Knockout Matches</div>',
         unsafe_allow_html=True,
